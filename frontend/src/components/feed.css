@@ -1,0 +1,41 @@
+.risk { display: inline-flex; align-items: center; gap: var(--space-2); }
+
+/* Filled hexagon = flagged, hollow = cleared. The shape, not the colour, is
+   what a colour-blind reader relies on. */
+.risk__marker {
+  width: 8px; height: 8px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: var(--risk-low);
+}
+.risk__marker[data-flagged='true'] { background: var(--risk-high); }
+.risk__marker[data-flagged='false'] { box-shadow: inset 0 0 0 1px var(--risk-low); background: transparent; }
+
+.risk__track { width: 72px; height: 3px; background: var(--rule); }
+.risk__fill  { display: block; height: 100%; background: var(--risk-low); }
+.risk__fill[data-flagged='true'] { background: var(--risk-high); }
+.risk__score { font-size: var(--step--1); color: var(--text-dim); }
+
+.feed { width: 100%; border-collapse: collapse; }
+.feed th {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--step--1);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--rule);
+}
+.feed td { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--rule); }
+.feed tbody tr { cursor: pointer; }
+.feed tbody tr:hover { background: var(--raised); }
+.feed tbody tr[aria-selected='true'] { background: var(--raised); box-shadow: inset 2px 0 0 var(--spec-cyan); }
+
+.feed__empty { padding: var(--space-6); color: var(--text-dim); text-align: center; }
+
+/* The one orchestrated moment: a new row's band sweeps once as it arrives. */
+@media (prefers-reduced-motion: no-preference) {
+  .feed tbody tr[data-fresh='true'] .risk__fill { animation: sweep 240ms ease-out; }
+  @keyframes sweep { from { width: 0 !important; } }
+}

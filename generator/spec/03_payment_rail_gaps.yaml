@@ -1,0 +1,251 @@
+# spec/03_payment_rail_gaps.yaml
+# Canonical Specification for Payment Rail Plumbing, Gateway Risk & Post-Auth Dispute Lifecycles
+# Grounded in: ISO 8583 (1987/1993/2003), Visa Core Rules (VCR), Visa Acquirer Monitoring Program (VAMP 2025/2026),
+# Mastercard Rules & Security Rules (ECP/EFM/MATCH), Commission Delegated Regulation (EU) 2018/389 (PSD2 RTS on SCA).
+
+schema_version: "1.1.0"
+unit_definitions:
+  currency: "USD_cents"
+  time: "seconds"
+  latency: "milliseconds"
+  probability: "[0.0, 1.0]"
+  ratio: "bps_or_percentage"
+
+dual_message_system_lifecycle:
+  authorization_phase:
+    request_mti: "0100"
+    response_mti: "0110"
+    timeout_sla_ms: 2000
+    state_effect: "MEMO_HOLD_APPLIED"
+  clearing_presentment_phase:
+    clearing_mti: "0200"
+    clearing_delay_window_hours: [24, 72]
+    reconciliation_keys: ["RRN_DE37", "STAN_DE11", "AUTH_CODE_DE38", "TID"]
+    state_effect: "FINANCIAL_SETTLEMENT"
+  hold_expiry_window_days:
+    retail_standard: 7
+    car_rental: 30
+    hotel_lodging: 30
+
+pre_authorization_protocols:
+  automated_fuel_dispenser_mcc_5542:
+    standard_auth_hold_cents: 17500  # $175.00 Visa/Mastercard standard
+    fleet_auth_hold_cents: 35000     # $350.00 Commercial fleet standard
+    partial_authorization_supported: true
+    mandatory_field_39_code: "10"    # Partial Approval indicator
+    pump_controller_behavior: "HALT_NOZZLE_AT_APPROVED_LIMIT"
+    clearing_advice_mti: "0220"
+    ghost_hold_release_delay_hours: [24, 72] # Delay before bank unfreezes difference
+
+  hotel_lodging_mcc_7011:
+    hold_formula: "total_hold = (room_rate + tax) * nights + daily_incidentals * nights"
+    daily_incidental_cents: 7500     # $75.00/night
+    incremental_auth_supported: true
+    hold_duration_days: 30
+
+  dining_restaurant_mcc_5812:
+    tip_tolerance_percentage: 20.0   # 120% clearable without second auth
+    batch_settlement_hour_local: [1, 3] # 01:00 AM - 03:00 AM
+    excess_chargeback_rights:
+      visa_reason_code: "13.1"
+      mastercard_reason_code: "4837"
+
+stand_in_processing_stip:
+  trigger_conditions:
+    timeout_threshold_ms: 2000       # Host unresponsive > 2.0s
+    transport_link_down: true
+  network_floor_limits_cents:
+    subprime_classic: 10000          # $100.00
+    rewards_signature: 50000         # $500.00
+    ultra_premium: 250000            # $2,500.00
+  controls:
+    negative_card_file_check: true
+    positive_balance_file_check: true
+    max_consecutive_offline_approvals: 3
+    fourth_consecutive_action: "HARD_DECLINE_05"
+  signaling:
+    response_code_field_39: "00"
+    visa_field_44_5_stip_indicator: true
+    mastercard_de48_se22_stip_code: true
+  liability: "ISSUER_STIP_CONTRACTUAL_LIABILITY"
+
+address_verification_service_avs:
+  matching_algorithm: "EXACT_NUMERIC_EXTRACTION"
+  response_matrix:
+    Y: { match: "FULL_MATCH", street: true, zip5: true, risk: "LOW" }
+    A: { match: "PARTIAL_STREET", street: true, zip5: false, risk: "MEDIUM_HIGH" }
+    Z: { match: "PARTIAL_ZIP", street: false, zip5: true, risk: "HIGH_EXPLOIT_BYPASS" }
+    N: { match: "NO_MATCH", street: false, zip5: false, risk: "EXTREME_FRAUD" }
+    U: { match: "UNAVAILABLE_INTERNATIONAL", street: null, zip5: null, risk: "MERCHANT_LIABILITY_SHIFT" }
+    G: { match: "GLOBAL_NON_PARTICIPATING", street: null, zip5: null, risk: "MERCHANT_LIABILITY_SHIFT" }
+
+emv_3ds_sca_exemptions:
+  low_value_article_16:
+    max_single_tx_eur: 30.00
+    cumulative_spend_circuit_breaker_eur: 100.00
+    consecutive_tx_circuit_breaker: 5
+  transaction_risk_analysis_article_18:
+    tiers:
+      - { max_amount_eur: 100.00, max_allowable_fraud_bps: 13 }
+      - { max_amount_eur: 250.00, max_allowable_fraud_bps: 6 }
+      - { max_amount_eur: 500.00, max_allowable_fraud_bps: 1 }
+    exceeding_500_eur_action: "FORBIDDEN_SCA_MANDATORY"
+  whitelisted_beneficiary_article_13: true
+  recurring_fixed_subscription_article_14: true
+
+merchant_acquirer_and_gateway_risk:
+  payment_facilitator_settlement_pipelines:
+    standard_payout_float_days: [2, 3] # T+2 to T+3 rolling business days
+    instant_payout_fee_percentage: [1.00, 1.50]
+    high_risk_dynamic_rolling_reserve:
+      volume_withheld_percentage: [5.0, 15.0]
+      retention_window_days: [90, 180] # Covering 120d dispute window
+  
+  pre_auth_gateway_velocity_filters:
+    card_to_ip_window_minutes: 60
+    card_to_ip_max_distinct_pans: 3     # >3 PANs on same IP triggers hard decline (05)
+    ip_to_card_window_minutes: 10
+    ip_to_card_max_attempts: 5          # >5 attempts on same PAN triggers 15m blackhole
+    device_to_card_window_hours: 24
+    device_to_card_max_distinct_pans: 2 # >2 PANs per device hash triggers step-up
+    sub_minute_burst_window_seconds: 10
+    sub_minute_burst_max_tx: 2          # Rate-limit 429 trigger
+
+  five_way_geolocation_risk_matrix:
+    weights:
+      ip_vs_bin_country_mismatch: 35
+      billing_vs_shipping_country_mismatch: 25
+      ip_vs_billing_country_mismatch: 20
+      browser_timezone_skew_gt_2h: 20
+    high_risk_threshold_score: 75
+    datacenter_asn_static_score: 100    # AWS, DigitalOcean, Hetzner
+    tor_exit_node_action: "HARD_DECLINE_ISO_59"
+
+  device_fingerprinting_mechanics:
+    signals:
+      - "HTML5_CANVAS_MURMUR3_HASH"
+      - "WEBGL_UNMASKED_RENDERER_STRING"
+      - "AUDIOCONTEXT_FLOAT32_DSP_CURVE"
+      - "FONT_ENUMERATION_SPANS"
+      - "BATTERY_STATUS_API"
+      - "WEBRTC_ICE_CANDIDATE_LEAKS"
+
+scheme_monitoring_programs:
+  visa_acquirer_monitoring_program_vamp:
+    effective_date: "2025-04-01"
+    consolidates: ["VDMP", "VFMP"]
+    ratio_formula: "(TC40_fraud_count + TC15_dispute_count) / TC05_settled_count"
+    excessive_merchant_threshold_2025: 0.022 # 2.20% (220 bps)
+    excessive_merchant_threshold_2026: 0.015 # 1.50% (150 bps, effective April 2026)
+    min_monthly_volume_events: 1500
+    non_compliance_fee_per_event_usd: 8.00
+    acquirer_portfolio_excessive_threshold: 0.007 # 0.70%
+    exit_clean_consecutive_months: 3
+
+  mastercard_excessive_chargeback_program_ecp:
+    ratio_formula: "current_month_chargebacks / previous_month_settled"
+    tier_1_ecm:
+      min_chargebacks: 100
+      max_chargebacks: 299
+      chargeback_ratio_range: [0.015, 0.0299] # 1.50% - 2.99%
+    tier_2_hecm:
+      min_chargebacks: 300
+      min_chargeback_ratio: 0.03 # >= 3.00%
+    escalating_fines_monthly_usd: [1000, 2000, 4000, 8000, 12000, 16000, 25000, 50000, 100000]
+    exit_clean_consecutive_months: 3
+
+  mastercard_excessive_fraud_merchant_efm:
+    target_reason_code: "4837"
+    trigger_criteria_all_mandatory:
+      min_ecommerce_transactions: 1000
+      min_fraud_volume_usd: 50000.00
+      min_fraud_to_sales_ratio: 0.005 # 0.50%
+      max_3ds_coverage_ratio: 0.50     # <= 50% 3DS coverage
+    escalating_fines_monthly_usd: [500, 1000, 5000, 25000, 50000, 100000]
+
+  mastercard_match_system:
+    formerly: "TERMINATED_MERCHANT_FILE_TMF"
+    mandatory_listing_window_days: 5
+    retention_period_years: 5
+    total_reason_codes: 14
+    key_reason_codes:
+      "01": "ACCOUNT_DATA_COMPROMISE"
+      "02": "COMMON_POINT_OF_PURCHASE_CPP"
+      "03": "LAUNDERING"
+      "04": "EXCESSIVE_CHARGEBACKS"
+      "05": "EXCESSIVE_FRAUD"
+      "08": "QUESTIONABLE_MERCHANT_QMAP"
+      "11": "MERCHANT_COLLUSION"
+      "14": "IDENTITY_THEFT"
+    consequence: "GLOBAL_ACQUIRER_AUTOMATED_UNDERWRITING_REJECTION"
+
+global_dispute_and_chargeback_lifecycle:
+  visa_claims_resolution_vcr:
+    allocation_workflow:
+      dispute_category: "10_FRAUD"
+      primary_reason_code: "10.4_OTHER_FRAUD_CARD_ABSENT"
+      network_liability_assignment: "AUTOMATED_VROL_DEBIT_ON_NON_3DS_CNP"
+      second_presentment_allowed: false
+      contesting_mechanism: "PRE_ARBITRATION_WITH_COMPELLING_EVIDENCE"
+      max_filing_window_days: 120
+    collaboration_workflow:
+      dispute_categories: ["11_AUTHORIZATION", "12_PROCESSING_ERROR", "13_CUSTOMER_DISPUTE"]
+      second_presentment_allowed: true
+      second_presentment_window_days: 30
+
+  mastercard_mastercom_workflow:
+    primary_fraud_reason_code: "4837_NO_CARDHOLDER_AUTHORIZATION"
+    stages: ["FIRST_CHARGEBACK", "SECOND_PRESENTMENT", "ARBITRATION"]
+    max_filing_window_days: 120
+    second_presentment_window_days: 45
+
+  visa_compelling_evidence_3_0:
+    target_reason_code: "10.4"
+    qualification_criteria:
+      historical_undisputed_settled_tx_count: 2
+      historical_window_days: [120, 365] # Must be between 120 and 365 days prior
+      dispute_free_invariant: true        # No prior TC40 or chargeback on PAN
+      factor_matching:
+        min_distinct_factors: 2
+        mandatory_anchor_factor: ["IP_ADDRESS", "DEVICE_FINGERPRINT_HASH"]
+        secondary_corroborating_factor: ["USER_ID_LOGIN", "SHIPPING_ADDRESS"]
+    effect:
+      pre_dispute_deflection: "VERIFI_ORDER_INSIGHT_REALTIME_BLOCK"
+      post_chargeback_liability_shift: "REVERSED_100_PERCENT_TO_ISSUER"
+
+  network_arbitration_tollgate:
+    filing_fee_usd: 500.00
+    administrative_review_fee_usd: 500.00
+    liability_determination: "LOSER_PAYS_ALL"
+    rational_economic_veto_ceiling_usd: 1000.00 # Disputes < $1,000 abandoned if contested
+
+institutional_authorization_velocity_calibration:
+  grounded_authorities:
+    - "Visa Core Rules (VCR 2024-2026)"
+    - "Mastercard Transaction Processing Rules (Chapter 17)"
+    - "ISO 8583 Bit 39 Institutional Response Codes"
+    - "Federal Reserve Diary of Consumer Payment Choice (DCPC 2023-2024)"
+    - "Reserve Bank of India Master Directions (RBI/2020-21/73 & PSS Act 2007)"
+  
+  retail_authorization_benchmarks:
+    global_approval_rate_window: [0.880, 0.925]
+    card_present_approval_rate_window: [0.965, 0.985]
+    card_not_present_approval_rate_window: [0.820, 0.880]
+    overall_decline_rate_window: [0.075, 0.120]
+
+  decline_distribution_targets_within_declines:
+    iso_51_insufficient_funds_ratio: [0.40, 0.50]
+    iso_05_59_fraud_or_do_not_honor_ratio: [0.18, 0.25]
+    iso_54_82_14_expired_or_cvv_or_card_ratio: [0.08, 0.12]
+    iso_63_security_violation_3ds_drop_ratio: [0.06, 0.10]
+    iso_57_transaction_not_permitted_ratio: [0.04, 0.07]
+    iso_65_activity_count_limit_ratio: [0.03, 0.06]
+
+  channel_differentiated_velocity_ceilings:
+    card_present_emv_chip_hourly_cap: 15
+    card_not_present_hourly_cap: 8
+    card_not_present_distinct_mid_window_seconds: 1800 # 30 min
+    card_not_present_max_distinct_mids: 3
+    subminute_automated_burst_threshold: 3 # >= 3 attempts in 60s
+    daily_transaction_count_limit: 35      # 24h count limit
+    hold_active_pruning_policy: "PRUNE_ON_EVERY_TRANSACTION_EVALUATION"

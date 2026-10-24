@@ -1,0 +1,72 @@
+{
+  "training": {
+    "stem": "data/raw/india/train_in",
+    "generator_revision": "51e5c77c00280734e46097f4ebd872ab887f3783",
+    "rows": 90000,
+    "fraud_rows": 435,
+    "cards": 2000,
+    "merchants": 300,
+    "span_days": 63.77624305555666,
+    "calibration": {
+      "profile": "rbi-psi-2026-07",
+      "overall": "PASS",
+      "generated": {
+        "rows": 90000,
+        "fraud_rows": 435,
+        "requested_fraud_prevalence": 0.005,
+        "registry_fraud_prevalence": 1.2369e-05,
+        "registry_fraud_prevalence_range_2025_26": [
+          8.3e-06,
+          1.25e-05
+        ],
+        "boost_factor": 404.236397445226,
+        "expected_fraud_rows_at_target": 1.11321
+      },
+      "gated": [
+        {
+          "id": "mean_credit_card_ticket_inr",
+          "statistic": "mean amount of legitimate rows on credit card products",
+          "target": 3440.0,
+          "observed": 3225.2747504610843,
+          "tolerance_relative": 0.25,
+          "status": "PASS"
+        }
+      ]
+    }
+  },
+  "demo": {
+    "stem": "data/raw/india/demo_in",
+    "generator_revision": "51e5c77c00280734e46097f4ebd872ab887f3783",
+    "rows": 20000,
+    "fraud_rows": 569,
+    "cards": 600,
+    "merchants": 150,
+    "span_days": 16.020618981481704,
+    "calibration": {
+      "profile": "rbi-psi-2026-07",
+      "overall": "PASS",
+      "generated": {
+        "rows": 20000,
+        "fraud_rows": 569,
+        "requested_fraud_prevalence": 0.03,
+        "registry_fraud_prevalence": 1.2369e-05,
+        "registry_fraud_prevalence_range_2025_26": [
+          8.3e-06,
+          1.25e-05
+        ],
+        "boost_factor": 2425.418384671356,
+        "expected_fraud_rows_at_target": 0.24738
+      },
+      "gated": [
+        {
+          "id": "mean_credit_card_ticket_inr",
+          "statistic": "mean amount of legitimate rows on credit card products",
+          "target": 3440.0,
+          "observed": 3477.1662328598404,
+          "tolerance_relative": 0.25,
+          "status": "PASS"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,188 @@
+[
+  {
+    "feature": "card_tx_1h",
+    "kind": "numeric",
+    "auc": 0.800011913889132,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "card_distinct_mcc_30m",
+    "kind": "numeric",
+    "auc": 0.7999868183442094,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "seconds_since_last",
+    "kind": "numeric",
+    "auc": 0.6988543182314613,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "mcc",
+    "kind": "categorical",
+    "auc": 0.6897431026739277,
+    "fraud_only_values": [],
+    "legitimate_only_values": [
+      "4816",
+      "6051",
+      "8398"
+    ]
+  },
+  {
+    "feature": "ip_distance_from_home_km",
+    "kind": "numeric",
+    "auc": 0.6658804608269455,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "pos_entry_mode",
+    "kind": "categorical",
+    "auc": 0.6622028464063283,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "channel_type",
+    "kind": "categorical",
+    "auc": 0.6622028464063283,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "eci",
+    "kind": "categorical",
+    "auc": 0.6621346000331282,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "vaai_score",
+    "kind": "numeric",
+    "auc": 0.6497522087716567,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "asn_type",
+    "kind": "categorical",
+    "auc": 0.6494478148794656,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "pos_condition_code",
+    "kind": "categorical",
+    "auc": 0.6422512387223323,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "product_id",
+    "kind": "categorical",
+    "auc": 0.6341322064481105,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "hour_of_day",
+    "kind": "numeric",
+    "auc": 0.6138019573901548,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "utilization",
+    "kind": "numeric",
+    "auc": 0.5958369244729053,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "amount",
+    "kind": "numeric",
+    "auc": 0.5957974366589485,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "gateway_provider",
+    "kind": "categorical",
+    "auc": 0.5528819765355096,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "amount_to_limit",
+    "kind": "numeric",
+    "auc": 0.5406354025709892,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "acquirer_bin",
+    "kind": "categorical",
+    "auc": 0.5382856957887909,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "avs_match_code",
+    "kind": "categorical",
+    "auc": 0.5251484118312972,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "geo_risk_score",
+    "kind": "numeric",
+    "auc": 0.5246561910345621,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "card_tx_24h",
+    "kind": "numeric",
+    "auc": 0.5199785996831414,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "first_cnp_30d",
+    "kind": "numeric",
+    "auc": 0.5182589313641522,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "first_mcc_30d",
+    "kind": "numeric",
+    "auc": 0.5137857414076077,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "card_amount_24h",
+    "kind": "numeric",
+    "auc": 0.5125714651496142,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "is_cross_border",
+    "kind": "numeric",
+    "auc": 0.5118682183576353,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "cvv_match_flag",
+    "kind": "numeric",
+    "auc": 0.5024152513576015,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  }
+]

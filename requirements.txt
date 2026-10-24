@@ -1,0 +1,40 @@
+# Verified resolvable on Python 3.14.4 / win_amd64 (2026-08-05).
+# NOTE: tensorflow is deliberately absent: no 3.14 distribution exists. See README.
+
+# Core numerics
+numpy==2.5.1
+pandas==3.0.5
+scipy>=1.16
+
+# Models
+scikit-learn==1.9.0
+xgboost==3.4.0
+torch==2.13.0
+
+# Imbalance handling
+imbalanced-learn==0.14.2
+
+# Explainability
+shap==0.52.0
+
+# Serialization
+joblib==1.5.3
+
+# Service layer
+fastapi>=0.120
+uvicorn[standard]>=0.51
+pydantic>=2.10
+SQLAlchemy==2.0.51
+
+# Simulator
+httpx>=0.28
+
+# Reporting
+matplotlib==3.11.1
+PyYAML>=6.0
+
+# Dev
+pytest==9.1.1
+
+# The transaction generator, mirrored under generator/ (see README, The generator)
+-e ./generator

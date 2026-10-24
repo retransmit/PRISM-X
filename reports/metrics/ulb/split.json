@@ -1,0 +1,33 @@
+{
+  "track": "ulb",
+  "rule": "stratified",
+  "train": {
+    "rows": 181584,
+    "fraud": 302
+  },
+  "val": {
+    "rows": 45396,
+    "fraud": 76
+  },
+  "test": {
+    "rows": 56746,
+    "fraud": 95
+  },
+  "duplicates_dropped": 1081,
+  "n_features": 30,
+  "categorical_columns": [],
+  "loaded": {
+    "n_total": 284807,
+    "n_normal": 284315,
+    "n_fraud": 492,
+    "fraud_rate": 0.001727485630620034,
+    "imbalance_ratio": 577.8760162601626
+  },
+  "settings": {
+    "raw_csv": "data/raw/creditcard.csv",
+    "split": "stratified",
+    "test_size": 0.2,
+    "val_size": 0.2,
+    "threshold_strategy": "f1"
+  }
+}

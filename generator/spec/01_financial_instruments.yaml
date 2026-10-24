@@ -1,0 +1,236 @@
+# spec/01_financial_instruments.yaml
+# Canonical Specification for Payment Card Financial Instruments
+# Grounded in: Visa Core Rules (VCR), Mastercard Rules, 12 CFR Part 1005 (Reg E),
+# 12 CFR Part 1026 (Reg Z), FinCEN 31 CFR § 1022.210, IRS Rev. Rul. 2003-43 (IIAS).
+
+schema_version: "1.0.0"
+unit_definitions:
+  currency: "USD_cents"
+  time: "seconds"
+  probability: "[0.0, 1.0]"
+  frequency: "events_per_day"
+
+card_products:
+  - id: "PROD_SUBPRIME_SECURED"
+    name: "Subprime & Secured Consumer Credit"
+    category: "CONSUMER_CREDIT"
+    regulatory_framework: "REG_Z_TILA"
+    network_product_codes: ["VISA_CLASSIC_F", "MC_STANDARD_MCC"]
+    credit_limit_cents:
+      min: 20000        # $200.00
+      median: 40000     # $400.00
+      max: 100000       # $1,000.00
+    opening_fee_load_cents: 8500  # $85.00 first-year fee deduction
+    ach_clearance_delay_seconds: 432000  # 5 business days float
+    statutory_liability_cap_cents: 5000  # 12 CFR § 1026.12(b) max $50
+    zero_liability_eligible: true
+    daily_spend_limit_cents: 40000       # $400.00 max daily spend
+    daily_velocity_max_tx: 5
+    cash_advance_permitted: false
+    cross_border_permitted: false
+    stip_floor_limit_cents: 10000        # $100.00 offline network STIP cap
+    stip_max_consecutive_approvals: 2
+    primary_adversarial_vulnerabilities:
+      - "MICRO_AUTH_CARD_TESTING"
+      - "SYNTHETIC_IDENTITY_BUST_OUT"
+
+  - id: "PROD_CLASSIC_REVOLVING"
+    name: "Traditional Classic Consumer Revolving Credit"
+    category: "CONSUMER_CREDIT"
+    regulatory_framework: "REG_Z_TILA"
+    network_product_codes: ["VISA_CLASSIC_F", "VISA_TRADITIONAL_A", "MC_STANDARD_MCC"]
+    credit_limit_cents:
+      min: 100000       # $1,000.00
+      median: 250000    # $2,500.00
+      max: 500000       # $5,000.00
+    ach_clearance_delay_seconds: 259200  # 3 business days
+    statutory_liability_cap_cents: 5000
+    zero_liability_eligible: true
+    daily_spend_limit_cents: 250000      # $2,500.00
+    daily_velocity_max_tx: 12
+    cash_advance_permitted: true
+    cash_advance_ceiling_ratio: 0.25     # 25% of credit line
+    cross_border_permitted: true
+    stip_floor_limit_cents: 25000        # $250.00
+    stip_max_consecutive_approvals: 3
+    primary_adversarial_vulnerabilities:
+      - "BULK_CNP_ECOMMERCE_DUMPS"
+      - "NOCTURNAL_CARDING"
+
+  - id: "PROD_REWARDS_SIGNATURE"
+    name: "Prime Rewards & Signature Consumer Credit"
+    category: "CONSUMER_CREDIT"
+    regulatory_framework: "REG_Z_TILA"
+    network_product_codes: ["VISA_SIGNATURE_C", "MC_WORLD_MCW"]
+    credit_limit_cents:
+      min: 500000       # $5,000.00 (Visa Signature underwriting floor)
+      median: 1250000   # $12,500.00
+      max: 2500000      # $25,000.00
+    ach_clearance_delay_seconds: 172800  # 2 business days
+    statutory_liability_cap_cents: 0     # Enhanced Zero Liability
+    zero_liability_eligible: true
+    daily_spend_limit_cents: 1000000     # $10,000.00
+    daily_velocity_max_tx: 25
+    cash_advance_permitted: true
+    cash_advance_ceiling_ratio: 0.20
+    cross_border_permitted: true
+    cross_border_velocity_radius_multiplier: 4.5
+    stip_floor_limit_cents: 75000        # $750.00
+    stip_max_consecutive_approvals: 3
+    primary_adversarial_vulnerabilities:
+      - "ACCOUNT_TAKEOVER_SILENT_BAKING"
+      - "APPLE_PAY_PROVISIONING_YELLOW_PATH"
+      - "LOYALTY_POINT_DRAINING"
+
+  - id: "PROD_ULTRA_PREMIUM_INFINITE"
+    name: "Ultra-Premium & Infinite / Centurion Charge"
+    category: "CONSUMER_CREDIT"
+    regulatory_framework: "REG_Z_TILA"
+    network_product_codes: ["VISA_INFINITE_I", "MC_WORLD_ELITE_MWE", "AMEX_CENTURION"]
+    credit_limit_cents:
+      min: 2000000      # $20,000.00 floor
+      median: 5000000   # $50,000.00
+      max: 25000000     # $250,000.00 (NPSL dynamic shadow line)
+    ach_clearance_delay_seconds: 86400   # 1 business day
+    statutory_liability_cap_cents: 0
+    zero_liability_eligible: true
+    daily_spend_limit_cents: 5000000     # $50,000.00
+    daily_velocity_max_tx: 50
+    cash_advance_permitted: true
+    cash_advance_ceiling_ratio: 0.15
+    cross_border_permitted: true
+    cross_border_velocity_radius_multiplier: 12.0
+    stip_floor_limit_cents: 250000       # $2,500.00
+    stip_max_consecutive_approvals: 5
+    primary_adversarial_vulnerabilities:
+      - "DORMANT_LINE_WAKING"
+      - "VIP_PRIVILEGE_FALSE_DECLINE_BYPASS"
+
+  - id: "PROD_CHECKING_DEBIT"
+    name: "Traditional Checking Account Consumer Debit"
+    category: "CONSUMER_DEBIT"
+    regulatory_framework: "REG_E_EFTA"
+    network_product_codes: ["VISA_DEBIT_F", "MC_DEBIT_MDB", "PULSE", "INTERLINK"]
+    demand_deposit_balance_cents:
+      min: 20000        # $200.00
+      median: 300000    # $3,000.00
+      max: 1500000      # $15,000.00
+    overdraft_buffer_cents: 35000        # -$350.00 courtesy limit
+    statutory_liability_framework:
+      within_2_business_days_cents: 5000
+      within_60_calendar_days_cents: 50000
+      exceeding_60_days_cents: -1        # -1 denotes unlimited liability
+    provisional_credit_window_days: 10
+    daily_pos_spend_limit_cents: 300000  # $3,000.00
+    daily_atm_withdrawal_limit_cents: 80000 # $800.00
+    daily_velocity_max_tx: 18
+    stip_floor_limit_cents: 15000        # $150.00
+    primary_adversarial_vulnerabilities:
+      - "MAGSTRIPE_SKIMMING_PIN_HARVEST"
+      - "RAPID_ATM_CASHOUT"
+
+  - id: "PROD_GPR_PREPAID"
+    name: "General Purpose Reloadable (GPR) Prepaid Card"
+    category: "PREPAID_ACCESS"
+    regulatory_framework: "CFPB_PREPAID_RULE_REG_E"
+    network_product_codes: ["VISA_PREPAID_P", "MC_PREPAID_MPB"]
+    fincen_balance_cap_cents: 1000000    # $10,000.00 statutory cap (31 CFR § 1022)
+    daily_cash_reload_limit_cents: 150000 # $1,500.00
+    daily_pos_spend_limit_cents: 250000  # $2,500.00
+    daily_atm_withdrawal_limit_cents: 50000 # $500.00
+    avs_enforcement_level: "PERMISSIVE"  # Frequently approves AVS 'Z' or ignores street
+    primary_adversarial_vulnerabilities:
+      - "MONEY_LAUNDERING_MULE_CASHING"
+      - "AVS_BYPASS_CARD_TESTING"
+
+  - id: "PROD_GOVERNMENT_EBT_SNAP"
+    name: "Government Benefit EBT (SNAP Food Assistance)"
+    category: "GOVERNMENT_BENEFIT"
+    regulatory_framework: "USDA_7_CFR_274"
+    network_product_codes: ["QUEST_NETWORK"]
+    monthly_benefit_injection_cents:
+      min: 20000        # $200.00
+      median: 45000     # $450.00
+      max: 90000        # $900.00
+    benefit_drop_day_window: [1, 10]     # Benefits post 1st to 10th of month
+    chip_enabled: false                  # Millions remain magstripe-only
+    pin_required: true
+    cash_withdrawal_permitted: false     # SNAP restricted strictly to eligible food
+    mcc_whitelist: [5411, 5499, 5422]   # Supermarkets and food stores
+    statutory_liability_cap_cents: -1    # Exempt from Reg E statutory reimbursement
+    primary_adversarial_vulnerabilities:
+      - "POS_MAGSTRIPE_SKIMMING_BENEFIT_DROP"
+
+  - id: "PROD_COMMERCIAL_FLEET"
+    name: "Commercial Logistics Fleet Card"
+    category: "COMMERCIAL"
+    regulatory_framework: "COMMERCIAL_CONTRACT"
+    network_product_codes: ["WEX_FLEET", "VOYAGER_FLEET", "COMDATA"]
+    credit_facility_per_vehicle_cents: 150000 # $1,500.00
+    mcc_whitelist: [5541, 5542, 7538, 5533] # Gas, diesel, repair, parts
+    mandatory_level_iii_prompts:
+      prompt_driver_id_pin: true
+      prompt_odometer_reading: true
+    prompt_bypass_tolerances:
+      allow_dummy_odometer: true         # Legacy pump controllers accept '999999'
+    single_fueling_gallon_cap: 350.0     # 350 gallons diesel
+    primary_adversarial_vulnerabilities:
+      - "GHOST_FUELING_BLADDER_RIGS"
+      - "ODOMETER_PROMPT_BYPASS"
+
+  - id: "PROD_RESTRICTED_HSA_FSA"
+    name: "Tax-Exempt Healthcare HSA/FSA Card"
+    category: "SPECIALIZED_RESTRICTED"
+    regulatory_framework: "IRS_REV_RUL_2003_43"
+    network_product_codes: ["VISA_HEALTHCARE_N", "MC_HEALTHCARE"]
+    annual_statutory_limit_cents: 415000 # $4,150.00 (individual 2024)
+    iias_basket_validation_enforced: true
+    split_tender_settlement_supported: true
+    mcc_whitelist: [8011, 8021, 8042, 8062, 8099, 5912]
+    primary_adversarial_vulnerabilities:
+      - "ROGUE_MCC_SPOOFING"
+      - "RETAIL_RETURN_TO_CASH_LOOPS"
+
+  - id: "PROD_BNPL_SINGLE_USE_VIRTUAL"
+    name: "Buy-Now-Pay-Later Single-Use Virtual Card"
+    category: "DIGITAL_VIRTUAL"
+    regulatory_framework: "REG_Z_CFPB_2024_RULE"
+    network_product_codes: ["MARQETA_VIRTUAL", "LITHIC_BNPL"]
+    credit_limit_cents:
+      min: 5000         # $50.00
+      median: 40000     # $400.00
+      max: 150000       # $1,500.00
+    time_to_live_seconds: 86400          # 24 hours PAN lifetime
+    over_authorization_buffer_ratio: 0.15 # Up to 115% authorized for sales tax
+    single_merchant_lock_enforced: true
+    primary_adversarial_vulnerabilities:
+      - "SYNTHETIC_LOAN_STACKING"
+
+  - id: "PROD_TOKENIZED_DPAN"
+    name: "Apple Pay / Google Pay Device PAN (DPAN)"
+    category: "DIGITAL_VIRTUAL"
+    regulatory_framework: "EMVCO_TOKENIZATION_BOOK_4"
+    network_product_codes: ["VTS_DPAN", "MDES_DPAN"]
+    underlying_funding_instrument: "MIRROR_FPAN"
+    dynamic_cryptogram_type: "EMV_ARQC_TAVV_UCAF"
+    cdcvm_biometric_enforced: true
+    chargeback_liability_allocation: "ISSUER_FULL_ABSORPTION"
+    primary_adversarial_vulnerabilities:
+      - "TOKEN_PROVISIONING_YELLOW_PATH_OTP_PHISHING"
+
+# ----------------------------------------------------------------------------------------------
+# Credit line assignment
+# ----------------------------------------------------------------------------------------------
+# Issuers assign credit lines in steps, not as continuous amounts: the underwriting decision rounds to
+# the product's step, and the step grows with the line. A continuous triangular draw gave every
+# simulated card its own limit, so the credit_limit column of the authorisation feed identified the card.
+credit_limit_assignment:
+  rounding_steps_cents:
+    - { up_to: 100000,  step: 10000 }    # to $1,000 in $100 steps
+    - { up_to: 500000,  step: 25000 }    # to $5,000 in $250 steps
+    - { up_to: 2500000, step: 50000 }    # to $25,000 in $500 steps
+    - { up_to: 10000000, step: 500000 }  # to $100,000 in $5,000 steps
+    - { up_to: null,    step: 1000000 }  # above, $10,000 steps
+  applies_to: "credit_limit_cents and demand_deposit_balance_cents of every product, clamped to the product's range"
+  hypothesis: true
+  note: "replace with the line-assignment grid of an issuer's underwriting policy"

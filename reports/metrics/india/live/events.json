@@ -1,0 +1,250 @@
+[
+  {
+    "as_of": 1709251778.77,
+    "challenger_bundle": null,
+    "challenger_model": null,
+    "challenger_pr_auc": null,
+    "champion_bundle": "offline",
+    "champion_model": null,
+    "champion_pr_auc": null,
+    "difference": null,
+    "known_fraud": {
+      "backtest": 79,
+      "train": 0,
+      "val": 45
+    },
+    "reason": "the training window holds 0 known frauds among 0 rows, fewer than min_known_fraud 10",
+    "recorded_at": "2026-10-22T22:57:44.384181+00:00",
+    "rows": {
+      "backtest": 27170,
+      "train": 0,
+      "val": 15595
+    },
+    "status": "skipped",
+    "stream_day": 60.0,
+    "windows": {
+      "backtest": [
+        1704931778.77,
+        1706659778.77
+      ],
+      "train": [
+        1704067778.77,
+        1704067778.77
+      ],
+      "val": [
+        1704067778.77,
+        1704931778.77
+      ]
+    }
+  },
+  {
+    "as_of": 1710547778.77,
+    "challenger_bundle": "day-075-659ef7",
+    "challenger_model": "xgboost",
+    "challenger_pr_auc": 0.1721979722311504,
+    "champion_bundle": "offline",
+    "champion_model": "xgboost",
+    "champion_pr_auc": 0.4477870999784286,
+    "difference": {
+      "high": -0.17289715632163646,
+      "low": -0.3777900757116007
+    },
+    "known_fraud": {
+      "backtest": 70,
+      "train": 65,
+      "val": 53
+    },
+    "reason": "the paired interval of the PR-AUC difference [-0.3778, -0.1729] does not lie above zero",
+    "recorded_at": "2026-10-22T23:16:32.570733+00:00",
+    "rows": {
+      "backtest": 26738,
+      "train": 22251,
+      "val": 14016
+    },
+    "status": "kept",
+    "stream_day": 75.0,
+    "train_seconds": 32.49313129999791,
+    "windows": {
+      "backtest": [
+        1706227778.77,
+        1707955778.77
+      ],
+      "train": [
+        1704067778.77,
+        1705363778.77
+      ],
+      "val": [
+        1705363778.77,
+        1706227778.77
+      ]
+    }
+  },
+  {
+    "as_of": 1711843778.77,
+    "challenger_bundle": "day-090-7ae106",
+    "challenger_model": "autoencoder",
+    "challenger_pr_auc": 0.21290452493932757,
+    "champion_bundle": "offline",
+    "champion_model": "xgboost",
+    "champion_pr_auc": 0.6132425175296549,
+    "difference": {
+      "high": -0.2774664633115066,
+      "low": -0.519598932166118
+    },
+    "known_fraud": {
+      "backtest": 85,
+      "train": 137,
+      "val": 42
+    },
+    "reason": "the paired interval of the PR-AUC difference [-0.5196, -0.2775] does not lie above zero",
+    "recorded_at": "2026-10-22T23:34:31.124146+00:00",
+    "rows": {
+      "backtest": 26346,
+      "train": 42765,
+      "val": 13670
+    },
+    "status": "kept",
+    "stream_day": 90.0,
+    "train_seconds": 38.92315330001293,
+    "windows": {
+      "backtest": [
+        1707523778.77,
+        1709251778.77
+      ],
+      "train": [
+        1704067778.77,
+        1706659778.77
+      ],
+      "val": [
+        1706659778.77,
+        1707523778.77
+      ]
+    }
+  },
+  {
+    "as_of": 1713139778.77,
+    "challenger_bundle": "day-105-348e35",
+    "challenger_model": "xgboost",
+    "challenger_pr_auc": 0.5296544317974407,
+    "champion_bundle": "offline",
+    "champion_model": "xgboost",
+    "champion_pr_auc": 0.7054471614030894,
+    "difference": {
+      "high": -0.09628885729231974,
+      "low": -0.25668101892797
+    },
+    "known_fraud": {
+      "backtest": 90,
+      "train": 202,
+      "val": 48
+    },
+    "reason": "the paired interval of the PR-AUC difference [-0.2567, -0.0963] does not lie above zero",
+    "recorded_at": "2026-10-22T23:55:30.281854+00:00",
+    "rows": {
+      "backtest": 26437,
+      "train": 63005,
+      "val": 13383
+    },
+    "status": "kept",
+    "stream_day": 105.0,
+    "train_seconds": 45.7288661999919,
+    "windows": {
+      "backtest": [
+        1708819778.77,
+        1710547778.77
+      ],
+      "train": [
+        1704067778.77,
+        1707955778.77
+      ],
+      "val": [
+        1707955778.77,
+        1708819778.77
+      ]
+    }
+  },
+  {
+    "as_of": 1714435778.77,
+    "challenger_bundle": "day-120-d95055",
+    "challenger_model": "xgboost",
+    "challenger_pr_auc": 0.6156784027039156,
+    "champion_bundle": "offline",
+    "champion_model": "xgboost",
+    "champion_pr_auc": 0.5940556481049768,
+    "difference": {
+      "high": 0.11068185722466688,
+      "low": -0.06308507515709924
+    },
+    "known_fraud": {
+      "backtest": 88,
+      "train": 280,
+      "val": 52
+    },
+    "reason": "the paired interval of the PR-AUC difference [-0.0631, 0.1107] does not lie above zero",
+    "recorded_at": "2026-10-23T00:16:15.543103+00:00",
+    "rows": {
+      "backtest": 25288,
+      "train": 82781,
+      "val": 13458
+    },
+    "status": "kept",
+    "stream_day": 120.0,
+    "train_seconds": 52.69748459997936,
+    "windows": {
+      "backtest": [
+        1710115778.77,
+        1711843778.77
+      ],
+      "train": [
+        1704067778.77,
+        1709251778.77
+      ],
+      "val": [
+        1709251778.77,
+        1710115778.77
+      ]
+    }
+  },
+  {
+    "as_of": 1715731778.77,
+    "challenger_bundle": "day-135-24ea98",
+    "challenger_model": "xgboost",
+    "challenger_pr_auc": 0.5090356017565203,
+    "champion_bundle": "offline",
+    "champion_model": "xgboost",
+    "champion_pr_auc": 0.4619991386965725,
+    "difference": {
+      "high": 0.11682812869135409,
+      "low": -0.01928811889349794
+    },
+    "known_fraud": {
+      "backtest": 82,
+      "train": 360,
+      "val": 47
+    },
+    "reason": "the paired interval of the PR-AUC difference [-0.0193, 0.1168] does not lie above zero",
+    "recorded_at": "2026-10-23T00:36:49.593477+00:00",
+    "rows": {
+      "backtest": 24983,
+      "train": 102825,
+      "val": 12656
+    },
+    "status": "kept",
+    "stream_day": 135.0,
+    "train_seconds": 59.28436420002254,
+    "windows": {
+      "backtest": [
+        1711411778.77,
+        1713139778.77
+      ],
+      "train": [
+        1704067778.77,
+        1710547778.77
+      ],
+      "val": [
+        1710547778.77,
+        1711411778.77
+      ]
+    }
+  }
+]

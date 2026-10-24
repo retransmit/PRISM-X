@@ -1,0 +1,183 @@
+{
+  "profile": "rbi-psi-2026-07",
+  "region": "IN",
+  "as_of": "2026-07",
+  "scope": "Card rail only: credit and debit card authorisations, which is what Prism Generator synthesises. UPI, IMPS, PPI wallets, their ticket sizes and their fraud typologies are listed under out_of_scope so that nobody reads a card stream as the Indian retail payment mix.",
+  "generated": {
+    "rows": 90000,
+    "fraud_rows": 435,
+    "requested_fraud_prevalence": 0.005,
+    "registry_fraud_prevalence": 1.2369e-05,
+    "registry_fraud_prevalence_range_2025_26": [
+      8.3e-06,
+      1.25e-05
+    ],
+    "boost_factor": 404.236397445226,
+    "expected_fraud_rows_at_target": 1.11321
+  },
+  "targets": [
+    {
+      "id": "fraud_prevalence",
+      "statistic": "fraud rows divided by all rows",
+      "target": 1.2369e-05,
+      "observed": 0.004833333333333334,
+      "tolerance_relative": null,
+      "tolerance_absolute": null,
+      "within_tolerance": null,
+      "gate": false,
+      "status": "REPORTED",
+      "note": "depends on the requested rate; the boost factor is the number to read",
+      "source": "RBI PSI July 2026, Domestic Payment Frauds: one fraud in every 80,847 transactions",
+      "reliable_from_fraud_rows": null,
+      "reliability_warning": "",
+      "reliability_basis": ""
+    },
+    {
+      "id": "fraud_value_share_bps",
+      "statistic": "amount of fraud rows divided by amount of all rows, in basis points",
+      "target": 0.142,
+      "observed": 311.59677706819247,
+      "tolerance_relative": null,
+      "tolerance_absolute": null,
+      "within_tolerance": null,
+      "gate": false,
+      "status": "REPORTED",
+      "note": "scales with the requested prevalence",
+      "source": "RBI PSI July 2026, Domestic Payment Frauds: fraud-to-sales 0.142 bps",
+      "reliable_from_fraud_rows": null,
+      "reliability_warning": "",
+      "reliability_basis": ""
+    },
+    {
+      "id": "mean_fraud_amount_inr",
+      "statistic": "mean amount of fraud rows",
+      "target": 13353.0,
+      "observed": 21322.99448275862,
+      "tolerance_relative": 0.3,
+      "tolerance_absolute": null,
+      "within_tolerance": false,
+      "gate": false,
+      "status": "REPORTED",
+      "note": "CPFIR covers every payment system, cards included; no card-only average is published",
+      "source": "RBI PSI July 2026: Rs 458 crore over 3.43 lakh frauds",
+      "reliable_from_fraud_rows": null,
+      "reliability_warning": "",
+      "reliability_basis": ""
+    },
+    {
+      "id": "fraud_cases_above_10000_share",
+      "statistic": "share of fraud rows with amount above 10,000",
+      "target": 0.45,
+      "observed": 0.20919540229885059,
+      "tolerance_relative": null,
+      "tolerance_absolute": 0.15,
+      "within_tolerance": false,
+      "gate": false,
+      "status": "REPORTED",
+      "note": "NCRP figure across all rails, dominated by authorised push payments",
+      "source": "RBI discussion paper, 9 April 2026: transactions above Rs 10,000 are about 45 percent of reported fraud cases",
+      "reliable_from_fraud_rows": null,
+      "reliability_warning": "",
+      "reliability_basis": ""
+    },
+    {
+      "id": "fraud_value_above_10000_share",
+      "statistic": "share of fraud amount in rows above 10,000",
+      "target": 0.985,
+      "observed": 0.9385961220042135,
+      "tolerance_relative": null,
+      "tolerance_absolute": 0.15,
+      "within_tolerance": true,
+      "gate": false,
+      "status": "REPORTED",
+      "note": "NCRP figure across all rails, dominated by authorised push payments",
+      "source": "RBI discussion paper, 9 April 2026: 98.5 percent of fraud value sits above Rs 10,000",
+      "reliable_from_fraud_rows": null,
+      "reliability_warning": "",
+      "reliability_basis": ""
+    },
+    {
+      "id": "fraud_value_above_50000_share",
+      "statistic": "share of fraud amount in rows above 50,000",
+      "target": 0.92,
+      "observed": 0.85916686606287,
+      "tolerance_relative": null,
+      "tolerance_absolute": 0.15,
+      "within_tolerance": true,
+      "gate": false,
+      "status": "REPORTED",
+      "note": "NCRP figure across all rails, dominated by authorised push payments",
+      "source": "RBI discussion paper, 9 April 2026: about 92 percent of fraud value is above Rs 50,000",
+      "reliable_from_fraud_rows": null,
+      "reliability_warning": "",
+      "reliability_basis": ""
+    },
+    {
+      "id": "mean_credit_card_ticket_inr",
+      "statistic": "mean amount of legitimate rows on credit card products",
+      "target": 3440.0,
+      "observed": 3225.2747504610843,
+      "tolerance_relative": 0.25,
+      "tolerance_absolute": null,
+      "within_tolerance": true,
+      "gate": true,
+      "status": "PASS",
+      "note": "",
+      "source": "RBI PSI July 2026, payment modes: credit cards 605 million transactions, Rs 2,08,186 crore",
+      "reliable_from_fraud_rows": null,
+      "reliability_warning": "",
+      "reliability_basis": ""
+    },
+    {
+      "id": "mean_debit_card_ticket_inr",
+      "statistic": "mean amount of legitimate rows on debit card products",
+      "target": 3735.0,
+      "observed": 3211.955351251945,
+      "tolerance_relative": 0.25,
+      "tolerance_absolute": null,
+      "within_tolerance": true,
+      "gate": false,
+      "status": "REPORTED",
+      "note": "the only debit product in spec/05 is the PMJDY financial-inclusion card; a mainstream debit product would let this gate",
+      "source": "RBI PSI July 2026, payment modes: debit cards 102 million transactions, Rs 37,932 crore",
+      "reliable_from_fraud_rows": null,
+      "reliability_warning": "",
+      "reliability_basis": ""
+    }
+  ],
+  "out_of_scope": [
+    {
+      "what": "UPI share of retail payment volume",
+      "figure": "about 85 percent by count in July 2026 (23,658 million UPI transactions); credit cards 2.3 percent, debit cards 0.4 percent, PPIs 3.5 percent, IMPS 1.4 percent",
+      "source": "RBI PSI July 2026"
+    },
+    {
+      "what": "UPI ticket sizes",
+      "figure": "Rs 1,263 overall (PSI); Rs 1,348 overall and Rs 592 for merchant payments (Worldline 1H 2025)",
+      "source": "RBI PSI July 2026; Worldline"
+    },
+    {
+      "what": "UPI merchant versus person-to-person split",
+      "figure": "merchant payments 64 percent of volume, 29 percent of value",
+      "source": "SBI Research on NPCI data, July 2025"
+    },
+    {
+      "what": "Fraud typology by value",
+      "figure": "investment and impersonation scams 76 percent of 2025 losses; authorised push payments, not card fraud",
+      "source": "I4C via MHA, Lok Sabha question 452, 2 December 2025"
+    },
+    {
+      "what": "Fraud typology by count of complaints",
+      "figure": "UPI fraud 47.25 percent of complaints; card and SIM-swap 11.27 percent",
+      "source": "FCRF"
+    },
+    {
+      "what": "Geography",
+      "figure": "Maharashtra 9.8 percent, Karnataka 5.5 percent, Uttar Pradesh 5.3 percent of UPI volume",
+      "source": "NPCI via SBI Research"
+    }
+  ],
+  "overall": "PASS",
+  "gated_failures": [],
+  "warnings": []
+}

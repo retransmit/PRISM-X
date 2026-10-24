@@ -1,0 +1,212 @@
+[
+  {
+    "feature": "V14",
+    "kind": "numeric",
+    "auc": 0.9593708634843624,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V4",
+    "kind": "numeric",
+    "auc": 0.9350587913558408,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V12",
+    "kind": "numeric",
+    "auc": 0.932920214826105,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V3",
+    "kind": "numeric",
+    "auc": 0.918554484393018,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V11",
+    "kind": "numeric",
+    "auc": 0.9151443899450207,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V10",
+    "kind": "numeric",
+    "auc": 0.9094898870012701,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V2",
+    "kind": "numeric",
+    "auc": 0.8554510513092514,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V9",
+    "kind": "numeric",
+    "auc": 0.8463105961068595,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V7",
+    "kind": "numeric",
+    "auc": 0.8318779215668596,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V16",
+    "kind": "numeric",
+    "auc": 0.8307469954060086,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V17",
+    "kind": "numeric",
+    "auc": 0.8001135182089066,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V1",
+    "kind": "numeric",
+    "auc": 0.790201443128634,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V6",
+    "kind": "numeric",
+    "auc": 0.7823413647508755,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V21",
+    "kind": "numeric",
+    "auc": 0.7460943365029831,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V18",
+    "kind": "numeric",
+    "auc": 0.7288711429874248,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V27",
+    "kind": "numeric",
+    "auc": 0.7068848899643458,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V5",
+    "kind": "numeric",
+    "auc": 0.6933926659653091,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V8",
+    "kind": "numeric",
+    "auc": 0.6738679468401322,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V28",
+    "kind": "numeric",
+    "auc": 0.6626789654346297,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V19",
+    "kind": "numeric",
+    "auc": 0.6602743659927297,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V20",
+    "kind": "numeric",
+    "auc": 0.6488320746623515,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "Time",
+    "kind": "numeric",
+    "auc": 0.5795510156471302,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V24",
+    "kind": "numeric",
+    "auc": 0.5654569796528639,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V23",
+    "kind": "numeric",
+    "auc": 0.5619811831714242,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V25",
+    "kind": "numeric",
+    "auc": 0.5438049357223326,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "Amount",
+    "kind": "numeric",
+    "auc": 0.5418306234090957,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V26",
+    "kind": "numeric",
+    "auc": 0.5405937191559366,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V15",
+    "kind": "numeric",
+    "auc": 0.5352300440621911,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V22",
+    "kind": "numeric",
+    "auc": 0.5142618346404209,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  },
+  {
+    "feature": "V13",
+    "kind": "numeric",
+    "auc": 0.5051146758944445,
+    "fraud_only_values": [],
+    "legitimate_only_values": []
+  }
+]

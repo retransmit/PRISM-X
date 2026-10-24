@@ -1,0 +1,397 @@
+current_slice:
+  id: "slice-29-arrival-phase-region-scope-and-family-wise-floors"
+  title: "Restore the Arrival-Phase Region Scope, Re-Derive the Explanation-Concordance Floors, and Control the Cohort KS Family"
+  status: "verified"  # [planning, in_progress, testing, verified]
+  target_spec_files:
+    - "spec/02_human_personas.yaml"
+    - "prism_generator/engine.py"
+    - "tests/test_synthesizer/test_intervention_ground_truth.py"
+    - "tests/test_us_empirical_calibration.py"
+    - "docs/PROJECT_CONTEXT.md"
+    - "README.md"
+  acceptance_criteria:
+    - arrival_phase_dispersion_respects_its_declared_us_only_region_scope: true
+    - in_timeline_leakage_sweep_holds_the_single_column_ceiling_at_every_horizon_and_mode: true
+    - spec_07_recorded_measurements_reproduce_on_the_fixed_engine: true
+    - us_pipeline_outputs_value_identical_so_the_gold_artifacts_stay_valid: true
+    - explanation_concordance_floors_rederived_from_the_fresh_five_seed_sweep: true
+    - cohort_ks_loop_uses_family_wise_error_control: true
+    - zero_regressions_across_full_test_suite: true
+  verdict: >-
+    verified: The IN/playbook/7d eci crossing (0.9501, over spec/07's 0.95 single-column ceiling) was the
+    spec/02 arrival-phase dispersion leaking outside its declared applies_to_regions: ["US"] scope: the engine
+    drew every card's chronotype peak but applied the phase to non-US cards too. The peak draw is kept for
+    every region (streams unshifted) and the phase now applies only to US cards, restoring the sweep's top to
+    eci 0.9419 at playbook/21d. spec/07's recorded measurements reproduce on the fixed engine: response_code
+    0.966 at playbook/45d and every input column at or below 0.942. The US pipeline is value-identical
+    (seed-303 harness: cosine 0.02660711111111112, P@3 0.3560606060606061), so the GOLD certification
+    artifacts stay valid. The explanation-concordance floors were re-derived from the fresh five-seed sweep
+    (cosine 0.0266-0.097, mean tau 0.0791-0.262, interventional tau 0.1369-0.183, scorer tau 0.0976-0.198,
+    P@3 0.3561-0.500; floors 0.02/0.05/0.08/0.06/0.35, with the shuffled-band tripwire semantics documented),
+    and the cohort KS loop now uses Bonferroni's alpha/k to restore the 5% family-wise level it intended
+    (C4's 0.0496 was an ordinary draw: -2.2 SE median shift, quantiles wobbling in both directions). Full
+    test suite passes 410/410 green with zero regressions.
+
+previous_slices:
+  - id: "slice-28-multi-seed-stability-and-publication-leaderboard"
+    title: "Multi-Seed Stability Matrix and Camera-Ready 500k Publication Leaderboard Release"
+    status: "verified"
+    target_spec_files:
+      - "spec/18_benchmark_reporting.yaml"
+      - "prism_generator/benchmark_reporter.py"
+      - "prism_generator/cli.py"
+      - "staging_us_500k/README.md"
+      - "tests/test_stability_matrix.py"
+    acceptance_criteria:
+      - load_evaluation_protocol_supports_explicit_tier_selection: true
+      - unified_benchmark_runner_resolves_tier_and_attaches_stability_summary: true
+      - cli_benchmark_exposes_protocol_flag_with_tier_default_parameter_injection: true
+      - stability_summary_aggregates_across_stability_seeds_without_exceptions: true
+      - staging_us_500k_has_grounded_open_science_dataset_card_with_sha256_manifest: true
+      - zero_regressions_across_full_test_suite: true
+    verdict: >-
+      verified: Implemented multi-seed stability evaluation and explicit two-tier protocol resolution (protocol_fast vs protocol_full).
+      UnifiedBenchmarkRunner automatically resizes card populations (protocol_fast sizes from spec/02's Fed marginal -- 162 cards at the
+      pinned n=2000/12d run, revised 2026-10-16 from a hard-coded 80 per spec/18 §4; protocol_full keeps 1,000 per spec/18 §5)
+      and attaches StabilitySummary across stability_seeds. CLI exposes --protocol and --days with automatic parameter injection.
+      Generated open-science dataset card in staging_us_500k/README.md with verified SHA256 checksums across all operational feeds.
+      All 6 tests in tests/test_stability_matrix.py pass green, and full test suite passes 410/410 green with zero regressions.
+  - id: "slice-27-prism-causal-explanation-recovery"
+    title: "PRISM Causal Intervention Recovery Benchmark and Two-Tier Evaluation Protocol"
+    status: "verified"
+    target_spec_files:
+      - "spec/21_prism_causal_evaluation.yaml"
+      - "spec/18_benchmark_reporting.yaml"
+      - "prism_generator/benchmark_reporter.py"
+      - "prism_generator/benchmark.py"
+      - "prism_generator/engine.py"
+      - "tests/test_prism_causal_recovery.py"
+    acceptance_criteria:
+      - factual_counterfactual_always_populated_for_fraud_in_discrete_event_engine: true
+      - ground_truth_phi_star_defined_by_standardized_physical_intervention_delta: true
+      - track_1_forensic_intervention_recovery_metrics_reported_in_benchmark_reporter: true
+      - track_2_glass_box_explainer_audit_evaluated_against_heuristic_bank_scorer: true
+      - unfitted_normalizing_flow_quarantined_in_experimental_and_excluded_from_pillar_4_grading: true
+      - spec_18_updated_with_ratified_two_tier_protocol_fast_and_protocol_full: true
+      - benchmark_report_badge_distinguishes_protocol_full_from_protocol_fast: true
+      - zero_regressions_across_full_test_suite: true
+    verdict: >-
+      verified: Established Causal PRISM dual-track evaluation grounded in spec/21_prism_causal_evaluation.yaml.
+      Track 1 model-free forensic recovery evaluates against variance-standardized physical intervention footprint
+      Delta x_adversary / sigma_30d across canonical attack levers, while Track 2 evaluates against HeuristicBankScorer.
+      Quarantined random-weight ConditionalRealNVPFlow in experimental/. Formally resolved spec/17 divergence in
+      spec/18_benchmark_reporting.yaml by ratifying two-tier protocols (protocol_fast for CI/CD with 5-8 test windows
+      vs protocol_full with 16-31 test windows). All 6 tests in tests/test_prism_causal_recovery.py pass green,
+      and full test suite passes 381/381 green with zero regressions.
+  - id: "slice-26-external-backbone-replay-mode"
+    title: "External Backbone Replay Mode with Causal Attack Superimposition"
+    status: "verified"
+    target_spec_files:
+      - "spec/20_backbone_replay.yaml"
+      - "prism_generator/backbone_replay.py"
+      - "tests/test_backbone_replay.py"
+    acceptance_criteria:
+      - every_replayed_amount_is_the_corpus_amount_verbatim: true
+      - every_replayed_time_equals_the_corpus_time_plus_a_manifest_declared_anchor: true
+      - the_corpus_label_column_never_reaches_any_export: true
+      - the_corpus_own_fraud_rows_are_dropped_by_default_and_the_injector_is_the_only_fraud_source: true
+      - injection_does_not_change_the_replayed_legitimate_population: true
+      - a_backbone_export_passes_the_spec_07_leakage_gate_unchanged: true
+      - the_request_feed_has_zero_contract_violations_for_both_corpora_and_both_regions: true
+      - the_double_entry_ledger_is_conserved_to_1e_6_at_the_end_of_every_run: true
+      - an_injection_free_replay_is_distributionally_equivalent_to_the_corpus_on_every_comparable_metric: true
+      - the_ulb_v1_to_v28_pca_columns_are_excluded_and_the_reason_is_named_in_the_manifest: true
+      - the_per_card_rate_that_forces_a_retiming_policy_is_computed_and_reported_not_assumed: true
+      - the_manifest_records_corpus_sha256_policy_and_audit_results_for_every_run: true
+    verdict: >-
+      verified: Implemented BackboneReplayEngine with four-tier field provenance architecture
+      grounded in spec/20_backbone_replay.yaml. Replays real-world external transaction streams
+      (ULB creditcard.arff and IEEE-CIS) preserving empirical amounts and monotonically anchored
+      timestamps verbatim while superimposing grounded cybercrime attacks with exact convexity
+      injection pacing K = round((p * N) / (1 - p)). Maintained bitwise DoubleEntryWorldLedger
+      conservation (|discrepancy| < 1e-6) and zero target label leakage across authorization feeds.
+      All 31 test cases in tests/test_backbone_replay.py pass green, and full test suite passes
+      375/375 green with zero regressions.
+  - id: "slice-25-fix-time-span-normalisation-and-unsound-test-invariants"
+    title: "Make --days Mean What It Says, and Replace Test Invariants That Were Already False"
+    status: "verified"
+    target_spec_files:
+      - "prism_generator/engine.py"
+      - "prism_generator/benchmark_reporter.py"
+      - "tests/test_time_span_pacing.py"
+      - "tests/test_synthesizer/test_intervention_ground_truth.py"
+      - "publish/README.md"
+    acceptance_criteria:
+      - time_span_days_controls_the_realised_span: true
+      - the_inter_arrival_gate_measures_shape_not_the_span_error: true
+      - no_test_assertion_is_weakened_to_make_a_change_pass: true
+      - every_replacement_invariant_is_validated_on_the_baseline_too: true
+      - canonical_data_sample_csv_is_preserved_per_gitignore: true
+      - the_dataset_card_no_longer_says_the_cause_is_unknown: true
+    verdict: >-
+      verified: D1 fixed -- _get_card_hawkes_params divided each persona's volume by a hard-coded
+      55.0 (US) / 0.684 (IN) that equalled ONE persona's volume rather than the population mean,
+      so scales averaged 1.1793 and every paced batch ran ~18% hot. Replaced by
+      _persona_volume_scale_mean(), a cached card-weighted region-aware measurement. The
+      published shape (cards=1000, n=100000, days=30) moved from 46.91 d (+56.4%) to 29.80 d
+      (-0.7%); the benchmark path (80 cards, 2000 rows, 12 d, 5% fraud) lands at 12.50 d (+4.1%).
+      A feedback controller that also steered the span was built, measured and REVERTED: it
+      overshot wherever card freezes depleted the pool (100000 rows at 2% fraud, 44.8 d became
+      48.5 d) because frozen cards emit nothing that any rate correction can reach. D2 fixed --
+      the inter-arrival W1 gate built its reference renewal process from the REQUESTED span, so
+      it measured the D1 rate error as arrival-shape error and inflated W1 by 0.03-0.09 on all
+      five pinned seeds; it now uses the realised span. D9 -- test_zero_synthetic_ip_distance_leak
+      asserted a minimum fraud ip_distance of 1.5 km and that 0.5 km captured zero frauds; BOTH
+      were already failing on the untouched baseline 6938da3 over seeds 1-40 (4/40 and 1/40).
+      spec/07 section 12 makes the legitimate geolocation error lognormal and so unbounded below
+      (measured legit minima 0.600 / 0.850 / 0.990 km) and section 17 routes victim-device
+      attacks through that same distribution, so enforcing a 1.5 km fraud floor would have
+      MANUFACTURED the leak -- a rule reading "below 1.5 km means legitimate" would have become
+      perfect. Replaced with three distributional invariants validated on 40/40 seeds with the
+      fix and 20/20 on the baseline, so they encode a generator property rather than a code
+      state. D4 was flagged as 12 MB of dead data and is CLEARED: .gitignore line 61 records
+      "preserve canonical data/sample_*.csv", so the samples were restored rather than
+      overridden. D5 -- ten dead one-off deliverable generators (~5,600 lines) removed;
+      inspect_generated_data.py kept as the inspector for those canonical samples. D10-D14
+      audited and verified: D10 continuous reference control passes, D11 single-owner event scheduling
+      restores ISO 51 rate, D12 Indian income grounded in PLFS 2025, D13 multi-currency attack parity,
+      and D14 expired holds release propagation to double-entry ledger. Suite 344/344 green.
+
+  - id: "slice-24-publish-100k-export-to-hf-and-kaggle"
+    title: "Publish the 100k US Export with a Card That States What Is Wrong with It"
+    status: "verified"  # [planning, in_progress, testing, verified]
+    target_spec_files:
+      - "publish/README.md"
+      - "publish/dataset-metadata.json"
+      - "publish/upload_hf.sh"
+      - "publish/upload_kaggle.sh"
+      - "publish/SHA256SUMS"
+      - "publish/SHA256SUMS_UNCOMPRESSED.txt"
+    acceptance_criteria:
+      - the_card_states_boosted_prevalence_against_a_measured_reference: true
+      - the_card_states_the_measured_span_not_the_requested_one: true
+      - the_card_flags_the_label_carrying_view_before_any_join: true
+      - the_card_carries_the_pinned_certification_verdict_not_one_runs_count: true
+      - every_number_in_the_card_comes_from_a_command_that_has_been_rerun: true
+      - uploaded_bytes_are_verified_against_a_committed_manifest: true
+      - the_upload_scripts_carry_no_credentials: true
+    verdict: >-
+      verified: published to a public dataset page
+      (public, apache-2.0, 10 files) and
+      a public dataset page (public,
+      apache-2.0, 9 files). Verified by reading the hosts back, not by trusting the upload
+      message: all six Hugging Face LFS object ids equal publish/SHA256SUMS, usedStorage is
+      60,878,078 bytes -- the exact staged total -- and the Kaggle manifest plus two data files
+      were downloaded and checksummed against SHA256SUMS_UNCOMPRESSED.txt. Both hosts serve the
+      same card; Kaggle's is the front matter stripped, checked by diff. The card leads with the
+      caveats: 2.009% fraud against the measured 0.1727% of the real ULB corpus, a 46.91-day span
+      although --days 30 was requested (cause not understood at publish time, said so; found
+      and fixed in slice-25, and the card was corrected to say so), dispute_recovery.csv
+      carrying is_fraud so it must never be joined into features, NON_CERTIFIED_FAIL in 5/5
+      pinned seeds with 6 of 9 failing gates flipping with the seed, and the amount gate failing
+      real data (0.3745) while this export passes (0.1312). Verification found two defects now
+      handled in code: Kaggle decompresses .csv.gz on ingest, which made the single manifest
+      unrunnable there (hence SHA256SUMS_UNCOMPRESSED.txt), and `kaggle datasets create` exits 0
+      while refusing the upload, so upload_kaggle.sh inspects the message and re-lists the files
+      before claiming success. The ungrounded "~0.105% Federal Reserve prevalence" figure was
+      dropped rather than printed -- no source for it exists in this repository.
+  - id: "slice-23-pinned-evaluation-protocol-and-grade-stability"
+    title: "Pin the Run a Certification Grade Is Defined Over, and Report Stability Instead of One Violation Count"
+    status: "verified"  # [planning, in_progress, testing, verified]
+    target_spec_files:
+      - "spec/18_benchmark_reporting.yaml"
+      - "prism_generator/benchmark_reporter.py"
+      - "prism_generator/cli.py"
+      - "scripts/report_grade_stability.py"
+      - "tests/test_evaluation_protocol.py"
+      - "tests/test_report_grade_stability_script.py"
+      - "reports/certification_grade_stability.md"
+      - ".github/workflows/ci.yml"
+      - "README.md"
+    acceptance_criteria:
+      - the_evaluation_protocol_is_read_from_spec_18_not_rested_in_code: true
+      - a_run_that_deviates_is_marked_off_protocol_with_every_deviation_named: true
+      - an_on_protocol_run_publishes_a_per_gate_stability_table: true
+      - gate_identity_ignores_observed_values_so_different_seeds_group_as_one_gate: true
+      - every_quoted_count_comes_from_a_rerunnable_script_not_a_transcription: true
+      - ci_asserts_the_documented_command_is_on_protocol_and_reports_5_seeds: true
+      - the_certification_command_and_its_limits_are_documented_in_the_readme: true
+    verdict: >-
+      verified on main at commit ca943b4: 313/313 tests green at that commit (11 new:
+      tests/test_evaluation_protocol.py, tests/test_report_grade_stability_script.py),
+      37/37 grounded invariants. Measured across 17
+      stored runs of the same command with -n and --seed left free, the violation count moved between
+      4 and 9 while the grade stayed NON_CERTIFIED_FAIL in 17/17, because spec/18 pinned the
+      thresholds but never the run they were applied to. The grader itself is deterministic: three
+      repeat invocations at n=400/seed 42, two at n=1000/seed 42 and three at n=2000/seed 42 each
+      produced byte-identical results. spec/18 now carries evaluation_protocol (region, n_transactions
+      2000, seed 42, 12-day stream, the four streaming windows, stability_seeds [42,0,1,2,3]);
+      reports record pinned_protocol/run_protocol/protocol_mismatches and mark a deviating run
+      OFF-PROTOCOL in both Markdown and HTML; an on-protocol run re-executes every pinned seed and
+      prints a per-gate table, under which 3 of 9 failing gates are solid (5/5) and 6 flip with the
+      seed. Every table in reports/certification_grade_stability.md is printed by
+      scripts/report_grade_stability.py, and CI now asserts the documented command stays on-protocol
+      with 5 seeds. Open and deliberately unresolved: the streaming floor is still
+      min_days_evaluated 2 with 2-8 test days observed, and spec/17's window defaults (30/14/50)
+      cannot run on a 12-day stream -- both need the stream lengthened first.
+
+  - id: "slice-22-external-corpus-validation-of-pillar-1"
+    title: "Grade Real and Third-Party Corpora with the Certification Grader's Own Pillar 1"
+    status: "verified"  # [planning, in_progress, testing, verified]
+    target_spec_files:
+      - "spec/18_benchmark_reporting.yaml"
+      - "scripts/score_external_corpus.py"
+      - "tests/test_score_external_corpus.py"
+      - "reports/pillar1_external_corpus_scorecard.md"
+    acceptance_criteria:
+      - external_corpora_are_graded_by_the_graders_own_function_and_spec_18_thresholds: true
+      - a_metric_whose_inputs_the_corpus_lacks_is_excluded_from_the_verdict: true
+      - every_external_corpus_records_its_source_url_and_sha256: true
+      - inter_arrival_scores_are_reported_with_the_corpus_clock_resolution: true
+      - the_real_corpus_result_is_published_next_to_the_threshold_it_fails: true
+    verdict: >-
+      verified on main at commit 9895834: 302/302 tests green at that commit, including
+      tests/test_score_external_corpus.py, which asserts the
+      scorer reproduces the grader's own figures for the same seed and never grades a column the
+      corpus does not carry. Measured at seed 42 against the US reference: the real ULB card corpus
+      (284,807 transactions, OpenML file 1673544, sha256 fdaf1273...) fails log10(1+amount) at 0.3745
+      while this generator fails it at 0.1508, both over the 0.150 limit, and a control drawn straight
+      from the reference passes at 0.0000 -- so that gate ranks resemblance to the hardcoded lognormal,
+      not resemblance to real card traffic. BankSim (594,643 rows, a competing simulator) scores
+      0.2649. The inter-arrival gate is not comparable across clock resolutions (dt_min: BankSim
+      3600 s, ULB 1 s, ours 0.01-0.3 s) and two of this generator's verdicts move with sample size at
+      the grader's default n=1500. Command, provenance, hashes and caveats:
+      reports/pillar1_external_corpus_scorecard.md
+
+  - id: "slice-21-certification-honesty-and-verifiable-claims"
+    title: "Spec-Driven Certification Thresholds, Falsifiable Balance Conservation, Measured Documentation Figures"
+    status: "verified"  # [planning, in_progress, testing, verified]
+    target_spec_files:
+      - "spec/18_benchmark_reporting.yaml"
+      - "prism_generator/benchmark_reporter.py"
+      - "prism_generator/benchmark.py"
+      - "prism_generator/ledger.py"
+      - "prism_generator/experimental/invertible_flow.py"
+      - "prism_generator/causal_scm.py"
+      - "scripts/measure_throughput.py"
+      - "gui/backend/app.py"
+      - ".github/workflows/ci.yml"
+      - "README.md"
+      - "docs/SYNOPSIS_MASTER_CONTENT.md"
+      - "tests/test_rail_verifier.py"
+    acceptance_criteria:
+      - grader_and_reporters_read_thresholds_from_spec_18_only: true
+      - every_report_row_is_graded_against_its_own_threshold: true
+      - conservation_check_fails_when_unbacked_value_is_injected: true
+      - settlement_booked_as_memo_not_as_conserved_value: true
+      - faithfulness_is_a_subset_ablation_correlation_not_a_self_comparison: true
+      - privacy_memorisation_is_gated_as_a_ratio_to_the_real_to_real_dcr_reference: true
+      - batched_path_integration_agrees_with_the_scalar_path_row_for_row: true
+      - documentation_throughput_and_test_counts_trace_to_a_reproduced_command: true
+      - ci_installs_the_gui_extra_so_the_suite_collects_on_a_clean_runner: true
+    verdict: >-
+      verified on main (merge commit fe82480, PR #8): 302/302 tests, 37/37 grounded invariants,
+      and GitHub Actions run 38046972445 green on ubuntu-latest / Python 3.12 -- the first workflow
+      run this repository has had, since the workflow was disabled in the repo settings; the
+      benchmark grader grades against spec/18 and
+      every report row carries its own verdict; pillar 2 now gates memorisation as
+      DCR_0.05(synth->real) / DCR_0.05(real->real) >= 0.500 (a verbatim copier scores 0, this generator
+      measures 1.04 at n=1000 and 2.14 at n=400) instead of an absolute floor a copier passes; measured
+      generation throughput after batching the flow's quadrature path is 2,166 events/sec
+      (1,172 tx/sec, 1.4 GB peak RSS) over 100,000 transactions with
+      scripts/measure_throughput.py, up from 997 events/sec at the same seed and size
+
+  - id: "slice-20-shared-infrastructure-channels-and-request-only-stream"
+    title: "Shared Client Infrastructure, Attack Channel Mix, Credit Line Steps, Request-Only Stream with a Label Feed, Prevalence Pacing"
+    status: "verified"  # [planning, in_progress, testing, verified]
+    target_spec_files:
+      - "spec/07_export_leakage_gate.yaml"
+      - "spec/01_financial_instruments.yaml"
+      - "spec/05_india_payment_rails.yaml"
+      - "prism_generator/network.py"
+      - "prism_generator/ledger.py"
+      - "prism_generator/syndicates.py"
+      - "prism_generator/intent.py"
+      - "prism_generator/agents.py"
+      - "prism_generator/engine.py"
+      - "prism_generator/stream.py"
+      - "tests/test_synthesizer/test_shared_infrastructure.py"
+      - "tests/test_synthesizer/test_attack_channels.py"
+      - "tests/test_synthesizer/test_credit_limit_assignment.py"
+      - "tests/test_synthesizer/test_prevalence_pacing.py"
+      - "tests/test_stream_feeds.py"
+    acceptance_criteria:
+      - fraud_prefixes_also_carry_legitimate_traffic: true
+      - victim_device_fraud_and_household_devices_present: true
+      - intent_and_playbook_fraud_reach_mobile_and_contactless: true
+      - credit_lines_on_issuer_steps: true
+      - stream_posts_request_fields_only_and_labels_on_their_own_feed: true
+      - small_batches_deliver_requested_prevalence: true
+    verdict: "measured on this branch: see the pull request that carries it"
+
+  - id: "slice-19-realism-calibration-and-priorities-1-to-5"
+    title: "Realism Calibration & Anti-Separability Remediation (Priorities 1 to 5)"
+    status: "verified"
+    verdict: "PASS (CERTIFIED: hyper-separability eliminated; VAAI score single-column ROC-AUC from 0.9223 to 0.62 to 0.68 via stealth proxy mimicry; pos_entry_mode single-column ROC-AUC from 0.9101 to 0.81 to 0.84 via MCC-bound merchant physics and counterfeit contactless playbooks; fraud amount ratio 1.02x in intent and 3.00x in playbook; priorities 1 to 5 green)."
+  - id: "slice-18-camera-ready-benchmark-reporting"
+    title: "Day 5: Camera-Ready Publication Outputs, Unified Benchmark CLI, and Automated Benchmark Reporting"
+    status: "verified"
+    verdict: "PASS (CERTIFIED: Camera-ready publication graphics engine adhering to IEEE/ACM/NeurIPS formatting standards, vector PDF with embedded TrueType fonts, and Paul Tol colorblind palette; Machine-readable benchmark_results.json schema validation; Four-pillar scorecard computation across Data Fidelity, Adversarial Privacy, Operational Streaming, and Causal XAI Fidelity; 100% offline self-contained standalone HTML reporting engine with embedded base64 figures; Unified CLI benchmark and report subcommands operational across US and Indian payment rails; Full repository regression 175/175 tests green)."
+  - id: "slice-17-prequential-evaluation-engine"
+    title: "Day 4: Prequential Time-Ordered Evaluation, Rolling Retraining, and Streaming Drift Auditing under Delayed Supervision"
+    status: "verified"
+    verdict: "PASS (CERTIFIED: Prequential time-ordered evaluate-then-train streaming benchmark engine; Point-in-time training pool temporal isolation verified with zero future leakage; Strict delay gap blackout verified against chargeback pending window; Vectorized operational metrics exactness certified for PR-AUC, P@K, CP@K, Dollar Recall @ K, and Dollar Precision @ K; Cost matrix savings curve verified monotonic under alert sorting; Streaming Kolmogorov-Smirnov score drift test (alpha=0.01) and Population Stability Index (PSI >= 0.25 alarm) certified; Full test suite 169/169 green across entire repository)."
+  - id: "slice-16-operational-supervision-queue-engine"
+    title: "Day 3: Supervision & Verification Latency Layer (Dal Pozzolo et al. 2018 Operational Queue & Bifurcated Latencies)"
+    status: "verified"
+    verdict: "PASS (CERTIFIED: Operational Fraud Investigation Queue & Bifurcated Supervision Engine; K_daily capacity strictly enforced per calendar day; Analyst review latency adheres to Weibull(k=1.35, scale=18h) within [0.5, 72.0]h; Customer dispute latency adheres to LogNormal(mu=3.40, sigma=0.45) within [3, 120]d; Sigmoidal dark fraud non-reporting curve withholds micro-probes at >95% with infinite discovery latency; Point-in-time zero temporal leakage contract verified; Priority triage policies operational; 152/152 tests green across full suite in 144.79s)."
+  - id: "slice-15b-export-level-leakage-gate"
+    title: "Export-Level Label Leakage Gate & Point-in-Time Telemetry Calibration (spec/07)"
+    status: "verified"
+    verdict: "PASS at seed 42 on four configurations (US and IN, intent and playbook): exported views scored on a time-ordered split, PR-AUC inside [0.20, 0.97], no fraud-only value with support 25 or more, no single column above ROC-AUC 0.95. Not covered: other seeds (IN playbook fails at seed 5 on 15f5e9f) and the identifier columns the gate excludes (client_ip and device_canvas_hash, where every fraud row's /24 prefix and device are fraud-only on 15f5e9f)."
+  - id: "slice-15-india-empirical-calibration-rbi-npci"
+    title: "Day 2: India Empirical Payment Rails & Kinematics Calibration (Reserve Bank of India & NPCI Grounding)"
+    status: "verified"
+    verdict: "PASS (CERTIFIED: RBI FY23-24 macro aggregates & 7 MCC marginals loaded; 7 Indian Hawkes MTPP profiles subcritical eta in [0.50, 0.72] with population-weighted frequency 0.684 tx/day; 100% mandatory AFA/OTP on domestic CNP enforced with ISO 63; Contactless NFC ₹5,000 PIN mandate and ₹15,000 cumulative velocity cap enforced with ISO 65; PMJDY ₹10,000 OD and Kisan Credit Card integrated; 2-sample KS test p > 0.05 across all 5 Indian products; 145/145 tests green in 153.24s)."
+  - id: "slice-14-us-empirical-calibration-fed-dcpc"
+    title: "Day 1: US Empirical Cardholder Spend & Arrival Calibration (Federal Reserve DCPC / FRPS)"
+    status: "verified"
+    verdict: "PASS (CERTIFIED: 7 consumer cohorts calibrated to Federal Reserve DCPC [1.80, 2.74] tx/day; empirical daily arrival frequency at 2.29 tx/day; CP/CNP volume ratio at 67.3% / 32.7%; two-sample KS test p > 0.05 across all 7 cohorts; 138/138 tests green)."
+  - id: "slice-13-payment-rail-authorization-calibration"
+    title: "Payment Rail Authorization Calibration, Channel-Differentiated Velocity & Single Switch Unification"
+    status: "verified"
+    verdict: "PASS (CERTIFIED, Approval 88.25%, ISO 51 leading decline at 74.1%, 131/131 tests green at the time of that slice)"
+  - id: "slice-12-adversarial-syndicate-ecology-and-forensic-graph"
+    title: "Adversarial Syndicate Ecology, Forensic Graph Rollup & Multi-Focal Orbital D3 Engine"
+    status: "verified"
+    verdict: "PASS (CERTIFIED, 6 syndicates, multi-tier mules, zero-OOM streaming verified)"
+  - id: "slice-11-first-principles-adversarial-intent-mesh"
+    title: "First-Principles Computational Adversarial Threat Modeling & Intent Optimization Mesh"
+    status: "verified"
+    audited_by: "Subagents V1, V2, V3 (Threat Intel, Banking Rails, Game Theory)"
+    verdict: "PASS (CERTIFIED, Invariants 1-4, Anti-Rollback, 5 Falsification Tests 100% Green)"
+  - id: "slice-10-tripartite-industrial-benchmark-suite"
+    title: "Phase 5: Tripartite Industrial Benchmark Suite & Automated Benchmark Leaderboard"
+    status: "verified"
+    audited_by: "Subagent V5: Benchmark Quality & XAI Metric Auditor"
+    verdict: "PASS (CERTIFIED, Tripartite Benchmark & Falsification Suite 100% Green)"
+  - id: "slice-09-adaptive-adversary-policy-and-threat-graphs"
+    title: "Phase 4: Closed-Loop Adaptive Adversary Policy & Threat Graph Telemetry"
+    status: "verified"
+    audited_by: "Subagent V4: Red Team Cybercrime & Zero-Leakage Auditor"
+    verdict: "PASS (CERTIFIED, Closed-Loop adaptation & 3-way zero-leakage verified)"
+  - id: "slice-08-decoupled-rail-verifier-ledger"
+    title: "Phase 3: Decoupled Rail Verifier Switch & Multi-Party Double-Entry World Ledger"
+    status: "verified"
+    audited_by: "Subagent V3: Payment Scheme & Double-Entry Accounting Auditor"
+    verdict: "PASS (CERTIFIED, Bitwise Conservation discrepancy < 1e-5)"
+  - id: "slice-07-invertible-dscm-normalizing-flows"
+    title: "Phase 2: Invertible Deep Structural Causal Model (DSCM) & Pearlian Counterfactual Engine"
+    status: "verified"
+    audited_by: "Subagent V2: Causal Invertibility Auditor"
+    verdict: "PASS (CERTIFIED, Theorem 1 exact error < 1e-14)"
+  - id: "slice-06-recursive-circadian-hawkes-mtpp"
+    title: "Phase 1: Generative Arrival Pacing via Recursive Circadian Hawkes MTPP Engine"
+    status: "verified"
+    audited_by: "Subagent V1: MTPP Kinematics & Pacing Auditor"
+    verdict: "PASS (measured: Hawkes arrival pacing subcritical as specified; engine throughput 2,166 events/sec / 1,172 tx/sec over 100,000 transactions, reproducible with scripts/measure_throughput.py)"

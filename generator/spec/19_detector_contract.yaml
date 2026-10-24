@@ -1,0 +1,134 @@
+# spec/19_detector_contract.yaml
+# The detector contract: what a detector receives for one authorisation, what it is told afterwards,
+# and what the two export views carry. One machine-readable file, version 1, read by the code
+# (prism_generator/contract.py; storage.py, cli.py and stream.py take their columns from it), so a
+# column cannot change without this file changing, and an export conforms to it by test
+# (tests/test_detector_contract.py).
+#
+# Types are the JSON types the stream posts and the CSV views carry: string, integer, number, boolean.
+# A domain lists the values the generator emits, measured on four 4,000-row batches (both regions, both
+# adversary modes); a detector may refuse anything outside it. Fields without a domain are free text or
+# open numeric values. Every field carries its meaning in one line.
+
+contract_version: 1
+schema_version: "1.0.0"
+
+feeds:
+  # ------------------------------------------------------------------------------------------
+  # What the detector receives before the issuer answers: the authorisation feed and the
+  # gateway telemetry of the export, joined on transaction_id, minus the authorisation outcome.
+  # ------------------------------------------------------------------------------------------
+  authorisation_request:
+    description: "one authorisation request as the detector sees it, before the answer"
+    fields:
+      - { name: transaction_id, type: string, description: "unique id of the authorisation, the join key of every feed" }
+      - { name: card_id, type: string, description: "the card's stable identifier, the key of the card's own history" }
+      - { name: pan_masked, type: string, description: "the card number with the middle digits masked" }
+      - { name: product_id, type: string, description: "the card product's identifier (spec/01 for the US, spec/05 for India)" }
+      - { name: cohort_id, type: string, description: "the cardholder's persona identifier, a generator label a bank would replace with its own segment" }
+      - { name: timestamp_utc, type: string, description: "the authorisation time, ISO 8601 in UTC" }
+      - { name: tx_time_seconds, type: number, description: "the authorisation time as seconds since the epoch", minimum: 0 }
+      - { name: mti, type: string, description: "ISO 8583 message type indicator", domain: ["0100"] }
+      - { name: stan, type: string, description: "system trace audit number, six digits" }
+      - { name: rrn, type: string, description: "retrieval reference number, twelve digits" }
+      - { name: pos_entry_mode, type: string, description: "how the card data entered the terminal: 012 keyed or e-commerce, 051 chip, 071 contactless, 102 in-app", domain: ["012", "051", "071", "102"] }
+      - { name: pos_condition_code, type: string, description: "terminal condition: 00 attended card-present, 59 electronic commerce", domain: ["00", "59"] }
+      - { name: eci, type: string, description: "electronic commerce indicator of the 3-D Secure attempt; empty on a card-present payment", domain: ["", "05", "07"] }
+      - { name: trans_status_3ds, type: string, description: "3-D Secure result: Y authenticated, N not authenticated, C challenge required", domain: ["C", "N", "Y"] }
+      - { name: vaai_score, type: integer, description: "the network's risk score delivered with the request, 0 to 99", minimum: 0 }
+      - { name: amount, type: number, description: "the amount in the card's currency, major units", minimum: 0 }
+      - { name: amount_minor, type: integer, description: "the amount in minor units (cents or paise)", minimum: 0 }
+      - { name: currency, type: string, description: "ISO 4217 currency of the card", domain: ["EUR", "INR", "USD"] }
+      - { name: available_balance, type: number, description: "the issuer's open-to-buy on the card at the request" }
+      - { name: credit_limit, type: number, description: "the card's credit line, on the issuer's assignment steps", minimum: 0 }
+      - { name: mcc, type: integer, description: "ISO 18245 merchant category code", minimum: 0 }
+      - { name: merchant_id, type: string, description: "the merchant's identifier" }
+      - { name: mid, type: string, description: "merchant identification number at the acquirer" }
+      - { name: tid, type: string, description: "terminal identification number" }
+      - { name: acquirer_bin, type: string, description: "the acquirer's bank identification number", domain: ["370001", "400012", "400814", "412800", "459110", "524180", "541234", "607152"] }
+      - { name: gateway_provider, type: string, description: "the payment gateway that forwarded the request", domain: ["ADYEN", "BILLDESK", "BRAINTREE", "CASHFREE", "CYBERSOURCE", "PAYU", "RAZORPAY", "STRIPE"] }
+      - { name: client_ip, type: string, description: "the client address of a card-not-present request; 127.0.0.1 on a card-present payment" }
+      - { name: asn_type, type: string, description: "the network type of the client address", domain: ["datacenter", "mobile", "residential"] }
+      - { name: ip_distance_from_home_km, type: number, description: "distance between the client address's geolocation and the cardholder's home, kilometres", minimum: 0 }
+      - { name: device_canvas_hash, type: string, description: "the device fingerprint of a card-not-present request; empty on a card-present payment" }
+      - { name: channel_type, type: string, description: "the payment channel", domain: ["CNP_MOBILE", "CNP_WEB", "CP_POS_CHIP", "CP_POS_CONTACTLESS"] }
+      - { name: avs_match_code, type: string, description: "address verification result (spec/03): Y full match, A address only, Z postcode only, N no match, U unavailable", domain: ["A", "N", "U", "Y", "Z"] }
+      - { name: cvv_match_flag, type: integer, description: "1 when the card verification value matched, 0 otherwise", domain: ["0", "1"] }
+      - { name: geo_risk_score, type: integer, description: "the gateway's geolocation mismatch score, 0 to 100", minimum: 0 }
+      - { name: is_cross_border, type: boolean, description: "true when the merchant is outside the card's country" }
+
+  # ------------------------------------------------------------------------------------------
+  # What the issuer answered: never part of the request a detector scores.
+  # ------------------------------------------------------------------------------------------
+  authorisation_outcome:
+    description: "the issuer's answer to the request, known after the detector has scored it"
+    fields:
+      - { name: response_code, type: string, description: "ISO 8583 response code of the authorisation" }
+      - { name: auth_response_code, type: string, description: "the response code as returned on the authorisation leg" }
+      - { name: auth_code, type: string, description: "the approval code; empty when declined" }
+
+  # ------------------------------------------------------------------------------------------
+  # What the bank learns later, released only once it would know it (spec/16).
+  # ------------------------------------------------------------------------------------------
+  label_event:
+    description: "a label as the bank learns it: an investigator's verdict, a chargeback, or a clean maturity"
+    fields:
+      - { name: transaction_id, type: string, description: "the authorisation the label belongs to" }
+      - { name: card_id, type: string, description: "the card of the authorisation" }
+      - { name: tx_timestamp_utc, type: string, description: "the authorisation time, ISO 8601 in UTC" }
+      - { name: discovered_label, type: integer, description: "1 fraud, 0 legitimate", domain: ["0", "1"] }
+      - { name: label_source, type: string, description: "how the bank learned it", domain: ["INVESTIGATOR_ALERT", "CHARGEBACK_DISPUTE", "UNLABELLED"] }
+      - { name: discovery_time_seconds, type: number, description: "when the bank learned it, seconds since the epoch", minimum: 0 }
+      - { name: discovery_timestamp_utc, type: string, description: "when the bank learned it, ISO 8601 in UTC" }
+
+# ------------------------------------------------------------------------------------------------
+# The two export views a detector is trained from, joined on transaction_id.
+# ------------------------------------------------------------------------------------------------
+export_views:
+  auth_stream:
+    description: "the authorisation feed (ISO 8583): the request fields the issuer host sees plus the outcome"
+    columns:
+      - transaction_id
+      - card_id
+      - pan_masked
+      - product_id
+      - cohort_id
+      - timestamp_utc
+      - tx_time_seconds
+      - mti
+      - stan
+      - rrn
+      - auth_code
+      - response_code
+      - auth_response_code
+      - pos_entry_mode
+      - pos_condition_code
+      - eci
+      - trans_status_3ds
+      - vaai_score
+      - amount
+      - amount_minor
+      - currency
+      - available_balance
+      - credit_limit
+      - mcc
+      - merchant_id
+  gateway_telemetry:
+    description: "the gateway's risk telemetry for the same request"
+    columns:
+      - transaction_id
+      - timestamp_utc
+      - merchant_id
+      - mid
+      - tid
+      - acquirer_bin
+      - gateway_provider
+      - client_ip
+      - asn_type
+      - ip_distance_from_home_km
+      - device_canvas_hash
+      - channel_type
+      - avs_match_code
+      - cvv_match_flag
+      - geo_risk_score
+      - is_cross_border

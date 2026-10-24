@@ -1,0 +1,698 @@
+# spec/05_india_payment_rails.yaml
+# Canonical Specification for Indian Payment Rails, Regulatory Invariants & Adversarial Playbooks
+# Grounded in: Reserve Bank of India (PSS Act 2007), NPCI Operating Guidelines,
+# RBI Circulars RBI/2017-18/15, RBI/2019-20/67, RBI/DPSS/2025-26/115, MHA I4C Compendia, Income Tax Rules 1962 (Rule 114B).
+
+schema_version: "1.1.0"
+unit_definitions:
+  currency: "INR_paisa"  # 1 INR = 100 Paisa
+  time: "seconds"
+  latency: "milliseconds"
+  probability: "[0.0, 1.0]"
+  ratio: "bps_or_percentage"
+
+# =============================================================================
+# INDIAN PAYMENT MARKET MACRO AGGREGATES & STATISTICAL CLEARING BASELINE
+# Grounded in: RBI Annual Report FY 2023-24 (Table on Digital Payments),
+# RBI Bulletin Payment System Indicators (2022-2025), Bank-wise Card Statistics,
+# and Worldline India Digital Payments Reports (1H 2024 / 2H 2024).
+# =============================================================================
+
+indian_card_macro_aggregates:
+  reporting_period_baseline: "FY_2023_2024_ANNUAL_AND_JULY_2026_PSI_ACTIVE"
+  latest_census_date: "2026-07-31"
+  cards_in_circulation:
+    total_cards_outstanding_millions: 1116.4
+    debit_cards:
+      outstanding_millions: 1005.2
+      public_sector_banks_share_percentage: 63.5
+      private_sector_banks_share_percentage: 25.4
+      other_banks_share_percentage: 11.1
+    credit_cards:
+      outstanding_millions: 111.2
+      private_sector_banks_share_percentage: 70.8
+      top_4_issuers_combined_share_percentage: 72.0
+      top_4_issuers: ["HDFC_BANK", "SBI_CARD", "ICICI_BANK", "AXIS_BANK"]
+
+  annual_clearing_fy2023_24:
+    statutory_source: "RBI Annual Report 2023-24 (Digital Payments Table 4.1 & 4.2)"
+    credit_cards:
+      annual_volume_lakh_tx: 35610.0          # 3,561,000,000 transactions (356.10 Crore)
+      annual_value_crore_inr: 1831134.0       # ₹18,31,134.00 Crore (~₹18.31 Lakh Crore)
+      volume_yoy_growth_percentage: 32.2
+      value_yoy_growth_percentage: 27.0
+    debit_cards:
+      annual_volume_lakh_tx: 22860.0          # 2,286,000,000 transactions (228.60 Crore)
+      annual_value_crore_inr: 592429.0        # ₹5,92,429.00 Crore (~₹5.92 Lakh Crore)
+      volume_yoy_growth_percentage: -23.1     # Structural substitution by UPI micro-payments
+      value_yoy_growth_percentage: -16.0
+    total_card_payments:
+      annual_volume_lakh_tx: 58470.0          # 5,847,000,000 transactions (584.70 Crore)
+      annual_value_crore_inr: 2423563.0       # ₹24,23,563.00 Crore (~₹24.24 Lakh Crore)
+
+  channel_disaggregation_march_2024:
+    statutory_source: "RBI Payment System Indicators (March 2024 Release)"
+    credit_cards:
+      total_monthly_spend_crore_inr: 164000.0
+      total_monthly_tx_volume_crore: 35.6
+      pos_in_person_cp:
+        value_crore_inr: 60378.0
+        value_share_percentage: 36.82
+        volume_crore_tx: 15.1
+        volume_share_percentage: 42.42
+      ecommerce_online_cnp:
+        value_crore_inr: 105000.0
+        value_share_percentage: 64.02
+        volume_crore_tx: 20.5
+        volume_share_percentage: 57.58
+    debit_cards:
+      total_monthly_spend_crore_inr: 51000.0
+      total_monthly_tx_volume_crore: 22.8
+      pos_in_person_cp:
+        value_crore_inr: 20000.0
+        value_share_percentage: 39.22
+        volume_crore_tx: 12.8
+        volume_share_percentage: 56.14
+      ecommerce_online_cnp:
+        value_crore_inr: 31000.0
+        value_share_percentage: 60.78
+        volume_crore_tx: 10.0
+        volume_share_percentage: 43.86
+
+  average_ticket_sizes:
+    statutory_source: "Worldline India Digital Payments Reports (1H 2024 / 2H 2024) & RBI Disaggregated Series"
+    credit_card_pos_cp:
+      nominal_inr: 3600.00
+      amount_paisa: 360000
+      typical_range_inr: [3400.00, 3800.00]
+    credit_card_ecommerce_cnp:
+      nominal_inr: 5122.00
+      amount_paisa: 512200
+      worldline_1h24_benchmark_inr: 5190.00
+      typical_range_inr: [4300.00, 6032.00]
+    debit_card_pos_cp:
+      nominal_inr: 2150.00
+      amount_paisa: 215000
+      typical_range_inr: [1850.00, 2350.00]
+    debit_card_ecommerce_cnp:
+      nominal_inr: 3113.00
+      amount_paisa: 311300
+      typical_range_inr: [2830.00, 3350.00]
+
+  cardholder_arrival_kinematics:
+    statutory_basis: "Derived from RBI Total Card Volume vs Active Cardholder Population"
+    mean_transactions_per_card_monthly: 3.00
+    mean_transactions_per_card_daily: 0.100
+    cards_per_active_cardholder_mean: 2.00
+    empirical_daily_card_frequency_mean: 0.200       # Exactly 1 tx every 5.0 days
+    empirical_daily_card_frequency_95ci: [0.167, 0.233] # 1 tx every 4.3 to 6.0 days
+    upi_displacement_effect:
+      upi_monthly_volume_billions: 14.0
+      upi_daily_volume_millions: 466.7
+      upi_active_users_millions: 350.0
+      upi_mean_daily_frequency_per_user: 1.33
+      upi_micropayments_sub_500_inr_share: 0.75      # 75% of UPI tx < ₹500
+      upi_p2m_average_ticket_size_paisa: 64300       # ₹643.00 INR
+
+# =============================================================================
+# EMPIRICAL SPEND MARGINALS BY MERCHANT CATEGORY CODE (MCC)
+# Continuous Log-Normal Parameterization: LogNormal(mu_log, sigma_log)
+# Validated against Indian Retail Disclosures, IRCTC, BBPS, and SFT Rules.
+# =============================================================================
+
+indian_spend_marginals_by_mcc:
+  mcc_5411_kirana_supermarket:
+    category_name: "Grocery, Supermarkets & Modern Trade"
+    representative_merchants: ["DMART", "RELIANCE_FRESH", "NATURES_BASKET", "MORE_RETAIL"]
+    channel_mix_weights:
+      cp_contact_chip: 0.45
+      cp_contactless_nfc: 0.35
+      cnp_ecommerce_web: 0.12
+      cnp_mobile_app: 0.08
+    distribution:
+      model: "LogNormal"
+      currency_inr_paisa:
+        mu_log: 11.8132
+        sigma_log: 0.6500
+        median_paisa: 135000                         # ₹1,350.00
+        mean_paisa: 166780                           # ₹1,667.80
+        percentiles_paisa:
+          p10: 58700                                 # ₹587.00
+          p25: 87100                                 # ₹871.00
+          p50: 135000                                # ₹1,350.00
+          p75: 209300                                # ₹2,093.00
+          p90: 310600                                # ₹3,106.00
+          p95: 393300                                # ₹3,933.00
+          p99: 612500                                # ₹6,125.00
+      currency_inr_nominal:
+        mu_log: 7.2080
+        sigma_log: 0.6500
+        median_inr: 1350.00
+        mean_inr: 1667.80
+    empirical_source: "Avenue Supermarts (DMart) FY24 disclosures (Offline basket: ₹1,500-₹1,800; Online: ₹1,275)"
+    behavioral_quirk: "Micro kirana purchases below ₹200 are 98% UPI QR; cards reserved for planned weekly modern-trade hauls."
+
+  mcc_5541_fuel_petroleum:
+    category_name: "Service Stations & Automated Fuel Dispensers"
+    representative_merchants: ["INDIAN_OIL_IOCL", "BHARAT_PETROLEUM_BPCL", "HINDUSTAN_PETROLEUM_HPCL"]
+    channel_mix_weights:
+      cp_contact_chip: 0.55
+      cp_contactless_nfc: 0.40
+      cnp_ecommerce_web: 0.00
+      cnp_mobile_app: 0.05
+    distribution:
+      model: "LogNormal"
+      currency_inr_paisa:
+        mu_log: 12.1808
+        sigma_log: 0.4800
+        median_paisa: 195000                         # ₹1,950.00
+        mean_paisa: 218800                           # ₹2,188.00
+        percentiles_paisa:
+          p10: 105400                                # ₹1,054.00
+          p25: 141100                                # ₹1,411.00
+          p50: 195000                                # ₹1,950.00
+          p75: 269600                                # ₹2,696.00
+          p90: 360700                                # ₹3,607.00
+          p95: 429500                                # ₹4,295.00
+          p99: 595600                                # ₹5,956.00
+      currency_inr_nominal:
+        mu_log: 7.5756
+        sigma_log: 0.4800
+        median_inr: 1950.00
+        mean_inr: 2188.00
+    empirical_source: "Petroleum Federation of India fuel transaction audits & fuel surcharge waiver band"
+    behavioral_quirk: "Card usage strictly concentrates in the 1% surcharge waiver window (₹400-₹4,000); two-wheelers route to UPI."
+
+  mcc_5812_5814_dining_food_delivery:
+    category_name: "Restaurants, Casual Dining & Food Delivery Aggregators"
+    representative_merchants: ["SWIGGY", "ZOMATO", "MCDONALDS_IN", "DOMINOS_JUBILANT", "BARBEQUE_NATION"]
+    channel_mix_weights:
+      cp_contact_chip: 0.20
+      cp_contactless_nfc: 0.15
+      cnp_ecommerce_web: 0.10
+      cnp_mobile_app: 0.55
+    distribution:
+      model: "LogNormal"
+      currency_inr_paisa:
+        mu_log: 11.1273
+        sigma_log: 0.7800
+        median_paisa: 68000                          # ₹680.00
+        mean_paisa: 92180                            # ₹921.80
+        percentiles_paisa:
+          p10: 25000                                 # ₹250.00
+          p25: 40200                                 # ₹402.00 (Swiggy single order benchmark)
+          p50: 68000                                 # ₹680.00
+          p75: 115100                                # ₹1,151.00
+          p90: 184800                                # ₹1,848.00
+          p95: 245300                                # ₹2,453.00
+          p99: 417400                                # ₹4,174.00
+      currency_inr_nominal:
+        mu_log: 6.5221
+        sigma_log: 0.7800
+        median_inr: 680.00
+        mean_inr: 921.80
+    empirical_source: "Zomato & Swiggy FY24 Quarterly Investor Presentations (Food Delivery AOV: ₹410-₹465; Dining: ₹1,200-₹2,500)"
+    behavioral_quirk: "Heavy weekend evening circadian peak; dining out features 20% dual-message tip hold risk."
+
+  mcc_5311_5999_general_merchandise_ecommerce:
+    category_name: "Horizontal E-commerce, Department Stores & Electronics"
+    representative_merchants: ["AMAZON_INDIA", "FLIPKART", "MYNTRA", "TATA_CLIQ", "CROMA", "RELIANCE_DIGITAL"]
+    channel_mix_weights:
+      cp_contact_chip: 0.06
+      cp_contactless_nfc: 0.04
+      cnp_ecommerce_web: 0.42
+      cnp_mobile_app: 0.48
+    distribution:
+      model: "LogNormal"
+      currency_inr_paisa:
+        mu_log: 12.5603
+        sigma_log: 0.9200
+        median_paisa: 285000                         # ₹2,850.00
+        mean_paisa: 435160                           # ₹4,351.60
+        percentiles_paisa:
+          p10: 87700                                 # ₹877.00
+          p25: 153200                                # ₹1,532.00
+          p50: 285000                                # ₹2,850.00
+          p75: 530100                                # ₹5,301.00
+          p90: 926600                                # ₹9,266.00
+          p95: 1294400                               # ₹12,944.00
+          p99: 2423000                               # ₹24,230.00
+      currency_inr_nominal:
+        mu_log: 7.9551
+        sigma_log: 0.9200
+        median_inr: 2850.00
+        mean_inr: 4351.60
+    empirical_source: "Worldline India E-commerce Card Indicators (ATS ₹4,301-₹5,190) & Redseer E-commerce Survey"
+    behavioral_quirk: "High No-Cost EMI penetration above ₹5,000; extreme velocity spike during Q3/Q4 festive sales."
+
+  mcc_4112_railways_transit_irctc:
+    category_name: "Passenger Railways & Ticketing Services"
+    representative_merchants: ["IRCTC_WEB", "IRCTC_APP", "CRIS_PRS"]
+    channel_mix_weights:
+      cp_contact_chip: 0.03
+      cp_contactless_nfc: 0.02
+      cnp_ecommerce_web: 0.55
+      cnp_mobile_app: 0.40
+    distribution:
+      model: "LogNormal"
+      currency_inr_paisa:
+        mu_log: 11.8845
+        sigma_log: 0.5500
+        median_paisa: 145000                         # ₹1,450.00
+        mean_paisa: 168670                           # ₹1,686.70
+        percentiles_paisa:
+          p10: 71600                                 # ₹716.00
+          p25: 100100                                # ₹1,001.00
+          p50: 145000                                # ₹1,450.00
+          p75: 210100                                # ₹2,101.00
+          p90: 293400                                # ₹2,934.00
+          p95: 358300                                # ₹3,583.00
+          p99: 521200                                # ₹5,212.00
+      currency_inr_nominal:
+        mu_log: 7.2793
+        sigma_log: 0.5500
+        median_inr: 1450.00
+        mean_inr: 1686.70
+    empirical_source: "IRCTC Operational Annual Reports (13.88-14.53 lakh tickets/day, 25.5 lakh passengers = 1.75 pax/ticket)"
+    behavioral_quirk: "Extreme 10:00 AM (AC) and 11:00 AM (Non-AC) Tatkal surge; highly price-sensitive fixed class tariffs."
+
+  mcc_4900_4814_utility_bills_bbps:
+    category_name: "Electricity, Piped Gas, Water, Broadband & BBPS Biller Hub"
+    representative_merchants: ["BHARAT_CONNECT_BBPS", "TATA_POWER", "BESCOM", "MAHADISCOM", "AIRTEL_BBPS", "JIO_FIBER"]
+    channel_mix_weights:
+      cp_contact_chip: 0.05
+      cp_contactless_nfc: 0.05
+      cnp_ecommerce_web: 0.45
+      cnp_mobile_app: 0.45
+    distribution:
+      model: "LogNormal"
+      currency_inr_paisa:
+        mu_log: 12.1281
+        sigma_log: 1.1200
+        median_paisa: 185000                         # ₹1,850.00
+        mean_paisa: 346380                           # ₹3,463.80 (Anchored to July 2024 BBPS ₹3,468 ATS)
+        percentiles_paisa:
+          p10: 44000                                 # ₹440.00
+          p25: 86900                                 # ₹869.00
+          p50: 185000                                # ₹1,850.00
+          p75: 393800                                # ₹3,938.00
+          p90: 777100                                # ₹7,771.00
+          p95: 1167400                               # ₹11,674.00
+          p99: 2504500                               # ₹25,045.00
+      currency_inr_nominal:
+        mu_log: 7.5229
+        sigma_log: 1.1200
+        median_inr: 1850.00
+        mean_inr: 3463.80
+    empirical_source: "NPCI Bharat Connect (BBPS) Monthly Operational Indicators (July 2024: 189.52M tx, ₹65,733.76 Cr = ₹3,468 ATS)"
+    behavioral_quirk: "Salary-day bill pay peak between 5th and 10th of every month; heavy right tail driven by credit card bill payments on BBPS."
+
+  mcc_5944_jewellery_gold:
+    category_name: "Precious Stones, Gold Bullion & Fine Jewellery"
+    representative_merchants: ["TANISHQ_TITAN", "KALYAN_JEWELLERS", "MALABAR_GOLD", "JOYALUKKAS", "CARATLANE"]
+    channel_mix_weights:
+      cp_contact_chip: 0.75
+      cp_contactless_nfc: 0.10
+      cnp_ecommerce_web: 0.10
+      cnp_mobile_app: 0.05
+    distribution:
+      model: "LogNormal"
+      currency_inr_paisa:
+        mu_log: 15.7398
+        sigma_log: 0.8200
+        median_paisa: 6850000                        # ₹68,500.00
+        mean_paisa: 9587500                          # ₹95,875.00
+        percentiles_paisa:
+          p10: 2395000                               # ₹23,950.00 (Mia/CaratLane everyday jewellery)
+          p25: 3939900                               # ₹39,399.00
+          p50: 6850000                               # ₹68,500.00
+          p75: 11910000                              # ₹1,19,100.00
+          p90: 19593000                              # ₹1,95,930.00 (Artificial smurfing peak under ₹2 Lakhs)
+          p95: 26392000                              # ₹2,63,920.00 (PAN-declared bridal purchases)
+          p99: 46148000                              # ₹4,61,480.00
+      currency_inr_nominal:
+        mu_log: 11.1346
+        sigma_log: 0.8200
+        median_inr: 68500.00
+        mean_inr: 95875.00
+    empirical_source: "Titan Company Ltd (Tanishq/CaratLane) & Kalyan Jewellers FY24 investor reports; CBDT Rule 114B"
+    behavioral_quirk: "Aggressive transaction smurfing right below the ₹2,00,000 PAN reporting threshold (Rule 114B); huge Dhanteras surge."
+
+# =============================================================================
+# STATUTORY RAIL THRESHOLDS & INVARIANTS
+# Concrete Invariants mandated by RBI, NPCI, and Ministry of Finance.
+# =============================================================================
+
+statutory_rail_thresholds_and_invariants:
+  contactless_nfc_tap_mandate:
+    statutory_authority: "RBI/2020-21/73 (DPSS.CO.PD No.751/02.14.003/2020-21)"
+    pin_free_single_tx_ceiling_paisa: 500000         # ₹5,000.00 INR
+    max_consecutive_pinless_transactions: 5
+    cumulative_pinless_spend_ceiling_paisa: 1500000   # ₹15,000.00 INR
+    exceeded_circuit_breaker_action: "FORCE_CONTACT_CHIP_AND_PIN"
+    terminal_prompt_behavior: "DECLINE_CONTACTLESS_REQUEST_INSERT_CARD"
+
+  domestic_cnp_mandatory_afa:
+    statutory_authority: "Payment and Settlement Systems Act, 2007 (Section 10(2) & 18) & RBI/2022-23/92"
+    enforcement_rule: "STRICT_100_PERCENT_DOMESTIC_CNP_AFA"
+    risk_based_authentication_exemption_permitted: false
+    otp_validity_window_seconds: 180                 # 3 minutes canonical validity
+    otp_expired_decline_response_code: "05_DO_NOT_HONOR"
+    otp_max_failed_attempts: 3
+    post_exhaustion_action: "TEMP_BLOCK_CNP_24_HOURS"
+
+  income_tax_rule_114b_pan_mandate:
+    statutory_authority: "Income-tax Rules, 1962 (Rule 114B) under Section 139A Income-tax Act, 1961"
+    mandatory_pan_quoting_threshold_paisa: 20000000  # ₹2,00,000.00 INR (2 Lakhs)
+    applicable_mccs: [5944, 7011, 4722, 5511]
+    statutory_reporting_obligation: "FORM_61A_SFT_FILING"
+    adversarial_smurfing_pattern:
+      detection_trigger: "AGGREGATE_MERCHANT_SAME_PAN_OR_CARD_WITHIN_24H_EXCEEDING_2L"
+      typical_split_count: [2, 3]
+      typical_inter_swipe_spacing_seconds: [60, 180]
+      ticket_clustering_range_paisa: [16500000, 19500000] # ₹1,65,000 - ₹1,95,000
+
+  rupay_credit_on_upi_mdr_framework:
+    statutory_authority: "NPCI Circular NPCI/2022-23/RuPay/003 (October 4, 2022)"
+    small_merchant_turnover_ceiling_inr: 2000000.00  # ₹20 Lakhs annual turnover
+    small_merchant_zero_mdr_ceiling_paisa: 200000    # ₹2,000.00 INR zero MDR
+    standard_mdr_percentage_range: [1.50, 2.00]
+    issuer_interchange_share_percentage: [1.15, 1.50]
+    p2p_credit_transfer_allowed: false               # Strict P2M restriction
+    rejection_mti_response: "DECLINE_TRANSACTION_NOT_PERMITTED_ON_RAIL"
+
+india_regulatory_rails:
+  additional_factor_of_authentication_afa:
+    statutory_basis: "Payment and Settlement Systems Act, 2007 (Section 10(2) & 18)"
+    domestic_cnp_enforcement: "STRICT_100_PERCENT"
+    otp_validity_window_seconds: 180
+    exemptions:
+      contactless_nfc_tap:
+        pin_free_ceiling_paisa: 500000       # ₹5,000.00 INR (RBI/2020-21/73)
+        max_consecutive_pinless_tx: 5
+        cumulative_pinless_ceiling_paisa: 1500000 # ₹15,000.00 INR
+        exceeded_action: "FORCE_CONTACT_CHIP_AND_PIN"
+      e_mandate_recurring:
+        standard_ceiling_paisa: 1500000      # ₹15,000.00 INR
+        high_value_category_ceiling_paisa: 10000000 # ₹1,00,000.00 INR (Mutual funds, insurance, card bills)
+        pre_debit_notification_window_hours: 24
+      offline_micropayments:
+        per_tx_ceiling_paisa: 50000          # ₹500.00 INR (RBI/2021-22/150)
+        instrument_max_balance_paisa: 200000 # ₹2,000.00 INR
+        upi_lite_per_tx_ceiling_paisa: 100000 # ₹1,000.00 INR
+        upi_lite_wallet_ceiling_paisa: 500000 # ₹5,000.00 INR
+
+  card_on_file_tokenization_coft:
+    mandate_circular: "RBI/2021-22/96"
+    raw_pan_storage_allowed: false
+    allowed_stored_metadata: ["last_4_digits", "issuer_name", "network"]
+    token_service_providers: ["NPCI_TOKEN_CONNECT", "VTS", "MDES", "AMEX_TOKEN_SERVICE"]
+
+  card_controls_default_state:
+    mandate_circular: "RBI/2019-20/142"
+    default_enabled: ["DOMESTIC_ATM", "DOMESTIC_POS_CONTACT"]
+    default_disabled: ["DOMESTIC_CNP", "INTERNATIONAL_POS", "INTERNATIONAL_CNP", "CONTACTLESS_NFC"]
+
+  rupay_credit_on_upi:
+    small_merchant_turnover_ceiling_inr: 2000000.00
+    small_merchant_zero_mdr_ceiling_paisa: 200000 # ₹2,000.00 INR zero MDR
+    standard_mdr_percentage_range: [1.50, 2.00]
+    p2p_credit_transfer_allowed: false
+
+  customer_protection_limiting_liability:
+    statutory_basis: "RBI/2017-18/15 (DBR.No.Leg.BC.78/09.07.005/2017-18)"
+    zero_liability_scenarios:
+      bank_contributory_fraud_or_deficiency: true
+      third_party_breach_reported_within_working_days: 3
+      customer_liability_paisa: 0
+    limited_liability_tiers_reporting_4_to_7_working_days:
+      bsbd_pmjdy_accounts_max_liability_paisa: 500000 # ₹5,000.00
+      savings_ppi_credit_cards_le_5_lakh_paisa: 1000000 # ₹10,000.00
+      credit_cards_gt_5_lakh_and_corporate_paisa: 2500000 # ₹25,000.00
+    beyond_7_working_days: "BANK_BOARD_APPROVED_POLICY"
+    customer_negligence_sharing_otp:
+      liability: "CUSTOMER_100_PCT_UNTIL_REPORTED_BANK_100_PCT_POST_REPORT"
+    provisional_shadow_credit_mandate_working_days: 10
+    absolute_resolution_sla_calendar_days: 90
+    burden_of_proof: "BANK_BEARS_100_PERCENT_BURDEN"
+
+  harmonisation_tat_failed_transactions:
+    statutory_basis: "RBI/2019-20/67 (DPSS.CO.PD No.629/02.01.014/2019-20)"
+    auto_reversal_turnaround_times:
+      atm_cash_not_dispensed_calendar_days: 5
+      card_pos_ecom_transaction_failed_calendar_days: 5
+      upi_imps_beneficiary_not_credited_calendar_days: 1
+      ppi_wallet_failed_calendar_days: 1
+    delayed_reversal_statutory_penalty_per_day_paisa: 10000 # ₹100.00 INR per day
+    auto_compensation_credit_mandated: true
+
+  payment_aggregator_escrow_settlement:
+    statutory_basis: "RBI/DPSS/2025-26/115 (Master Direction on Payment Aggregators)"
+    escrow_account_type: "SCHEDULED_COMMERCIAL_BANK_DEDICATED"
+    merchant_payout_settlement_sla: "T_PLUS_1_BUSINESS_DAYS_MAX"
+    commingling_with_corporate_funds: "STRICTLY_PROHIBITED"
+
+indian_card_products:
+  - id: "IN_PROD_KISAN_CREDIT_CARD"
+    name: "Kisan Credit Card (KCC)"
+    category: "AGRICULTURAL_REVOLVING"
+    regulatory_framework: "RBI_NABARD_DLTC"
+    credit_limit_paisa:
+      min: 2500000       # ₹25,000.00
+      median: 15000000   # ₹1,50,000.00
+      max: 100000000     # ₹10,00,000.00
+    spend_distribution:
+      model: "LogNormal"
+      mu_log: 7.80
+      sigma_log: 0.72
+      median_inr: 2440.0
+      mean_inr: 3162.0
+    effective_net_apr_percentage: 4.0   # 7% nominal with 3% prompt repayment incentive
+    crop_season_cycles: ["KHARIF", "RABI"]
+    primary_adversarial_vulnerabilities:
+      - "BC_KIOSK_SKIMMING"
+      - "LAND_PATTA_IDENTITY_THEFT"
+
+  # Mainstream retail debit. Added 2026-10-12: until this existed, the only debit
+  # product was PMJDY (a financial-inclusion card, mean ticket ~Rs 822), so the
+  # synthetic debit slice could not represent India's debit population and the
+  # RBI PSI debit aggregate (mean Rs 3,719) was not like-for-like against it.
+  #
+  # Grounding: the RBI PSI July 2026 payment-modes table reports a credit-card mean
+  # of Rs 3,440. That is an INDEPENDENT number from the same table -- it is not the
+  # debit target, and it is not back-solved from it. A mainstream retail debit card
+  # and a mainstream retail credit card are both ordinary retail payment instruments
+  # in India, so the credit-card mean is used as the anchor for the retail-debit
+  # ticket level, and the mixture of PMJDY and this product is then checked against
+  # the debit aggregate as an independent test rather than fitted to it.
+  #
+  # Assumption to revisit: that retail-debit and retail-credit tickets are of a
+  # similar level. If RBI later splits debit by product tier, this should be
+  # re-anchored on the debit-specific figure instead.
+  - id: "IN_PROD_RETAIL_RUPAY_DEBIT"
+    name: "Mainstream Retail RuPay Debit Card"
+    category: "RETAIL_DEBIT"
+    regulatory_framework: "RBI_CARD_DIRECTIONS_2022"
+    account_balance_paisa:
+      min: 50000             # Rs 500.00
+      median: 4500000        # Rs 45,000.00
+      max: 90000000          # Rs 9,00,000.00
+    spend_distribution:
+      model: "LogNormal"
+      # mu = ln(3440) - 0.75^2/2, so E[X] = Rs 3,440 (RBI PSI credit-card mean)
+      mu_log: 7.8620
+      sigma_log: 0.75
+      median_inr: 2597.0
+      mean_inr: 3440.0
+      anchor: "RBI PSI July 2026 payment modes, credit cards: 605 million transactions, Rs 2,08,186 crore"
+    debit_attributes:
+      has_credit_line: false     # this is a debit instrument
+      atm_withdrawal_enabled: true
+      primary_adversarial_vulnerabilities:
+        - "ATM_SKIMMING"
+        - "P2P_SCAM_FRAUD"
+        - "CYBER_MONEY_MULE_RECRUITMENT"
+
+  - id: "IN_PROD_PMJDY_RUPAY_DEBIT"
+    name: "Pradhan Mantri Jan Dhan Yojana (PMJDY) RuPay Debit"
+    category: "FINANCIAL_INCLUSION_DEBIT"
+    regulatory_framework: "BSBDA_PMJDY"
+    account_balance_paisa:
+      min: 0
+      median: 250000     # ₹2,500.00
+      max: 1000000      # ₹10,000.00
+    spend_distribution:
+      model: "LogNormal"
+      mu_log: 6.50
+      sigma_log: 0.65
+      median_inr: 665.0
+      mean_inr: 822.0
+    overdraft_facility_paisa: 1000000   # ₹10,000.00 OD
+    inbuilt_accidental_insurance_paisa: 20000000 # ₹2 Lakhs
+    primary_adversarial_vulnerabilities:
+      - "AEPS_SILICONE_THUMB_SPOOFING"
+      - "CYBER_MONEY_MULE_RECRUITMENT"
+
+  - id: "IN_PROD_ENTRY_FD_BACKED"
+    name: "Entry-Level FD-Backed Credit Card"
+    category: "CONSUMER_CREDIT"
+    regulatory_framework: "RBI_CARD_DIRECTIONS_2022"
+    fixed_deposit_lien_ratio: 0.90      # 90% of FD balance
+    credit_limit_paisa:
+      min: 500000        # ₹5,000.00
+      median: 2500000    # ₹25,000.00
+      max: 5000000       # ₹50,000.00
+    spend_distribution:
+      model: "LogNormal"
+      mu_log: 6.95
+      sigma_log: 0.70
+      median_inr: 1043.0
+      mean_inr: 1333.0
+    revolving_apr_percentage_range: [24.0, 42.0]
+    primary_adversarial_vulnerabilities:
+      - "MICRO_AUTH_PROBING"
+      - "RAPID_RENT_PORTAL_CASHOUT"
+
+  - id: "IN_PROD_SALARIED_PRIME_REWARDS"
+    name: "Mid-Tier Salaried Prime Rewards Credit Card"
+    category: "CONSUMER_CREDIT"
+    regulatory_framework: "RBI_CARD_DIRECTIONS_2022"
+    credit_limit_paisa:
+      min: 5000000       # ₹50,000.00
+      median: 15000000   # ₹1,50,000.00
+      max: 50000000      # ₹5,00,000.00
+    spend_distribution:
+      model: "LogNormal"
+      mu_log: 7.65
+      sigma_log: 0.70
+      median_inr: 2100.0
+      mean_inr: 2683.0
+    interest_free_grace_period_days: 50
+    revolving_apr_percentage_range: [42.0, 45.0]
+    primary_adversarial_vulnerabilities:
+      - "REVERSE_PROXY_VISHING"
+      - "MALICIOUS_ANDROID_APK_SMS_STEALER"
+      - "RENT_PORTAL_CASHOUT"
+
+  - id: "IN_PROD_SUPER_PREMIUM_HNI"
+    name: "Super-Premium / HNI Infinite Metal Card"
+    category: "CONSUMER_CREDIT"
+    regulatory_framework: "RBI_CARD_DIRECTIONS_2022"
+    credit_limit_paisa:
+      min: 100000000     # ₹10,00,000.00
+      median: 250000000   # ₹25,00,000.00
+      max: 500000000     # ₹50,00,000.00
+    spend_distribution:
+      model: "LogNormal"
+      mu_log: 8.55
+      sigma_log: 0.75
+      median_inr: 5166.0
+      mean_inr: 6844.0
+    forex_markup_percentage: 2.0
+    primary_adversarial_vulnerabilities:
+      - "INTERNATIONAL_NON_3DS_ROUTE_AROUND"
+      - "CONCIERGE_ATO"
+      - "LOYALTY_MILES_DRAINING"
+
+indian_consumer_behavioral_quirks:
+  payday_liquidity_cycle:
+    private_sector_salary_credit_days: [28, 29, 30, 31]
+    government_salary_credit_days: [1, 2, 3]
+    statement_bill_payment_peak_days: [5, 6, 7, 8, 9, 10]
+    liquidity_squeeze_days: [20, 21, 22, 23, 24, 25, 26, 27, 28]
+
+  merchant_no_cost_emi:
+    statutory_ban_on_zero_interest: "RBI/2013-14/292"
+    upfront_merchant_discount_mechanism: true
+    gst_on_interest_percentage: 18.0
+    non_refundable_processing_fee_paisa: 19900 # ₹199.00 + 18% GST
+
+  festival_seasonality:
+    q3_q4_big_billion_days_surge:
+      months: [9, 10]
+      velocity_surge_multiplier: 6.0
+      instant_discount_cap_paisa: 250000 # ₹2,500.00
+    dhanteras_gold_splitting:
+      mcc: 5944
+      tax_rule_114b_pan_reporting_threshold_paisa: 20000000 # ₹2,00,000.00
+      split_transaction_behavior:
+        enabled: true
+        swipes_count: [2, 3]
+        spacing_seconds: [60, 180]
+        ticket_ranges_paisa: [16500000, 19500000]
+
+  fuel_surcharge_waiver_mcc_5541:
+    surcharge_rate_percentage: 1.0
+    qualifying_ticket_range_paisa: [40000, 400000] # ₹400 to ₹4,000
+    monthly_waiver_cap_paisa: 25000                # ₹250.00
+    gst_rate_percentage: 18.0
+    gst_reversible_by_law: false
+
+indian_adversarial_playbooks:
+  - id: "IN_ADV_REVERSE_PROXY_VISHING"
+    name: "Reverse-Proxy Vishing & Digital Arrest"
+    target_products: ["IN_PROD_SALARIED_PRIME_REWARDS", "IN_PROD_SUPER_PREMIUM_HNI"]
+    target_vulnerability: "HUMAN_COERCION_180S_OTP_RACE"
+    lure_types: ["ELECTRICITY_BILL_CUTOFF", "DIGITAL_ARREST_CBI_POLICE", "REWARD_POINTS_EXPIRY"]
+    ticket_size_paisa: [5000000, 50000000] # ₹50,000 to ₹5,00,000
+    reverse_proxy_latency_seconds: [2.0, 8.0]
+
+  - id: "IN_ADV_APK_SMS_STEALER"
+    name: "Malicious Android APK SMS Forwarder"
+    target_products: ["IN_PROD_SALARIED_PRIME_REWARDS", "IN_PROD_ENTRY_FD_BACKED"]
+    vector: "WHATSAPP_TELEGRAM_SIDELOAD_APK"
+    abused_permissions: ["android.permission.RECEIVE_SMS", "android.permission.READ_SMS", "AccessibilityService"]
+    exfiltration_target: "TELEGRAM_BOT_API"
+    silent_sms_suppression: true
+
+  - id: "IN_ADV_INTL_NON_3DS_BYPASS"
+    name: "International Non-3DS Gateway Route-Around"
+    target_products: ["IN_PROD_SUPER_PREMIUM_HNI", "IN_PROD_SALARIED_PRIME_REWARDS"]
+    prerequisite_card_state: "INTERNATIONAL_CNP_ENABLED == TRUE"
+    target_merchant_geo: "US_EU_NON_3DS"
+    auth_mti: "0100"
+    eci_indicator: "07" # Non-authenticated
+    time_window_ist_hours: [1.5, 5.5] # 01:30 - 05:30 AM IST (Cardholder asleep)
+    ticket_size_usd: [150.0, 1500.0]
+
+  - id: "IN_ADV_RENT_PORTAL_CASHOUT"
+    name: "Credit-to-Bank Liquidation via Rent Portals"
+    target_products: ["IN_PROD_SALARIED_PRIME_REWARDS", "IN_PROD_ENTRY_FD_BACKED"]
+    platform_convenience_fee_percentage: 1.8
+    settlement_rail: "IMPS_NEFT_T0"
+    p2p_crypto_conversion_window_minutes: 10
+
+  - id: "IN_ADV_SIM_SWAP_ESIM_HIJACK"
+    name: "Telecom SIM Swap & eSIM Profile Hijack"
+    target_products: ["IN_PROD_SUPER_PREMIUM_HNI", "IN_PROD_SALARIED_PRIME_REWARDS"]
+    bypass_vector: "FRIDAY_EVENING_TELECOM_BLACKOUT_WINDOW"
+    telecom_regulatory_cooldown_hours: 24 # TRAI mandatory SMS block post-swap
+    exploit_channel: "IVR_VOICE_OTP_FALLBACK"
+
+cfcfrms_1930_defensive_race:
+  statutory_authority: "Indian Cybercrime Coordination Centre (I4C), MHA"
+  helpline_number: 1930
+  inter_bank_mesh_connected_entities: 250
+  critical_golden_hour_cutoff_seconds: 900 # 15 minutes
+  inter_bank_api_lien_propagation_latency_seconds: 180
+  empirical_recovery_decay_model:
+    formula: "P(recovery|t) = 0.82 * exp(-0.045 * t) for t <= 30 min; 0.21 * exp(-0.015 * t) for 30 < t <= 120 min; < 0.03 for t > 120 min"
+    recovery_rates:
+      under_15_minutes: [0.70, 0.80]
+      between_15_and_45_minutes: [0.25, 0.40]
+      beyond_60_minutes: 0.10
+
+# ----------------------------------------------------------------------------------------------
+# Credit line assignment
+# ----------------------------------------------------------------------------------------------
+# Issuers assign credit lines in steps, not as continuous amounts (see spec/01 credit_limit_assignment).
+credit_limit_assignment:
+  rounding_steps_paisa:
+    - { up_to: 1000000,  step: 100000 }    # to Rs 10,000 in Rs 1,000 steps
+    - { up_to: 5000000,  step: 500000 }    # to Rs 50,000 in Rs 5,000 steps
+    - { up_to: 20000000, step: 1000000 }   # to Rs 2,00,000 in Rs 10,000 steps
+    - { up_to: 50000000, step: 2500000 }   # to Rs 5,00,000 in Rs 25,000 steps
+    - { up_to: null,     step: 10000000 }  # above, Rs 1,00,000 steps
+  applies_to: "credit_limit_paisa and account_balance_paisa of every product, clamped to the product's range"
+  hypothesis: true
+  note: "replace with the line-assignment grid of an issuer's underwriting policy"

@@ -1,0 +1,99 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE / Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Generated output batches (preserve canonical data/sample_*.csv)
+data/production_*.csv
+data/batch_*.csv
+data/test_*.csv
+data/*simulation*/
+data/*sim*/
+data/annual_sim_*/
+data/smoke_test_*/
+data/smoke_test_parallel/
+# External reference corpora stay out of the repo: corpora/creditcard.arff is ~150 MB and the
+# ULB corpus it is built from is DbCL-1.0, so committing it would redistribute third-party
+# data. Only the scores it produces are tracked -- publish/README.md caveat 5 and
+# reports/pillar1_external_corpus_scorecard.md cite those. Rebuild it from Kaggle
+# mlg-ulb/creditcardfraud (convert creditcard.csv to ARFF keeping Time/Amount/Class) and the
+# published scorecard reproduces exactly: ULB 0.3745 / 0.1716 / 0.1727%.
+corpora/
+# Generated benchmark output stays out of the repo. The curated markdown findings under
+# reports/ are a different thing: spec/active_slice.yaml and README.md cite them, and an
+# ignored report is a dead link for anyone who clones -- so track the .md files only.
+reports/*
+!reports/*.md
+.licenses/
+
+# Ad-hoc scratch scripts and presentation binaries
+scratch/
+scratch_*.py
+*.pptx
+
+# Frontend dependencies
+node_modules/
+gui/frontend/node_modules/
+
+# Archives
+*.zip
+
+# Local staged dataset outputs: track cards and checksum manifests, ignore generated data
+staging_*/*.csv
+staging_*/*.csv.gz
+

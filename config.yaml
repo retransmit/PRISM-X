@@ -1,0 +1,261 @@
+# Prism: central configuration.
+# Every path is resolved relative to the project root by prism.config.
+
+seed: 42
+
+# Which data track the pipeline, the API and the simulator work on unless a
+# --track flag says otherwise. Column lists are code (prism.tracks); only the
+# knobs live here. A deployment overrides this in config.local.yaml.
+track: ulb
+
+tracks:
+  ulb:
+    raw_csv: data/raw/creditcard.csv
+    split: stratified
+    test_size: 0.2
+    # Carved out of the training set for threshold tuning, so the test set is
+    # touched exactly once, at final evaluation.
+    val_size: 0.2
+    threshold_strategy: f1
+  india:
+    # Stem of a generator export: <stem>.csv, <stem>_auth_stream.csv,
+    # <stem>_gateway_telemetry.csv and <stem>_calibration.json. The training
+    # export runs at a stated boost (README, Data); the demo export is separate.
+    export_stem: data/raw/india/train_in
+    demo_stem: data/raw/india/demo_in
+    split: time_ordered
+    train_fraction: 0.7
+    val_fraction: 0.1
+    threshold_strategy: fpr_budget
+    # Alerts allowed per 10,000 legitimate transactions on the validation window.
+    fpr_budget_per_10k: 5
+    # RBI PSI July 2026: one fraud in 80,847 transactions. Test metrics are
+    # re-weighted to it (design D2).
+    prevalence_target: 0.000012369
+    # The registry rate above counts every domestic payment, of which cards
+    # are under 3 percent, so it is a reference, not the card rate. The
+    # registry's monthly series ran from one in 47,018 (February 2023) to one
+    # in 121,303 (March 2025); adjusted metrics are reported over that range.
+    prevalence_range: [0.0000082438, 0.0000212685]
+    # RBI discussion paper, 9 April 2026: 98.5 percent of Indian fraud value
+    # sits above this amount. Value caught is reported above and below it.
+    value_floor: 10000
+    # A single column that ranks the training labels above this gives the
+    # label away; training refuses unless the feature is listed below with
+    # the reason it is kept. The real-data track has no ceiling: a strongly
+    # predictive column there is evidence, not a leak.
+    shortcut_auc_ceiling: 0.95
+    allowed_shortcuts: {}
+    # The limit and the balance enter as ratios (prism.features.ratios); the
+    # raw values identify the card. The persona (cohort_id) is not a feature.
+
+features:
+  # Point-in-time velocity windows, in seconds, shared by training and serving.
+  velocity:
+    hour_seconds: 3600
+    day_seconds: 86400
+    half_hour_seconds: 1800
+    month_seconds: 2592000
+    # seconds_since_last for a card with nothing earlier inside the month window
+    no_history_seconds: 2592000
+
+models:
+  isolation_forest:
+    n_estimators: 200
+    max_samples: auto
+    # Set close to the true fraud prevalence (492/284807 = 0.00173).
+    contamination: 0.0017
+    n_jobs: -1
+
+  autoencoder:
+    hidden_dims: [24, 16, 8]     # encoder; decoder mirrors it
+    latent_dim: 4
+    epochs: 40
+    batch_size: 512
+    learning_rate: 0.001
+    weight_decay: 0.00001
+    # Trained on non-fraud rows only, so the model learns "normal" and flags
+    # whatever it cannot reconstruct.
+    train_on_normal_only: true
+
+  xgboost:
+    n_estimators: 400
+    max_depth: 5
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    eval_metric: aucpr
+    # null => computed at fit time as n_negative / n_positive (~577.9)
+    scale_pos_weight: null
+    n_jobs: -1
+
+resampling:
+  # SMOTE is applied inside CV folds only, never before the split.
+  enabled: true
+  method: smote
+  k_neighbors: 5
+  # Minority:majority ratio after oversampling. Full balance (1.0) is rarely
+  # optimal: it fabricates ~283k synthetic frauds from 394 real ones.
+  sampling_strategy: 0.1
+
+evaluation:
+  cv_folds: 5
+  primary_metric: average_precision   # PR-AUC
+  # How the decision threshold is chosen on the validation split.
+  #   f1        -> maximize F1
+  #   recall_at -> lowest threshold meeting target_recall
+  threshold_strategy: f1
+  target_recall: 0.85
+  # Fallback alert budget per 10,000 legitimate transactions for the fpr_budget
+  # strategy, when a track does not set its own.
+  fpr_budget_per_10k: 5
+  # Share of each CV training fold held out to tune the threshold, so it is
+  # never tuned on the rows it is then scored on.
+  cv_threshold_holdout: 0.2
+  # Rows a categorical value needs before "seen on one class only" counts.
+  shortcut_min_support: 25
+
+api:
+  host: 127.0.0.1
+  port: 8000
+  model_dir: models
+  database_url: sqlite:///prism_audit.db
+  # Model whose score drives the alert flag; the others are reported alongside.
+  # auto serves the champion the manifest records (the best validation PR-AUC of the
+  # last full training run); a model name pins the champion regardless of the evidence.
+  primary_model: auto
+  explain_when_flagged_only: true
+  # Rows the /stats percentiles and the engine's in-memory latency window
+  # cover. Bounded so a service left running for a week does not grow a list.
+  stats_window: 1000
+  # Bearer tokens, one per role: the analyst console and the cardholder channel
+  # post verdicts, the label feed posts labels as the bank learns them. The role
+  # is the credential a request arrived with, never the request body. Empty
+  # means the role cannot post; a deployment sets them in config.local.yaml.
+  credentials:
+    analyst: ""
+    customer: ""
+    label_feed: ""
+  cors_origins:
+    - http://localhost:5173
+    - http://127.0.0.1:5173
+
+explain:
+  # Fraction of training rows the normal range of each anonymised
+  # characteristic covers; a value outside it counts as unusual.
+  unusual_band: 0.995
+  # The band the driver sentence compares against ("above the 52 that covers
+  # 95% of transactions", design D7). unusual_band is wider on purpose: it
+  # counts out-of-range characteristics; this one has to leave room to name
+  # a range, or nearly every driver sits inside it and the clause says nothing.
+  driver_band: 0.95
+  # Nearest training transactions behind "N of the K most similar were fraud".
+  similar_cases: 50
+  # Amounts tried when asking what lower amount would have cleared the row.
+  counterfactual_steps: 200
+
+simulator:
+  endpoint: http://127.0.0.1:8000/api/v1/predict
+  interval_seconds: 1.5
+  jitter_seconds: 0.5
+  # Oversample fraud rows so the demo actually shows alerts; the real prevalence
+  # of 0.17% would mean ~1 alert every 10 minutes.
+  fraud_boost: 0.05
+  # Synthetic cardholders the replay is spread over. Small on purpose: at 40
+  # rows a minute each card sees a payment every 20 s and an alert every ten
+  # minutes or so, which is what the Customer board needs to show a history.
+  cards: 12
+
+harness:
+  # Several generator seeds, each a four-month Indian stream at the stated boost, written
+  # by the shipped command (python -m prism.harness.generate) to the stem pattern below.
+  # Four months because labels mature slowly: a chargeback lands a median of 30 days
+  # after the payment, so a shorter stream never shows a training window with matured
+  # labels and the operational regime would measure the stream's length, not the delay.
+  # Seed 59 stands where seed 31 was: at 120 days the generator at revision 001529e refused
+  # seed 31's stream (its own invariant check found an impossible card-present travel). At
+  # revision 51e5c77 that stream generates; the set is kept so runs stay comparable.
+  seeds: [42, 7, 11, 23, 59]
+  stem_pattern: data/raw/india/seeds/{seed}/train_in
+  rows: 180000
+  cards: 2000
+  merchants: 300
+  days: 120
+  fraud_rate: 0.005
+  calibration: rbi-psi-2026-07
+  # Rolling-origin backtests on the stream's clock: the training window grows from
+  # train_days, a validation and a test window follow it, and the origin rolls by step_days.
+  train_days: 60
+  val_days: 10
+  test_days: 20
+  step_days: 15
+  # Training labels: operational, a fraud counts as fraud only once the bank has discovered
+  # it by the training cut-off (the generator's supervision model gives the discovery time);
+  # full, every label known, the upper bound. Evaluation always uses the ground truth.
+  label_modes: [operational, full]
+  supervision:
+    k_daily: 50
+    alert_threshold: 0.70
+    seed: 0
+  # The cost matrix, in rupees, per 10,000 transactions: a missed fraud costs its amount, an
+  # alert costs a review, a false positive costs the friction of a held legitimate payment.
+  # The two rates are hypotheses until an issuer's figures replace them.
+  cost:
+    hypothesis: true
+    review_inr_per_alert: 150
+    friction_inr_per_false_positive: 60
+  bootstrap_resamples: 2000
+  # Test rows timed one at a time for the scoring p99 of each run.
+  scoring_rows: 500
+
+live:
+  # The stream the runner replays: written by the shipped generator, a seed the training
+  # export and the harness do not use, four months so labels mature inside the run.
+  stem: data/raw/india/live/train_in
+  seed: 101
+  rows: 180000
+  cards: 2000
+  merchants: 300
+  days: 120
+  fraud_rate: 0.005
+  calibration: rbi-psi-2026-07
+  database_url: sqlite:///prism_audit_live.db
+  # The live loop's own model root: bundles under <model_dir>/<track>/bundles and the pointer
+  # <model_dir>/<track>/current.json. A service follows the pointer only with the switch on
+  # (PRISM_LIVE=1 in its environment), so the offline deployment, the benchmarks and the
+  # demo always serve models/<track>/.
+  model_dir: models/live
+  enabled: false
+  # The bank: the investigator queue reviews Prism's alerts, up to k_daily a day.
+  supervision:
+    k_daily: 50
+    seed: 0
+  # Retraining, on the stream clock.
+  retrain_every_days: 15
+  # After label_lag_days + backtest_days + val_days (60), or the first training window is
+  # empty; the runner refuses a schedule that leaves none.
+  first_retrain_day: 75
+  label_lag_days: 30
+  backtest_days: 20
+  val_days: 10
+  min_known_fraud: 10
+  bootstrap_resamples: 2000
+  bundle_poll_seconds: 5
+  # After a promotion the runner asks /health this many times, bundle_poll_seconds apart,
+  # for the promoted bundle before it stops the run.
+  swap_checks: 3
+  # Retrain events the board's live-loop panel lists, newest last.
+  events_shown: 20
+  # Drift over the service's most recent rows, refused below drift_min_rows.
+  drift_window_rows: 5000
+  drift_min_rows: 500
+  # A report is recomputed at most this often, so an open board does not load the
+  # service's workers with it.
+  drift_refresh_seconds: 30
+  # A numeric input with at most this many distinct reference values is binned by value
+  # (a flag, a small count); deciles would put nearly all of it in one bin.
+  drift_discrete_max: 10
+  drift_warn: 0.10
+  drift_alert: 0.25
+  drift_epsilon: 0.0001
+  category_floor: 0.01

@@ -1,0 +1,133 @@
+# spec/14_interbank_switch_and_clearing.yaml
+# Complete Interbank Routing Switch and Multilateral Net Settlement Specification
+# Enforces ISO 8583 message families, On-Us vs Off-Us routing, and central bank netting.
+
+version: "1.0.0"
+description: "Multi-bank routing mesh, central switches, ISO 8583 MTI family, and multilateral net settlement."
+
+commercial_banks:
+  US:
+    - id: "BANK_US_CHASE"
+      name: "JPMorgan Chase Bank, N.A."
+      routing_number: "021000021"
+      bin_prefixes: ["400000", "414720", "440066"]
+      asset_tier: "TIER_1_MONEY_CENTER"
+      central_bank_rtgs_id: "FEDWIRE_CHASE_01"
+      market_share_weight: 0.28
+    - id: "BANK_US_BOFA"
+      name: "Bank of America, N.A."
+      routing_number: "011000138"
+      bin_prefixes: ["412800", "484128", "426428"]
+      asset_tier: "TIER_1_MONEY_CENTER"
+      central_bank_rtgs_id: "FEDWIRE_BOFA_02"
+      market_share_weight: 0.24
+    - id: "BANK_US_WELLS"
+      name: "Wells Fargo Bank, N.A."
+      routing_number: "121000247"
+      bin_prefixes: ["541234", "512345", "471234"]
+      asset_tier: "TIER_1_MONEY_CENTER"
+      central_bank_rtgs_id: "FEDWIRE_WELLS_03"
+      market_share_weight: 0.20
+    - id: "BANK_US_CITI"
+      name: "Citibank, N.A."
+      routing_number: "021000089"
+      bin_prefixes: ["524180", "542418", "412418"]
+      asset_tier: "TIER_1_MONEY_CENTER"
+      central_bank_rtgs_id: "FEDWIRE_CITI_04"
+      market_share_weight: 0.16
+    - id: "BANK_US_CAPITALONE"
+      name: "Capital One, N.A."
+      routing_number: "051405515"
+      bin_prefixes: ["459110", "409110", "519110"]
+      asset_tier: "TIER_2_SUPER_REGIONAL"
+      central_bank_rtgs_id: "FEDWIRE_CAPONE_05"
+      market_share_weight: 0.12
+
+  IN:
+    - id: "BANK_IN_SBI"
+      name: "State Bank of India"
+      ifsc_prefix: "SBIN"
+      bin_prefixes: ["400012", "607012", "504012"]
+      asset_tier: "PUBLIC_SECTOR_ANCHOR"
+      central_bank_rtgs_id: "RBI_RTGS_SBI_01"
+      market_share_weight: 0.26
+    - id: "BANK_IN_HDFC"
+      name: "HDFC Bank Limited"
+      ifsc_prefix: "HDFC"
+      bin_prefixes: ["412801", "607101", "524101"]
+      asset_tier: "PRIVATE_SECTOR_LEADER"
+      central_bank_rtgs_id: "RBI_RTGS_HDFC_02"
+      market_share_weight: 0.24
+    - id: "BANK_IN_ICICI"
+      name: "ICICI Bank Limited"
+      ifsc_prefix: "ICIC"
+      bin_prefixes: ["524181", "607181", "404181"]
+      asset_tier: "PRIVATE_SECTOR_MAJOR"
+      central_bank_rtgs_id: "RBI_RTGS_ICICI_03"
+      market_share_weight: 0.20
+    - id: "BANK_IN_AXIS"
+      name: "Axis Bank Limited"
+      ifsc_prefix: "UTIB"
+      bin_prefixes: ["607152", "412152", "524152"]
+      asset_tier: "PRIVATE_SECTOR_MAJOR"
+      central_bank_rtgs_id: "RBI_RTGS_AXIS_04"
+      market_share_weight: 0.16
+    - id: "BANK_IN_PNB"
+      name: "Punjab National Bank"
+      ifsc_prefix: "PUNB"
+      bin_prefixes: ["459111", "607111", "504111"]
+      asset_tier: "PUBLIC_SECTOR_MAJOR"
+      central_bank_rtgs_id: "RBI_RTGS_PNB_05"
+      market_share_weight: 0.14
+
+central_switching_networks:
+  US:
+    primary_card_switch: "VISANET_BASE_I_II"
+    backup_card_switch: "MASTERCARD_BANKNET"
+    instant_payments_switch: "FEDNOW_SERVICE"
+    switch_network_fee_usd: 0.0025
+    off_us_interchange_rate_credit: 0.0175
+    off_us_interchange_rate_debit: 0.0080
+    off_us_interchange_cap_debit_usd: 0.22
+  IN:
+    primary_card_switch: "NPCI_NFS_RUPAY"
+    instant_payments_switch: "NPCI_UPI_SWITCH"
+    switch_network_fee_inr: 0.20
+    off_us_interchange_rate_credit: 0.0180
+    off_us_interchange_rate_debit: 0.0090
+    off_us_interchange_cap_debit_inr: 150.00
+    upi_interchange_p2p_inr: 0.00
+    upi_interchange_p2m_inr: 0.00
+
+routing_rules:
+  on_us:
+    switch_fee: 0.00
+    interchange_fee: 0.00
+    latency_ms_range: [8.0, 16.0]
+    requires_central_switch: false
+    hops: ["MERCHANT", "ACQUIRER_CBS", "ISSUER_CORE"]
+  off_us:
+    latency_ms_range: [45.0, 115.0]
+    requires_central_switch: true
+    timeout_threshold_ms: 2000.0
+    timeout_rate: 0.0005
+    hops: ["MERCHANT", "ACQUIRER_SWITCH", "CENTRAL_SWITCH", "ISSUER_SWITCH"]
+
+iso8583_message_types:
+  auth_request: "0100"
+  auth_response: "0110"
+  financial_request: "0200"
+  financial_response: "0210"
+  reversal_request: "0400"
+  reversal_response: "0410"
+  network_management_request: "0800"
+  network_management_response: "0810"
+
+clearing_and_settlement:
+  clearing_cycles_per_day: 4
+  cycle_cutoff_hours_utc: [6, 12, 18, 24]
+  settlement_currency:
+    US: "USD"
+    IN: "INR"
+  netting_model: "MULTILATERAL_NET_SETTLEMENT"
+  zero_sum_tolerance: 0.000001

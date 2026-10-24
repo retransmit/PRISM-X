@@ -1,0 +1,54 @@
+{
+  "track": "india",
+  "rule": "time-ordered",
+  "train": {
+    "rows": 62999,
+    "fraud": 307
+  },
+  "val": {
+    "rows": 9000,
+    "fraud": 39
+  },
+  "test": {
+    "rows": 18001,
+    "fraud": 89
+  },
+  "duplicates_dropped": 0,
+  "n_features": 26,
+  "categorical_columns": [
+    "product_id",
+    "mcc",
+    "pos_entry_mode",
+    "pos_condition_code",
+    "eci",
+    "channel_type",
+    "asn_type",
+    "avs_match_code",
+    "acquirer_bin",
+    "gateway_provider"
+  ],
+  "loaded": {
+    "n_total": 90000,
+    "n_normal": 89565,
+    "n_fraud": 435,
+    "fraud_rate": 0.004833333333333334,
+    "imbalance_ratio": 205.89655172413794
+  },
+  "settings": {
+    "export_stem": "data/raw/india/train_in",
+    "demo_stem": "data/raw/india/demo_in",
+    "split": "time_ordered",
+    "train_fraction": 0.7,
+    "val_fraction": 0.1,
+    "threshold_strategy": "fpr_budget",
+    "fpr_budget_per_10k": 5,
+    "prevalence_target": 1.2369e-05,
+    "prevalence_range": [
+      8.2438e-06,
+      2.12685e-05
+    ],
+    "value_floor": 10000,
+    "shortcut_auc_ceiling": 0.95,
+    "allowed_shortcuts": {}
+  }
+}

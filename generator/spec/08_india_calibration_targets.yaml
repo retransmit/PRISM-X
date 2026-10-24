@@ -1,0 +1,120 @@
+# spec/08_india_calibration_targets.yaml
+# Canonical calibration targets for the Indian card stream, each with the public source of the number.
+# Grounded in: RBI Payment System Indicators (PSI), July 2026 release (payment modes table; part 5,
+# Domestic Payment Frauds, reported to CPFIR by scheduled commercial banks, non-bank PPI issuers and
+# non-bank credit card issuers; attempts excluded); RBI discussion paper "Exploring safeguards in digital
+# payments to curb frauds", 9 April 2026 (NCRP figures); Worldline India Digital Payments Report 1H 2025;
+# SBI Research on NPCI data, July 2025. The figures and their reading are collected in the PRISM-X research
+# note docs/research/2026-09-23-indian-payment-fraud-public-data.md (this repository, 23 September 2026).
+#
+# A target is either gated (the report says PASS or FAIL against a tolerance) or reported (the observed
+# value is printed next to the target with the reason it cannot be gated). Nothing here is a guess: where
+# the public figure covers every payment system and the generator covers cards only, the target is reported,
+# not gated, and the note says why.
+
+schema_version: "1.0.0"
+unit_definitions:
+  currency: "INR major units"
+  prevalence: "fraud transactions per transaction"
+  basis_points: "fraud value per 10,000 rupees of payment value"
+  share: "[0.0, 1.0]"
+
+profiles:
+  - id: "rbi-psi-2026-07"
+    region: "IN"
+    as_of: "2026-07"
+    scope: >
+      Card rail only: credit and debit card authorisations, which is what Prism Generator synthesises. UPI, IMPS,
+      PPI wallets, their ticket sizes and their fraud typologies are listed under out_of_scope so that
+      nobody reads a card stream as the Indian retail payment mix.
+    # PSI July 2026, Domestic Payment Frauds: 3.43 lakh frauds, Rs 458 crore, one fraud in every 80,847
+    # transactions, fraud-to-sales 0.142 basis points. The monthly series ran from about 1 in 50,000 in
+    # early 2023 to 1 in 100,000 to 120,000 in 2025 and back to 1 in 75,000 to 80,000 in mid 2026.
+    fraud_prevalence_per_transaction: 1.2369e-05
+    fraud_prevalence_range_2025_26: [8.3e-06, 1.25e-05]
+    demo_rate_policy: >
+      A batch small enough to inspect cannot hold one fraud in 80,847 rows. The CLI runs at the registry
+      rate unless --fraud-rate is given; the report then states the requested rate and the boost factor
+      (requested divided by registry), so a demo export is labelled as one.
+
+    targets:
+      - id: "fraud_prevalence"
+        statistic: "fraud rows divided by all rows"
+        target: 1.2369e-05
+        gate: false
+        reason_not_gated: "depends on the requested rate; the boost factor is the number to read"
+        source: "RBI PSI July 2026, Domestic Payment Frauds: one fraud in every 80,847 transactions"
+
+      - id: "fraud_value_share_bps"
+        statistic: "amount of fraud rows divided by amount of all rows, in basis points"
+        target: 0.142
+        gate: false
+        reason_not_gated: "scales with the requested prevalence"
+        source: "RBI PSI July 2026, Domestic Payment Frauds: fraud-to-sales 0.142 bps"
+
+      - id: "mean_fraud_amount_inr"
+        statistic: "mean amount of fraud rows"
+        target: 13353
+        tolerance_relative: 0.30
+        gate: false
+        reason_not_gated: "CPFIR covers every payment system, cards included; no card-only average is published"
+        source: "RBI PSI July 2026: Rs 458 crore over 3.43 lakh frauds"
+
+      - id: "fraud_cases_above_10000_share"
+        statistic: "share of fraud rows with amount above 10,000"
+        target: 0.45
+        tolerance_absolute: 0.15
+        gate: false
+        reason_not_gated: "NCRP figure across all rails, dominated by authorised push payments"
+        source: "RBI discussion paper, 9 April 2026: transactions above Rs 10,000 are about 45 percent of reported fraud cases"
+
+      - id: "fraud_value_above_10000_share"
+        statistic: "share of fraud amount in rows above 10,000"
+        target: 0.985
+        tolerance_absolute: 0.15
+        gate: false
+        reason_not_gated: "NCRP figure across all rails, dominated by authorised push payments"
+        source: "RBI discussion paper, 9 April 2026: 98.5 percent of fraud value sits above Rs 10,000"
+
+      - id: "fraud_value_above_50000_share"
+        statistic: "share of fraud amount in rows above 50,000"
+        target: 0.92
+        tolerance_absolute: 0.15
+        gate: false
+        reason_not_gated: "NCRP figure across all rails, dominated by authorised push payments"
+        source: "RBI discussion paper, 9 April 2026: about 92 percent of fraud value is above Rs 50,000"
+
+      - id: "mean_credit_card_ticket_inr"
+        statistic: "mean amount of legitimate rows on credit card products"
+        target: 3440
+        tolerance_relative: 0.25
+        gate: true
+        source: "RBI PSI July 2026, payment modes: credit cards 605 million transactions, Rs 2,08,186 crore"
+
+      - id: "mean_debit_card_ticket_inr"
+        statistic: "mean amount of legitimate rows on debit card products"
+        target: 3735
+        tolerance_relative: 0.25
+        gate: false
+        reason_not_gated: "the only debit product in spec/05 is the PMJDY financial-inclusion card; a mainstream debit product would let this gate"
+        source: "RBI PSI July 2026, payment modes: debit cards 102 million transactions, Rs 37,932 crore"
+
+    out_of_scope:
+      - what: "UPI share of retail payment volume"
+        figure: "about 85 percent by count in July 2026 (23,658 million UPI transactions); credit cards 2.3 percent, debit cards 0.4 percent, PPIs 3.5 percent, IMPS 1.4 percent"
+        source: "RBI PSI July 2026"
+      - what: "UPI ticket sizes"
+        figure: "Rs 1,263 overall (PSI); Rs 1,348 overall and Rs 592 for merchant payments (Worldline 1H 2025)"
+        source: "RBI PSI July 2026; Worldline"
+      - what: "UPI merchant versus person-to-person split"
+        figure: "merchant payments 64 percent of volume, 29 percent of value"
+        source: "SBI Research on NPCI data, July 2025"
+      - what: "Fraud typology by value"
+        figure: "investment and impersonation scams 76 percent of 2025 losses; authorised push payments, not card fraud"
+        source: "I4C via MHA, Lok Sabha question 452, 2 December 2025"
+      - what: "Fraud typology by count of complaints"
+        figure: "UPI fraud 47.25 percent of complaints; card and SIM-swap 11.27 percent"
+        source: "FCRF"
+      - what: "Geography"
+        figure: "Maharashtra 9.8 percent, Karnataka 5.5 percent, Uttar Pradesh 5.3 percent of UPI volume"
+        source: "NPCI via SBI Research"

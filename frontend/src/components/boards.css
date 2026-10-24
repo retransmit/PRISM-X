@@ -1,0 +1,69 @@
+.tabs {
+  display: flex; gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface);
+}
+.tabs__tab {
+  background: none; border: 1px solid var(--rule); color: var(--text-dim);
+  padding: var(--space-1) var(--space-3); border-radius: var(--radius); cursor: pointer;
+  font-family: var(--font-display); font-weight: 600; font-size: var(--step--1);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.tabs__tab:hover { color: var(--text); border-color: var(--text-dim); }
+.tabs__tab[aria-selected='true'] { color: var(--text); border-color: var(--text-dim); box-shadow: inset 0 -2px 0 var(--spec-cyan); }
+
+.stack { display: grid; gap: var(--space-5); }
+.layout--single { grid-template-columns: 1fr; max-width: 720px; }
+.region__head--split { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); }
+.placeholder { padding: var(--space-6); color: var(--text-dim); text-align: center; }
+
+/* Live log: a window on the audit log, newest line at the bottom. */
+.log {
+  margin: 0; padding: var(--space-3) var(--space-4);
+  height: 220px; overflow-y: auto;
+  font-family: var(--font-mono); font-size: var(--step--1); line-height: 1.6;
+  white-space: pre; color: var(--text-dim);
+}
+.log__line[data-alert='true'] { color: var(--risk-high); }
+.log[data-paused='true'] { box-shadow: inset 2px 0 0 var(--text-dim); }
+
+.decision { display: grid; gap: var(--space-3); margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--rule); }
+.decision__current { margin: 0; color: var(--text-dim); }
+.decision__note {
+  width: 100%; padding: var(--space-2) var(--space-3);
+  background: var(--ground); color: var(--text); border: 1px solid var(--rule); border-radius: var(--radius);
+  font-family: var(--font-body); font-size: var(--step-0);
+}
+.decision__actions { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+.decision__button {
+  background: none; border: 1px solid var(--text-dim); color: var(--text);
+  padding: var(--space-2) var(--space-4); border-radius: var(--radius); cursor: pointer;
+  font-family: var(--font-body); font-size: var(--step-0);
+}
+.decision__button:hover { border-color: var(--text); }
+.decision__button:disabled { opacity: 0.5; cursor: default; }
+.decision__error { margin: 0; color: var(--risk-high); }
+
+.detail { padding: var(--space-4); }
+
+/* The one surface with a different silhouette: it stands for a phone. */
+.phone__frame { display: flex; justify-content: center; padding: var(--space-5); }
+.phone {
+  width: 100%; max-width: 360px;
+  background: var(--ground); border: 1px solid var(--rule); border-radius: 16px;
+  padding: var(--space-4);
+}
+.phone__title { margin: 0 0 var(--space-3); font-size: var(--step-1); font-weight: 500; }
+.phone__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.phone__item { padding: var(--space-3); background: var(--surface); border-radius: var(--radius); }
+.phone__item[data-held='true'] { box-shadow: inset 2px 0 0 var(--risk-high); }
+.phone__row { display: flex; justify-content: space-between; gap: var(--space-3); }
+.phone__row--dim { color: var(--text-dim); font-size: var(--step--1); margin-top: var(--space-1); }
+.phone__held { margin-top: var(--space-3); display: grid; gap: var(--space-3); }
+.phone__reason { margin: 0; line-height: 1.45; }
+.phone__recorded { margin: 0; color: var(--text-dim); }
+#card-select {
+  background: var(--ground); color: var(--text); border: 1px solid var(--rule); border-radius: var(--radius);
+  padding: var(--space-1) var(--space-2); font-family: var(--font-mono); font-size: var(--step--1);
+}

@@ -1,0 +1,432 @@
+# ==============================================================================
+# Canonical Specification 18: Camera-Ready Publication Outputs & Benchmark Reporting
+# ==============================================================================
+# Grounding:
+#   - NeurIPS Datasets and Benchmarks Track (OpenXAI [Agarwal 2022], BAF [Jesus 2022])
+#   - JMLR Machine Learning Open Source Software (Quantus [Hedström 2023])
+#   - IEEE S&P / ACM CCS camera-ready specifications (IEEE conference template,
+#     ACM master article template)
+#   - Operational Fraud Detection (Dal Pozzolo 2018, Carcillo 2021, Le Borgne 2021)
+#   - Dollar-Metric Fraud & Temporal SHAP Auditing (Chenyu Wu 2026)
+# ==============================================================================
+
+version: "1.0.0"
+slice_id: "slice-18-camera-ready-benchmark-reporting"
+
+# ------------------------------------------------------------------------------
+# 1. Publication Graphical Layout & Typography Presets
+# ------------------------------------------------------------------------------
+publication_styles:
+  ieee:
+    single_column_width_in: 3.50
+    double_column_width_in: 7.00
+    default_height_in: 2.80
+    dpi: 300
+    vector_format: "pdf"
+    font_family: "sans-serif"
+    font_sans_serif: ["DejaVu Sans", "Helvetica", "Arial"]
+    font_size_pt:
+      title: 10
+      axis_label: 9
+      tick_label: 8
+      legend: 8
+      annotation: 7
+
+  acm:
+    single_column_width_in: 3.33
+    double_column_width_in: 6.83
+    default_height_in: 2.70
+    dpi: 300
+    vector_format: "pdf"
+    font_family: "sans-serif"
+    font_sans_serif: ["DejaVu Sans", "Helvetica", "Arial"]
+    font_size_pt:
+      title: 10
+      axis_label: 9
+      tick_label: 8
+      legend: 8
+      annotation: 7
+
+  neurips:
+    single_column_width_in: 5.50
+    double_column_width_in: 5.50
+    default_height_in: 3.20
+    dpi: 300
+    vector_format: "pdf"
+    font_family: "serif"
+    font_sans_serif: ["DejaVu Serif", "Times New Roman", "Computer Modern"]
+    font_size_pt:
+      title: 10
+      axis_label: 9
+      tick_label: 8
+      legend: 8
+      annotation: 7
+
+# ------------------------------------------------------------------------------
+# 2. Universal Colorblind-Safe Palette (Paul Tol Muted/Bright)
+# ------------------------------------------------------------------------------
+color_palette:
+  primary_blue: "#4477AA"       # STRICT_DELAY_GAP / Main Model
+  light_blue: "#66CCEE"         # Alternate / Auxiliary Model
+  safe_green: "#228833"         # Alert Precision / Cost Savings
+  warning_amber: "#CCBB44"      # Drift Warning / SCM Baseline
+  alert_red: "#EE6677"          # ASSUME_NEGATIVE / Ground Truth SCM / Drift Alarm
+  accent_purple: "#AA3377"      # Card Precision CP@K
+  neutral_grey: "#BBBBBB"       # Gridlines / Shading
+
+# ------------------------------------------------------------------------------
+# 3. Four-Pillar Certification Acceptance Thresholds
+# ------------------------------------------------------------------------------
+certification_thresholds:
+  pillar_1_data_fidelity:
+    wasserstein_amount_log_max: 0.150       # 1D Wasserstein distance on log10(1 + amount)
+    wasserstein_arrival_log_max: 0.150      # 1D Wasserstein distance on log10(1 + delta_t)
+    js_divergence_mcc_max: 0.050            # Jensen-Shannon divergence on MCC distribution
+    js_divergence_channel_max: 0.050        # Jensen-Shannon divergence on POS entry mode / channel
+    spearman_frobenius_error_max: 1.250     # Frobenius error between synthetic and empirical correlation matrices
+
+  pillar_2_adversarial_privacy:
+    # Memorisation is measured as a ratio, not as an absolute distance. An absolute
+    # floor in min-max normalised feature space is unit-dependent and cannot fail for a
+    # generator that emits copies of common records: 5% of a well-behaved stream sits
+    # arbitrarily close to another record of that stream. The ratio compares the
+    # synthetic-to-real distance with the real-to-real distance measured the same way,
+    # so 1.0 means "synthetic records are as far from real ones as real ones are from
+    # each other" and 0.0 means "synthetic records are copies of real records".
+    dcr_reference_ratio_min: 0.500          # dimensionless: DCR_0.05(synth->real) / DCR_0.05(real->real)
+    nndr_mean_min: 0.500                    # Nearest Neighbor Distance Ratio mean
+    nndr_mean_max: 0.980                    # NNDR upper bound
+    mia_attack_roc_auc_max: 0.580           # Membership inference attack ROC-AUC ceiling
+    evasion_rate_macro_mean_max: 0.700      # Ceiling on the approved share of fraud records (naming note in 3a)
+
+  pillar_3_operational_streaming:
+    min_days_evaluated: 2                   # Minimum test windows evaluated
+    min_prequential_pr_auc: 0.150           # Minimum prequential PR-AUC on forward stream
+    min_alert_precision_at_k: 0.050         # Minimum P@K for active investigator capacity
+    min_card_precision_at_k: 0.050          # Minimum CP@K (unique compromised cards)
+    min_net_cost_savings_ratio: 0.050       # Minimum financial cost savings over silent approval
+    drift_alarm_psi_threshold: 0.250        # Severe concept shift alarm threshold
+
+  pillar_4_causal_xai_fidelity:
+    min_spearman_rank_rho: 0.600            # Rank correlation with exact SCM ground truth
+    min_pearson_linear_r: 0.550             # Linear correlation with SCM ground truth
+    min_top_3_precision: 0.600              # Precision@3 against true causal support set
+    max_relative_attribution_error: 0.450   # Normalized L2 attribution error ceiling
+    min_causal_faithfulness: 0.500          # Score decay correlation under counterfactual replacement
+
+# ------------------------------------------------------------------------------
+# 3a. Threshold provenance (audited 2026-10-16)
+# ------------------------------------------------------------------------------
+# Every number above was audited against its basis on 2026-10-16. The audit found
+# no threshold that was moved to change a verdict; it records where each number
+# comes from so a scorecard row can be read with the right weight.
+#
+# [calibrated-from-data] The two Pillar-1 continuous limits are not taken from any
+#   paper: they are the `calibration_quantile` of bootstrap real-to-real
+#   Wasserstein distances drawn from the active corpus at the graded run's own
+#   sample size (section 3b below). The flat 0.150 values above are the
+#   pre-2026-10-15 fallbacks, kept so older scorecards reproduce. Method: two-sample
+#   Wasserstein bootstrap calibration (cf. Ramdas, Trillos & Cuturi, "On
+#   Wasserstein Two-Sample Testing", Entropy 19(2):47, 2017).
+#
+# [industry-convention] `drift_alarm_psi_threshold: 0.25` follows the credit-risk
+#   rule of thumb (PSI < 0.10 little change, 0.10-0.25 moderate, > 0.25 major:
+#   Yurdakul 2018, "Statistical Properties of the Population Stability Index",
+#   WMU dissertation; the rule is a convention, criticised on distributional
+#   grounds in arXiv:2303.01227). It is not a theorem about this simulator.
+#
+# [published-form, design-choice-number] Pillar 2's privacy metrics measure
+#   constructs from the synthetic-data privacy literature (Giomi et al. 2023,
+#   "Anonymeter", PoPETs; van Breugel et al. 2023, "Membership Inference Attacks
+#   against Synthetic Data", AISTATS; SDMetrics' DCROverfittingProtection
+#   holdout-ratio convention; NNDR per arXiv:2501.03941). That literature publishes
+#   no universal numeric safe threshold -- DCR-class metrics are explicitly known
+#   to miss some leakage (arXiv:2505.01524) -- so the numbers are this repo's
+#   design choices against the published conventions:
+#     - DCR ratio 0.5: "at least half as far from real as real is from itself";
+#       ratio form keeps the units dimensionless (see the note above the key).
+#     - NNDR band [0.5, 0.98]: 0.5 bounds suspicious closeness, 0.98 rejects
+#       degenerate collapse onto single neighbours.
+#     - MIA ROC-AUC 0.58: 0.5 is the no-advantage reference; the empirical
+#       ceilings reported for fully-synthetic-data MIA attacks are attack
+#       precision ~0.55-0.64 (Zhang et al. 2021, PMC8766950). 0.58 keeps the
+#       gate above seed noise without pretending to be a privacy guarantee.
+#     - evasion <= 0.70: approved share of fraud records. Naming drift, recorded
+#       not hidden: the field name (`evasion_rate_macro_mean`) and this section's
+#       earlier wording ("macro-average across attack families") describe a
+#       family-level mean, but the value has been record-weighted since the metric
+#       was added (3c6e6d1) and `test_evasion_rate_counts_approved_fraud` pins the
+#       record share. No family unit is defined anywhere (scenario tag, syndicate
+#       and playbook registry are all candidates) and the readings differ
+#       materially (1,000-card seed 42: record share 0.7704 vs per-tag mean
+#       0.6730), so the 0.70 design choice stands against the record share and the
+#       drift stays visible rather than resolved by choosing a grouping after the
+#       fact.
+#
+# [design-choice-only] `js_divergence_* 0.05`, `spearman_frobenius_error_max 1.25`,
+#   Pillar 3's operational floors (`min_days_evaluated`, prequential PR-AUC 0.15,
+#   P@K/CP@K 0.05, net-cost-savings 0.05) and all five Pillar-4 numbers have no
+#   literature anchor for the value. OpenXAI (Agarwal et al. 2022) and Quantus
+#   (Hedstroem et al. 2023) standardise metric definitions, not acceptance
+#   thresholds; the JS and Frobenius tolerances are internal consistency bars
+#   against this repo's own cohort schema. The operational floors are benchmark
+#   policy (prequential form per Dawid 1984; cost-sensitive evaluation per
+#   Dal Pozzolo et al. 2018 TNNLS and Wu 2026, arXiv:2607.14686).
+#
+# Pillar-4 measurability, revised 2026-10-16 (n=2,000, US, seed 42, reproducible from
+# the graded run; see reports/certification_grade_stability.md and spec/21
+# `pillar_4_attribution_protocol`): the shipped protocol scored the one-feature
+# counterfactual-drop attribution of a binary classifier trained on `is_fraud` against
+# the exact Shapley decomposition of the HeuristicBankScorer risk score -- a different
+# function (score AUC 0.554 vs the learner's 0.967 on the same batch), a different
+# reference point and different units. Measured concordance r=0.234, RAE=1.283 (r=-0.054,
+# RAE=1.425 at the 2026-10-16 graded re-run after the ticket recalibration); re-training
+# the learner on the scorer's own target (the most defensible same-object learner
+# configuration available) moved it only to r=0.442, RAE=1.131. Neither cleared
+# r>=0.55 / RAE<=0.45, and no published threshold exists to appeal to: the two
+# continuous Pillar-4 gates test attribution-operator and target agreement, not
+# synthesizer quality. The maintainer decision recorded above was taken as a PROTOCOL
+# REVISION, not a quiet threshold move: both sides now explain the same object at the
+# same reference point -- the HeuristicBankScorer approval probability over the eleven
+# explained columns, with v(S) = mean over a 100-row background sample of the batch's
+# training window, exact interventional Shapley as the ground truth (subset
+# enumeration over 2^11 coalitions, efficiency identity asserted per record), and
+# budgeted KernelSHAP (nsamples=256, l1_reg=0.0) as the graded explainer on the same
+# function and the same background. Measured at the graded seed: Kendall tau 0.906,
+# Spearman rho 0.963, Pearson r 0.999, P@3 1.000, RAE 0.038, faithfulness 0.899 --
+# every Pillar-4 gate clears with margin on the operator's fidelity to the exact
+# values, which is what the row claims to measure (OpenXAI and Quantus standardise
+# metric definitions, not acceptance thresholds).
+
+# ------------------------------------------------------------------------------
+# 3b. Pillar 1 real-corpus calibration reference (added 2026-10-15)
+# ------------------------------------------------------------------------------
+# Measurement (2026-10-15, reports/pillar1_external_corpus_scorecard.md): run with
+# the grader's own function, real card traffic fails the then-thresholds harder
+# than the synthetic stream being graded:
+#
+#   log10(1+amount) W1  limit 0.150 | control 0.0000 PASS | ours n=1,500 0.1508 FAIL | ULB real 0.3745 FAIL
+#   log10(1+dt-seconds) W1 limit 0.150 | control 0.0056 PASS | ours n=1,500 0.2302 FAIL | ULB real 0.1716 FAIL
+#
+# A sampler of the hardcoded `lognormal(mu=3.75, sigma=0.85)` passes both gates
+# at 0.0000 while being nothing like card traffic, and a real corpus fails both.
+# The two continuous gates therefore no longer measure realism; they measure
+# distance to that hardcoded draw. This section re-derives them:
+#
+# REFERENCE: real card traffic, not a parametric draw. The continuous gates
+# compare the graded log samples against a deterministic draw from the corpus
+# below (converted to USD at the recorded constant). The corpus hash is
+# verified on every load; a hash mismatch or an absent file falls back to the
+# previous embedded reference, and the scorecard's `reference_note` names which
+# was used so a reported number can never be read with the wrong provenance.
+#
+# LIMITS: size-corrected, not static. W1's expectation falls with sample size
+# (measured: our n=1,500 inter-arrival score 0.2295 FAIL moves to 0.1161 PASS at
+# n=50,000 with unchanged data), so the gate limit is the `calibration_quantile`
+# of bootstrap real-to-real W1 computed at the graded run's own sample size. A
+# real corpus graded against itself passes at ~quantile rate by construction;
+# a control drawn from the old hardcoded reference fails, because it is not
+# real traffic. That inversion is the point.
+#
+# KNOWN LIMITS, stated: the ACTIVE corpus (`active_corpus` below) is IEEE-CIS /
+# Vesta -- 590,540 real card-not-present transactions over 182 days (2019),
+# USD-native, timestamped to the whole second (so arrival shape is second-gridded
+# and not a microsecond clock). Its predecessor, ULB (September 2013, one
+# European bank, two days, EUR), is retained below ONLY for reproducing the
+# 2026-10-10 scorecard and is no longer the gating reference. Both are single
+# collections, not a card-rail panel with issuer/geography breakdowns, so the
+# gates are directional -- distance to whichever corpus `active_corpus` names --
+# and every reported number prints that corpus's identity and clock resolution
+# (see `clock_resolution_note`). BAF and the Fraud Dataset Benchmark were
+# rejected as references because they are privacy-preserving *synthetic* suites.
+pillar_1_real_reference:
+  active_corpus: "ieee_cis"          # upgraded from ULB on 2026-10-15; ULB stays recorded below for the comparative scorecard
+  ieee_cis:
+    corpus_name: "IEEE-CIS Fraud Detection (Vesta card-not-present transactions, 590,540 rows, 182 days)"
+    corpus_kind: "csv"
+    corpus_path: "corpora/ieee_cis/train_transaction.csv"
+    corpus_sha256: "3a5c83ab6b3cc13dcabe5ffa9f522307fd5f7f7b6e6f6a60c32284ca6283d642"
+    corpus_source: "Kaggle competition ieee-fraud-detection (train_transaction.csv, fetched 2026-10-15 via the Kaggle competition API with the project owner's account)"
+    measured: "fraud rate 3.4990%, span 181.9992 days, median positive dt 14 s, dt min 1 s, median amount 68.769 USD, mean amount 135.027 USD (columns TransactionDT / TransactionAmt / isFraud only)"
+    amount_usd_per_curve_unit: 1.0   # the corpus is USD-denominated; no conversion is applied
+    legit_only_deltas: true
+    clock_resolution_note: "IEEE-CIS TransactionDT is whole-second gridded (min positive dt 1 s, median 14 s); arrival shape is compared on a second clock, not a microsecond one"
+  ulb:
+    corpus_name: "ULB Credit Card Fraud Detection (European cardholders, September 2013) ,  superseded for gating, kept for the 2026-10-10 scorecard reproduction"
+    corpus_kind: "arff"
+    corpus_path: "corpora/creditcard.arff"
+    corpus_sha256: "4fcde0f8cc38ba4dae26c8913f33056126ebb930bc2ba04451e1f5110369fdef"
+    amount_usd_per_curve_unit: 1.3281
+    fx_grounding: "ECB annual average 2013 (Eurostat ert_bil_eur_a / FRED AEXUSEU)"
+    legit_only_deltas: true
+    clock_resolution_note: "ULB Time is whole-second; 159,836 zero-length inter-arrivals are dropped by the dt > 0 filter, leaving a coarse grid"
+  calibration_quantile: 0.99
+  calibration_draws: 200
+  provenance_note: "amount pool: legit rows converted to USD at the per-corpus constant; arrival pool: positive dt over legit-only pairs, rate-invariantly normalised by each sample's own median dt"
+  region_scope: "US"
+  # scope: Vesta aggregates card-not-present traffic from its global merchant base
+  # in USD. It is the reference for US runs because the pinned protocol is US.
+  # The known limits (one collection, CNP-only, 1-second clock) are stated in the
+  # section header above and printed in each scorecard's reference_note.
+
+# ------------------------------------------------------------------------------
+# 4. Evaluation Protocol: the exact run a certification grade is defined over
+# ------------------------------------------------------------------------------
+# Measured 2026-10-10 over eleven runs of `benchmark --unified` that differed only
+# in --seed: the same command reported between 4 and 9 violations (reports/
+# certification_grade_stability.md). Thresholds alone do not define a grade when
+# several gates rest on small denominators -- 2 to 8 streaming test days, and a
+# pillar-2 evasion share computed over ~160 fraud records (one record flips it by
+# ~0.006, and across recorded sweeps it has spanned 0.44-0.83). The
+# protocol below pins the run so a grade can be reproduced and compared; a run that
+# deviates from it is reported as OFF-PROTOCOL instead of producing a grade that
+# looks comparable.
+evaluation_protocol:
+  region: "US"
+  n_transactions: 2000
+  seed: 42
+  # Seeds the stability summary averages over: the protocol seed plus four
+  # consecutive offsets. Five runs is a maintainer choice (category (b) in
+  # spec/07's taxonomy), made because each run costs about 3 seconds, so the range
+  # is cheap to report and impossible to mistake for a single-seed result.
+  stability_seeds: [42, 0, 1, 2, 3]
+
+  # As-run stream shape. Grounding: region, n_transactions and seed are the
+  # command README documents (`prism_generator benchmark -n 2000 --model lightgbm --seed 42`).
+  time_span_days: 12
+
+  # Two-Tier Evaluation Protocol Resolution:
+  # The historical divergence between spec/17 and the CI test stream is resolved into
+  # two formally recognized tiers:
+  #   - protocol_fast: CI/CD, rapid unit testing, developer iteration (12d stream, 3d train, 1.5d delay, K=15)
+  #   - protocol_full: spec/17-compliant camera-ready publications (75d stream, 30d train, 14d delay, K=50)
+  protocol_tier: "protocol_fast"  # default active tier: protocol_fast | protocol_full
+  w_train_days: 3.0
+  w_test_days: 1.0
+  delta_delay_days: 1.5
+  k_daily: 15
+
+# Two-tier protocol registry
+evaluation_protocols:
+  protocol_fast:
+    description: "CI/CD and rapid regression suite"
+    region: "US"
+    n_transactions: 2000
+    # Revision 2026-10-16: n_cards 80 -> 162. The roster holds one Fed-average
+    # adult's card activity per card: spec/02's `fed_empirical_benchmark_marginals`
+    # put US card use at 31.4 transactions per adult per month, so a batch of n
+    # transactions over T days holds n / (T * 31.4/30.44) cards -- 162 at this
+    # protocol's n=2000, T=12 (1.03 tx/card/day). It replaces a hard-coded 80
+    # (2.08 tx/card/day, 2.0x the Fed marginal) and a short-lived 1,000-card roster
+    # (0.17/day, 6.1x below it). The arrival-shape gate compares a synthetic stream
+    # to a real (Vesta) portfolio stream at matched sample size, rate-invariantly;
+    # an 80-card roster's overnight hours hold under one record, so its extreme
+    # inter-arrivals are exponential tail rather than arrival shape, and the
+    # normalisation cannot remove that. Measured over the five stability seeds
+    # (n=2000, 12d, arrival limit 0.0446):
+    #   arrival W1   80: 0.0445 0.0553 0.0414 0.0389 0.0539 -> 3/5 pass
+    #               162: 0.0345 0.0346 0.0397 0.0310 0.0296 -> 5/5 pass
+    #              1000: 0.0244 0.0263 0.0211 0.0254 0.0192 -> 5/5 pass
+    #   evasion      80: 0.44-0.68 (5/5)  162: 0.64-0.71 (4/5)  1000: 0.69-0.77 (1/5)
+    #   MIA          80: 0.49-0.62 (3/5)  162: 0.48-0.58 (5/5)  1000: 0.48-0.54 (5/5)
+    #   prequential  80: 0.09-0.15 (1/5)  162: 0.08-0.20 (2/5)  1000: 0.06-0.17 (2/5)
+    #   net savings  80: 5/5              162: 5/5              1000: 3/5
+    # Per-seed gate violations (pillars 1-3, same pipeline as the graded run):
+    #   80 cards [1,2,3,1,3] | 162 cards [0,1,2,1,2] | 1000 cards [3,1,4,1,1].
+    # 162 minimises total violations of the three and rests on the Fed rate; the
+    # movers that still flip (prequential, evasion, MCC JS -- the last at seeds 1
+    # and 3 at every density) are small-denominator statistics, documented in
+    # reports/certification_grade_stability.md rather than smoothed away. Realised
+    # span at 162 cards lands at 10.3-11.6d, so the streaming evaluator keeps 5-7
+    # test windows where 1,000 cards left 3-4.
+    # On this revision the pinned run grades TIER-1_GOLD with 0 violations; the
+    # five pinned seeds grade TIER-1_GOLD x1, TIER-2_SILVER x2, NON_CERTIFIED_FAIL
+    # x2 (violation counts 0-2).
+    n_cards: 162
+    seed: 42
+    stability_seeds: [42, 0, 1, 2, 3]
+    time_span_days: 12.0
+    w_train_days: 3.0
+    w_test_days: 1.0
+    delta_delay_days: 1.5
+    k_daily: 15
+    badge: "REGRESSION (PROTOCOL_FAST)"
+
+  protocol_full:
+    description: "Camera-ready publications and spec/17 compliance releases"
+    region: "US"
+    n_transactions: 100000
+    n_cards: 1000
+    seed: 42
+    stability_seeds: [42, 0, 1, 2, 3]
+    time_span_days: 75.0
+    w_train_days: 30.0
+    w_test_days: 1.0
+    delta_delay_days: 14.0
+    k_daily: 50
+    badge: "CERTIFIED (PROTOCOL_FULL)"
+
+# ------------------------------------------------------------------------------
+# 5. Count, density and duration are one equation, not three free knobs
+# ------------------------------------------------------------------------------
+# The CLI exposed -n and --days as if they were independent, and --days was documented as
+# "Simulation duration in days". They are not independent, and this section exists because
+# they were silently coupled for the whole life of the project.
+#
+#   N  = density x T                          (count from rate over a duration)
+#   density = per-card rate x active cards    (per-card rate from spec/02 persona volumes)
+#
+# So N = per-card rate x active cards x T. Three quantities are pinned by the user -- -n,
+# --days, and the persona rates -- while the active card count is EMERGENT: fraud freezes
+# cards, and how many depends on how many distinct cards the adversary strikes. One equation
+# with one free variable means the slack must appear somewhere, and it appears in T.
+#
+# Measured at seed 42, region US, cards=1000, n=100000, days=30, fraud 0.02,
+# adversary_mode=intent, validated_card_follow_up p=0.58 -- the exact `prism_generator generate`
+# command that produced the published dataset, not a direct engine call, because
+# adversary_mode changes the outcome materially. There the identity closes to the row
+# with no residual:
+#
+#   per-card rate   3.077 tx per ACTIVE card-day
+#   active cards    31,858 card-days realised against 46,673 possible
+#                   (68% -- fraud struck 720 of 1000 cards and froze 533 of them)
+#   3.077 x 31,858 = 98,042  ==  the 98,042 legitimate rows actually produced
+#                                 (delta 0.000000, computed in double precision)
+#
+# Therefore the realised span was 46.67 days, not 30: with 68% of the population generating,
+# delivering 100,000 rows at the spec'd per-card rate simply takes longer. This is arithmetic,
+# not a simulator defect -- the per-card rate is correct and the freeze behaviour is spec'd
+# (cohort vigilance_weights, spec/02).
+#
+# The span is not tunable to 30 for free: raising the fraud-concentration value shortens it
+# (spec/07 measured 59.54 d at p=0.40, 46.67 d at p=0.58 and 41.80 d at p=0.70) but every
+# value past 0.58 breaks a gate -- leakage, channel coverage, calibration or an anti-vacuity
+# precondition -- which is why 0.58 is the ceiling. A default-mode (non-intent) call gives
+# 48.52 d at p=0.40, which is why every figure quoted here and in spec/07 names the
+# adversary_mode it came from.
+#
+# Consequences, all of which are now stated in the interface rather than left implicit:
+#
+#   - `-n` and `--days` jointly FIX density as n/days. Count alone cannot express "how many
+#     transactions happen in a day"; only count divided by duration can.
+#   - `--density` was added so tx/day can be chosen directly, with n = density x days following
+#     from it. That is the knob matching "replicate the nation's normal transaction density".
+#   - `generate` now prints a density report giving the requested and the realised span and
+#     density together, and explains the divergence in whichever direction it went: frozen cards
+#     when the span EXCEEDS the request, per-card first-arrival offsets when it falls SHORT.
+#   - You may pin persona rates plus ONE of {-n, --days}. Pinning both, and expecting the span
+#     to match, over-constrains the model by exactly one degree of freedom.
+#
+# OPEN: whether the default should be count-exact (as now, which keeps the published 100k-row
+# contract reproducible) or span-exact (honour --days and let the row count fall out at roughly
+# 90k). Changing the default changes every published artefact, so it is a decision, not a
+# cleanup.
+generate_run_dimensions:
+  identity: "N = density x days, density = per_card_rate x active_cards"
+  active_cards_are_emergent: true
+  why: "fraud freezes cards; the count is held, so the span absorbs the loss of generating capacity"
+  knobs:
+    n: "row count (the stopping rule)"
+    days: "pacing horizon; with -n it fixes density = n/days"
+    density: "transactions per day; overrides -n so n = density x days"
+  reporting: "generate prints requested vs realised span and density on every run"

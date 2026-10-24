@@ -1,0 +1,17 @@
+{
+  "n_total": 284807,
+  "n_normal": 284315,
+  "n_fraud": 492,
+  "fraud_rate": 0.001727485630620034,
+  "imbalance_ratio": 577.8760162601626,
+  "median_amount_fraud": 9.25,
+  "median_amount_normal": 22.0,
+  "mean_amount_fraud": 122.21132113821139,
+  "mean_amount_normal": 88.29102242231328,
+  "max_amount_fraud": 2125.87,
+  "figures": [
+    "E:\\Programs\\prism-fraud\\reports\\figures\\ulb\\class_balance.png",
+    "E:\\Programs\\prism-fraud\\reports\\figures\\ulb\\amount_distribution.png",
+    "E:\\Programs\\prism-fraud\\reports\\figures\\ulb\\temporal_pattern.png"
+  ]
+}

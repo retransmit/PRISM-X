@@ -1,0 +1,931 @@
+{
+  "models": [
+    {
+      "model": "autoencoder",
+      "label_mode": "full",
+      "n_folds": 20,
+      "n_budget_alone": 0,
+      "pr_auc": {
+        "mean": 0.19318239969741272,
+        "low": 0.1656984134141671,
+        "high": 0.22329652526083954,
+        "n": 20
+      },
+      "recall": {
+        "mean": 0.14423171570284501,
+        "low": 0.11483390727367906,
+        "high": 0.17609351111510793,
+        "n": 20
+      },
+      "precision": {
+        "mean": 0.7819049232692237,
+        "low": 0.6970308322906537,
+        "high": 0.8646773546917851,
+        "n": 20
+      },
+      "fpr_per_10k": {
+        "mean": 2.4062828500836497,
+        "low": 1.3890497588595625,
+        "high": 3.45789267546907,
+        "n": 20
+      },
+      "adjusted_precision_at_prevalence": {
+        "mean": 0.2099967850756861,
+        "low": 0.060116972924623854,
+        "high": 0.40897068892344546,
+        "n": 20
+      },
+      "share_of_fraud_value_caught": {
+        "mean": 0.8211700599947516,
+        "low": 0.7725188937511865,
+        "high": 0.8637234379273964,
+        "n": 20
+      },
+      "share_above_floor_caught": {
+        "mean": 0.8891037277420913,
+        "low": 0.8444410981401258,
+        "high": 0.9242707803482035,
+        "n": 20
+      },
+      "alerts_per_day": {
+        "mean": 1.1624999999999999,
+        "low": 0.9125,
+        "high": 1.4200624999999998,
+        "n": 20
+      },
+      "alerts_per_day_over_capacity": {
+        "mean": 0.023250000000000003,
+        "low": 0.018250000000000006,
+        "high": 0.028401250000000003,
+        "n": 20
+      },
+      "cost_total_inr_per_10k": {
+        "mean": 167433.7936074611,
+        "low": 147012.7038817807,
+        "high": 190468.47987709902,
+        "n": 20
+      },
+      "scoring_p99_ms": {
+        "mean": 1.1223805008994532,
+        "low": 1.0958175448644396,
+        "high": 1.1498718640445076,
+        "n": 20
+      },
+      "explain_p99_ms": {
+        "mean": 1.2745485998020738,
+        "low": 1.2356063948369411,
+        "high": 1.3103511518387672,
+        "n": 20
+      }
+    },
+    {
+      "model": "autoencoder",
+      "label_mode": "operational",
+      "n_folds": 20,
+      "n_budget_alone": 12,
+      "pr_auc": {
+        "mean": 0.1626210592183506,
+        "low": 0.13555054971136538,
+        "high": 0.1951157721585896,
+        "n": 20
+      },
+      "recall": {
+        "mean": 0.04764959468487741,
+        "low": 0.028470400838808457,
+        "high": 0.06955741260871869,
+        "n": 20
+      },
+      "precision": {
+        "mean": 0.5630357142857143,
+        "low": 0.37818303571428574,
+        "high": 0.7420223214285712,
+        "n": 20
+      },
+      "fpr_per_10k": {
+        "mean": 1.1337203067594963,
+        "low": 0.42780315981626893,
+        "high": 1.940542621630826,
+        "n": 20
+      },
+      "adjusted_precision_at_prevalence": {
+        "mean": 0.3519241262145655,
+        "low": 0.15212252852145286,
+        "high": 0.5525054243169718,
+        "n": 20
+      },
+      "share_of_fraud_value_caught": {
+        "mean": 0.3453988406526848,
+        "low": 0.2197432597145956,
+        "high": 0.4771066771706,
+        "n": 20
+      },
+      "share_above_floor_caught": {
+        "mean": 0.37783580499255687,
+        "low": 0.23587458343323398,
+        "high": 0.525332411617937,
+        "n": 20
+      },
+      "alerts_per_day": {
+        "mean": 0.425,
+        "low": 0.25749999999999995,
+        "high": 0.5900624999999997,
+        "n": 20
+      },
+      "alerts_per_day_over_capacity": {
+        "mean": 0.008500000000000002,
+        "low": 0.00515,
+        "high": 0.011801249999999992,
+        "n": 20
+      },
+      "cost_total_inr_per_10k": {
+        "mean": 726954.3282162534,
+        "low": 557881.1864009992,
+        "high": 904973.5398760109,
+        "n": 20
+      },
+      "scoring_p99_ms": {
+        "mean": 1.0973660495947115,
+        "low": 1.0702026848273818,
+        "high": 1.1250156970501848,
+        "n": 20
+      },
+      "explain_p99_ms": {
+        "mean": 1.3146454499947136,
+        "low": 1.2739776670159695,
+        "high": 1.3535151784190016,
+        "n": 20
+      }
+    },
+    {
+      "model": "isolation_forest",
+      "label_mode": "full",
+      "n_folds": 20,
+      "n_budget_alone": 0,
+      "pr_auc": {
+        "mean": 0.017872777437969306,
+        "low": 0.016026102103760428,
+        "high": 0.019856171377612662,
+        "n": 20
+      },
+      "recall": {
+        "mean": 0.0003144654088050315,
+        "low": 0.0,
+        "high": 0.0009433962264150945,
+        "n": 20
+      },
+      "precision": {
+        "mean": 0.005,
+        "low": 0.0,
+        "high": 0.015000000000000003,
+        "n": 20
+      },
+      "fpr_per_10k": {
+        "mean": 0.4633037165279445,
+        "low": 0.0,
+        "high": 1.0404096157277891,
+        "n": 20
+      },
+      "adjusted_precision_at_prevalence": {
+        "mean": 1.1109024027159899e-05,
+        "low": 0.0,
+        "high": 3.3327072081479696e-05,
+        "n": 20
+      },
+      "share_of_fraud_value_caught": {
+        "mean": 0.0015658804236483713,
+        "low": 0.0,
+        "high": 0.004697641270945114,
+        "n": 20
+      },
+      "share_above_floor_caught": {
+        "mean": 0.0016696677375082768,
+        "low": 0.0,
+        "high": 0.005009003212524831,
+        "n": 20
+      },
+      "alerts_per_day": {
+        "mean": 0.06000000000000001,
+        "low": 0.0,
+        "high": 0.1375,
+        "n": 20
+      },
+      "alerts_per_day_over_capacity": {
+        "mean": 0.0012000000000000001,
+        "low": 0.0,
+        "high": 0.00275,
+        "n": 20
+      },
+      "cost_total_inr_per_10k": {
+        "mean": 1111831.614204146,
+        "low": 943107.7231475218,
+        "high": 1291720.5379012835,
+        "n": 20
+      },
+      "scoring_p99_ms": {
+        "mean": 18.218340848390653,
+        "low": 17.626002437643002,
+        "high": 18.88549138133203,
+        "n": 20
+      },
+      "explain_p99_ms": {
+        "mean": 4.364192050146812,
+        "low": 4.200389786047344,
+        "high": 4.575415268567667,
+        "n": 20
+      }
+    },
+    {
+      "model": "isolation_forest",
+      "label_mode": "operational",
+      "n_folds": 20,
+      "n_budget_alone": 12,
+      "pr_auc": {
+        "mean": 0.017872777437969306,
+        "low": 0.016026102103760428,
+        "high": 0.019856171377612662,
+        "n": 20
+      },
+      "recall": {
+        "mean": 0.006583776388228298,
+        "low": 0.0034158337980214368,
+        "high": 0.01000122671185519,
+        "n": 20
+      },
+      "precision": {
+        "mean": 0.060789072039072044,
+        "low": 0.030622023809523807,
+        "high": 0.09729910714285714,
+        "n": 20
+      },
+      "fpr_per_10k": {
+        "mean": 3.399026046592237,
+        "low": 1.9212426727364762,
+        "high": 5.030753289459555,
+        "n": 20
+      },
+      "adjusted_precision_at_prevalence": {
+        "mean": 0.00018431237672996632,
+        "low": 8.631227166428803e-05,
+        "high": 0.0003031464058504471,
+        "n": 20
+      },
+      "share_of_fraud_value_caught": {
+        "mean": 0.030581437496738667,
+        "low": 0.012446719960503764,
+        "high": 0.05313583691935806,
+        "n": 20
+      },
+      "share_above_floor_caught": {
+        "mean": 0.03314484007573507,
+        "low": 0.013542598660424694,
+        "high": 0.05796203718639318,
+        "n": 20
+      },
+      "alerts_per_day": {
+        "mean": 0.4574999999999999,
+        "low": 0.2625,
+        "high": 0.6675624999999997,
+        "n": 20
+      },
+      "alerts_per_day_over_capacity": {
+        "mean": 0.009150000000000002,
+        "low": 0.00525,
+        "high": 0.013351249999999993,
+        "n": 20
+      },
+      "cost_total_inr_per_10k": {
+        "mean": 1081575.3843337975,
+        "low": 914815.7954607048,
+        "high": 1261190.4757889886,
+        "n": 20
+      },
+      "scoring_p99_ms": {
+        "mean": 17.84599869853264,
+        "low": 17.440481918317527,
+        "high": 18.23751870498345,
+        "n": 20
+      },
+      "explain_p99_ms": {
+        "mean": 4.476863200041406,
+        "low": 4.273521993175018,
+        "high": 4.718230390039206,
+        "n": 20
+      }
+    },
+    {
+      "model": "xgboost",
+      "label_mode": "full",
+      "n_folds": 20,
+      "n_budget_alone": 0,
+      "pr_auc": {
+        "mean": 0.5704197366363921,
+        "low": 0.5456174648129269,
+        "high": 0.5917313255636236,
+        "n": 20
+      },
+      "recall": {
+        "mean": 0.40845011830777683,
+        "low": 0.38087430687900803,
+        "high": 0.4354368318188101,
+        "n": 20
+      },
+      "precision": {
+        "mean": 0.8196263662361926,
+        "low": 0.7803021132586992,
+        "high": 0.8573182062182912,
+        "n": 20
+      },
+      "fpr_per_10k": {
+        "mean": 4.553120722952346,
+        "low": 3.528122545729747,
+        "high": 5.621453268434929,
+        "n": 20
+      },
+      "adjusted_precision_at_prevalence": {
+        "mean": 0.015389765715026638,
+        "low": 0.011395899826588125,
+        "high": 0.020130235578954273,
+        "n": 20
+      },
+      "share_of_fraud_value_caught": {
+        "mean": 0.6876854380726499,
+        "low": 0.6263569394448438,
+        "high": 0.74664684569803,
+        "n": 20
+      },
+      "share_above_floor_caught": {
+        "mean": 0.7270475136909227,
+        "low": 0.664276049464136,
+        "high": 0.7866445789299603,
+        "n": 20
+      },
+      "alerts_per_day": {
+        "mean": 3.025,
+        "low": 2.7975000000000003,
+        "high": 3.2501249999999993,
+        "n": 20
+      },
+      "alerts_per_day_over_capacity": {
+        "mean": 0.0605,
+        "low": 0.05595,
+        "high": 0.0650025,
+        "n": 20
+      },
+      "cost_total_inr_per_10k": {
+        "mean": 325004.68476040446,
+        "low": 271964.70605100173,
+        "high": 379672.6082039169,
+        "n": 20
+      },
+      "scoring_p99_ms": {
+        "mean": 10.795470299904991,
+        "low": 10.57494655712926,
+        "high": 11.05858194467437,
+        "n": 20
+      },
+      "explain_p99_ms": {
+        "mean": 12.779602800888824,
+        "low": 12.602996729431288,
+        "high": 12.987521582406771,
+        "n": 20
+      }
+    },
+    {
+      "model": "xgboost",
+      "label_mode": "operational",
+      "n_folds": 20,
+      "n_budget_alone": 12,
+      "pr_auc": {
+        "mean": 0.2679093087101424,
+        "low": 0.23544179766768547,
+        "high": 0.3014811841816253,
+        "n": 20
+      },
+      "recall": {
+        "mean": 0.07297624714638935,
+        "low": 0.047014960738729,
+        "high": 0.09861100778471053,
+        "n": 20
+      },
+      "precision": {
+        "mean": 0.6541338498277519,
+        "low": 0.47246225362443484,
+        "high": 0.8249675294952714,
+        "n": 20
+      },
+      "fpr_per_10k": {
+        "mean": 0.9495809286058776,
+        "low": 0.24546637468656263,
+        "high": 2.021177476815244,
+        "n": 20
+      },
+      "adjusted_precision_at_prevalence": {
+        "mean": 0.35581063034073285,
+        "low": 0.15613273724711677,
+        "high": 0.5558241687640688,
+        "n": 20
+      },
+      "share_of_fraud_value_caught": {
+        "mean": 0.2978969660574472,
+        "low": 0.19821982380343012,
+        "high": 0.3926397775872874,
+        "n": 20
+      },
+      "share_above_floor_caught": {
+        "mean": 0.3176485757875212,
+        "low": 0.21159064010390888,
+        "high": 0.41962247009632325,
+        "n": 20
+      },
+      "alerts_per_day": {
+        "mean": 0.56,
+        "low": 0.3375,
+        "high": 0.79,
+        "n": 20
+      },
+      "alerts_per_day_over_capacity": {
+        "mean": 0.011200000000000002,
+        "low": 0.006750000000000001,
+        "high": 0.0158,
+        "n": 20
+      },
+      "cost_total_inr_per_10k": {
+        "mean": 747450.7087747424,
+        "low": 629271.5908678573,
+        "high": 872083.5234083638,
+        "n": 20
+      },
+      "scoring_p99_ms": {
+        "mean": 10.605622400100401,
+        "low": 10.468389049030339,
+        "high": 10.760245434414719,
+        "n": 20
+      },
+      "explain_p99_ms": {
+        "mean": 12.445476800763572,
+        "low": 12.288071995808059,
+        "high": 12.62142981944271,
+        "n": 20
+      }
+    }
+  ],
+  "pairwise": [
+    {
+      "model_a": "autoencoder",
+      "model_b": "isolation_forest",
+      "metric": "pr_auc",
+      "label_mode": "full",
+      "n_folds": 20,
+      "difference": {
+        "mean": 0.1753096222594434,
+        "low": 0.14524060020447455,
+        "high": 0.20534553368845293,
+        "n": 20
+      },
+      "share_a_at_least_b": 1.0,
+      "share_b_at_least_a": 0.0
+    },
+    {
+      "model_a": "autoencoder",
+      "model_b": "xgboost",
+      "metric": "pr_auc",
+      "label_mode": "full",
+      "n_folds": 20,
+      "difference": {
+        "mean": -0.3772373369389793,
+        "low": -0.4068046388415058,
+        "high": -0.3437251817864062,
+        "n": 20
+      },
+      "share_a_at_least_b": 0.0,
+      "share_b_at_least_a": 1.0
+    },
+    {
+      "model_a": "isolation_forest",
+      "model_b": "xgboost",
+      "metric": "pr_auc",
+      "label_mode": "full",
+      "n_folds": 20,
+      "difference": {
+        "mean": -0.5525469591984228,
+        "low": -0.5743809532309996,
+        "high": -0.5273999924813948,
+        "n": 20
+      },
+      "share_a_at_least_b": 0.0,
+      "share_b_at_least_a": 1.0
+    },
+    {
+      "model_a": "autoencoder",
+      "model_b": "isolation_forest",
+      "metric": "pr_auc",
+      "label_mode": "operational",
+      "n_folds": 20,
+      "difference": {
+        "mean": 0.1447482817803813,
+        "low": 0.11663516306765137,
+        "high": 0.17806242770794925,
+        "n": 20
+      },
+      "share_a_at_least_b": 1.0,
+      "share_b_at_least_a": 0.0
+    },
+    {
+      "model_a": "autoencoder",
+      "model_b": "xgboost",
+      "metric": "pr_auc",
+      "label_mode": "operational",
+      "n_folds": 20,
+      "difference": {
+        "mean": -0.10528824949179179,
+        "low": -0.13702112472948266,
+        "high": -0.07222771386188738,
+        "n": 20
+      },
+      "share_a_at_least_b": 0.15,
+      "share_b_at_least_a": 0.85
+    },
+    {
+      "model_a": "isolation_forest",
+      "model_b": "xgboost",
+      "metric": "pr_auc",
+      "label_mode": "operational",
+      "n_folds": 20,
+      "difference": {
+        "mean": -0.250036531272173,
+        "low": -0.281653990189742,
+        "high": -0.21754739973151468,
+        "n": 20
+      },
+      "share_a_at_least_b": 0.0,
+      "share_b_at_least_a": 1.0
+    },
+    {
+      "model_a": "autoencoder",
+      "model_b": "isolation_forest",
+      "metric": "recall",
+      "label_mode": "full",
+      "n_folds": 20,
+      "difference": {
+        "mean": 0.14391725029403998,
+        "low": 0.113845309435182,
+        "high": 0.17493323274216285,
+        "n": 20
+      },
+      "share_a_at_least_b": 1.0,
+      "share_b_at_least_a": 0.0
+    },
+    {
+      "model_a": "autoencoder",
+      "model_b": "xgboost",
+      "metric": "recall",
+      "label_mode": "full",
+      "n_folds": 20,
+      "difference": {
+        "mean": -0.2642184026049319,
+        "low": -0.297944951350954,
+        "high": -0.23099214410314384,
+        "n": 20
+      },
+      "share_a_at_least_b": 0.0,
+      "share_b_at_least_a": 1.0
+    },
+    {
+      "model_a": "isolation_forest",
+      "model_b": "xgboost",
+      "metric": "recall",
+      "label_mode": "full",
+      "n_folds": 20,
+      "difference": {
+        "mean": -0.4081356528989718,
+        "low": -0.43505014308683926,
+        "high": -0.3808510237720711,
+        "n": 20
+      },
+      "share_a_at_least_b": 0.0,
+      "share_b_at_least_a": 1.0
+    },
+    {
+      "model_a": "autoencoder",
+      "model_b": "isolation_forest",
+      "metric": "recall",
+      "label_mode": "operational",
+      "n_folds": 20,
+      "difference": {
+        "mean": 0.04106581829664911,
+        "low": 0.023179139620946053,
+        "high": 0.06180515762381167,
+        "n": 20
+      },
+      "share_a_at_least_b": 1.0,
+      "share_b_at_least_a": 0.35
+    },
+    {
+      "model_a": "autoencoder",
+      "model_b": "xgboost",
+      "metric": "recall",
+      "label_mode": "operational",
+      "n_folds": 20,
+      "difference": {
+        "mean": -0.025326652461511945,
+        "low": -0.04871369738172595,
+        "high": -0.0035938532267830786,
+        "n": 20
+      },
+      "share_a_at_least_b": 0.45,
+      "share_b_at_least_a": 0.75
+    },
+    {
+      "model_a": "isolation_forest",
+      "model_b": "xgboost",
+      "metric": "recall",
+      "label_mode": "operational",
+      "n_folds": 20,
+      "difference": {
+        "mean": -0.06639247075816104,
+        "low": -0.09086773764935352,
+        "high": -0.042520261776903344,
+        "n": 20
+      },
+      "share_a_at_least_b": 0.25,
+      "share_b_at_least_a": 1.0
+    },
+    {
+      "model_a": "autoencoder",
+      "model_b": "isolation_forest",
+      "metric": "cost_total_inr_per_10k",
+      "label_mode": "full",
+      "n_folds": 20,
+      "difference": {
+        "mean": -944397.8205966849,
+        "low": -1128874.8378290527,
+        "high": -762615.3546053122,
+        "n": 20
+      },
+      "share_a_at_least_b": 0.0,
+      "share_b_at_least_a": 1.0
+    },
+    {
+      "model_a": "autoencoder",
+      "model_b": "xgboost",
+      "metric": "cost_total_inr_per_10k",
+      "label_mode": "full",
+      "n_folds": 20,
+      "difference": {
+        "mean": -157570.89115294343,
+        "low": -222395.20034547718,
+        "high": -95583.50373542334,
+        "n": 20
+      },
+      "share_a_at_least_b": 0.05,
+      "share_b_at_least_a": 0.95
+    },
+    {
+      "model_a": "isolation_forest",
+      "model_b": "xgboost",
+      "metric": "cost_total_inr_per_10k",
+      "label_mode": "full",
+      "n_folds": 20,
+      "difference": {
+        "mean": 786826.9294437412,
+        "low": 626490.877125979,
+        "high": 944631.9360025943,
+        "n": 20
+      },
+      "share_a_at_least_b": 1.0,
+      "share_b_at_least_a": 0.0
+    },
+    {
+      "model_a": "autoencoder",
+      "model_b": "isolation_forest",
+      "metric": "cost_total_inr_per_10k",
+      "label_mode": "operational",
+      "n_folds": 20,
+      "difference": {
+        "mean": -354621.0561175443,
+        "low": -531092.8866470426,
+        "high": -204494.6983843293,
+        "n": 20
+      },
+      "share_a_at_least_b": 0.3,
+      "share_b_at_least_a": 0.95
+    },
+    {
+      "model_a": "autoencoder",
+      "model_b": "xgboost",
+      "metric": "cost_total_inr_per_10k",
+      "label_mode": "operational",
+      "n_folds": 20,
+      "difference": {
+        "mean": -20496.380558488927,
+        "low": -174761.60653195996,
+        "high": 118032.53573906807,
+        "n": 20
+      },
+      "share_a_at_least_b": 0.65,
+      "share_b_at_least_a": 0.55
+    },
+    {
+      "model_a": "isolation_forest",
+      "model_b": "xgboost",
+      "metric": "cost_total_inr_per_10k",
+      "label_mode": "operational",
+      "n_folds": 20,
+      "difference": {
+        "mean": 334124.67555905535,
+        "low": 210334.13784282585,
+        "high": 472739.1383291989,
+        "n": 20
+      },
+      "share_a_at_least_b": 1.0,
+      "share_b_at_least_a": 0.25
+    }
+  ],
+  "scenarios": [
+    {
+      "model": "autoencoder",
+      "held_out_scenario": "INTENT_OMEGA_BISECT_DRAIN",
+      "n_seeds": 5,
+      "n_runs": 5,
+      "held_out_fraud_rows": 166,
+      "held_out_recall": {
+        "mean": 0.13658595387840672,
+        "low": 0.064,
+        "high": 0.1958888888888889,
+        "n": 5
+      },
+      "pr_auc": {
+        "mean": 0.17049863430603085,
+        "low": 0.1420185194912451,
+        "high": 0.19081723662545064,
+        "n": 5
+      }
+    },
+    {
+      "model": "autoencoder",
+      "held_out_scenario": "INTENT_OMEGA_HARVEST",
+      "n_seeds": 5,
+      "n_runs": 5,
+      "held_out_fraud_rows": 165,
+      "held_out_recall": {
+        "mean": 0.1517853457172343,
+        "low": 0.03529411764705882,
+        "high": 0.26827657378740966,
+        "n": 5
+      },
+      "pr_auc": {
+        "mean": 0.16378511613169275,
+        "low": 0.1350648977165169,
+        "high": 0.18739451104254762,
+        "n": 5
+      }
+    },
+    {
+      "model": "autoencoder",
+      "held_out_scenario": "INTENT_OMEGA_PROBE",
+      "n_seeds": 5,
+      "n_runs": 5,
+      "held_out_fraud_rows": 252,
+      "held_out_recall": {
+        "mean": 0.0044444444444444444,
+        "low": 0.0,
+        "high": 0.013333333333333332,
+        "n": 5
+      },
+      "pr_auc": {
+        "mean": 0.17053359875230417,
+        "low": 0.14274104481648306,
+        "high": 0.1929655104510218,
+        "n": 5
+      }
+    },
+    {
+      "model": "isolation_forest",
+      "held_out_scenario": "INTENT_OMEGA_BISECT_DRAIN",
+      "n_seeds": 5,
+      "n_runs": 5,
+      "held_out_fraud_rows": 166,
+      "held_out_recall": {
+        "mean": 0.0,
+        "low": 0.0,
+        "high": 0.0,
+        "n": 5
+      },
+      "pr_auc": {
+        "mean": 0.016903585706063897,
+        "low": 0.013443991939747876,
+        "high": 0.020153449221863528,
+        "n": 5
+      }
+    },
+    {
+      "model": "isolation_forest",
+      "held_out_scenario": "INTENT_OMEGA_HARVEST",
+      "n_seeds": 5,
+      "n_runs": 5,
+      "held_out_fraud_rows": 165,
+      "held_out_recall": {
+        "mean": 0.0,
+        "low": 0.0,
+        "high": 0.0,
+        "n": 5
+      },
+      "pr_auc": {
+        "mean": 0.017135708989256475,
+        "low": 0.012685691469197605,
+        "high": 0.02158572650931534,
+        "n": 5
+      }
+    },
+    {
+      "model": "isolation_forest",
+      "held_out_scenario": "INTENT_OMEGA_PROBE",
+      "n_seeds": 5,
+      "n_runs": 5,
+      "held_out_fraud_rows": 252,
+      "held_out_recall": {
+        "mean": 0.0,
+        "low": 0.0,
+        "high": 0.0,
+        "n": 5
+      },
+      "pr_auc": {
+        "mean": 0.017403084327937385,
+        "low": 0.013120121174557011,
+        "high": 0.02239131637585074,
+        "n": 5
+      }
+    },
+    {
+      "model": "xgboost",
+      "held_out_scenario": "INTENT_OMEGA_BISECT_DRAIN",
+      "n_seeds": 5,
+      "n_runs": 5,
+      "held_out_fraud_rows": 166,
+      "held_out_recall": {
+        "mean": 0.16466509433962265,
+        "low": 0.07641509433962264,
+        "high": 0.24516509433962264,
+        "n": 5
+      },
+      "pr_auc": {
+        "mean": 0.5341462933775272,
+        "low": 0.49576629413539325,
+        "high": 0.5631158580032043,
+        "n": 5
+      }
+    },
+    {
+      "model": "xgboost",
+      "held_out_scenario": "INTENT_OMEGA_HARVEST",
+      "n_seeds": 5,
+      "n_runs": 5,
+      "held_out_fraud_rows": 165,
+      "held_out_recall": {
+        "mean": 0.1956712637207993,
+        "low": 0.11675579322638145,
+        "high": 0.26280701754385966,
+        "n": 5
+      },
+      "pr_auc": {
+        "mean": 0.5007609067300683,
+        "low": 0.47125078198581904,
+        "high": 0.5311538513818126,
+        "n": 5
+      }
+    },
+    {
+      "model": "xgboost",
+      "held_out_scenario": "INTENT_OMEGA_PROBE",
+      "n_seeds": 5,
+      "n_runs": 5,
+      "held_out_fraud_rows": 252,
+      "held_out_recall": {
+        "mean": 0.007675438596491227,
+        "low": 0.0,
+        "high": 0.016008771929824563,
+        "n": 5
+      },
+      "pr_auc": {
+        "mean": 0.3362789927813127,
+        "low": 0.2799885842803866,
+        "high": 0.38616693973057503,
+        "n": 5
+      }
+    }
+  ],
+  "metrics": [
+    "pr_auc",
+    "recall",
+    "precision",
+    "fpr_per_10k",
+    "adjusted_precision_at_prevalence",
+    "share_of_fraud_value_caught",
+    "share_above_floor_caught",
+    "alerts_per_day",
+    "alerts_per_day_over_capacity",
+    "cost_total_inr_per_10k",
+    "scoring_p99_ms",
+    "explain_p99_ms"
+  ]
+}

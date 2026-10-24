@@ -1,0 +1,297 @@
+# spec/06_adversarial_intent_mesh.yaml
+# Canonical Specification for First-Principles Adversarial Intent, Information Supply Chains & Physical Constraints
+# Grounded in: US DOJ Indictments (US v. Wang 911 S5, US v. Seleznev), Thomas et al. (USENIX Security 2017),
+# Ali et al. (IEEE S&P 2017), Vastel et al. (USENIX Security 2018), EMVCo Tokenization Book 4,
+# Visa Core Rules (VCR 2024-2026), Mastercard Security Rules, PSD2 RTS (EU 2018/389), RBI PSS Act 2007.
+
+schema_version: "1.0.0"
+unit_definitions:
+  currency_us: "USD_cents"       # 1 USD = 100 Cents
+  currency_in: "INR_paisa"       # 1 INR = 100 Paisa
+  time: "seconds"
+  latency: "milliseconds"
+  velocity: "km_per_hour"
+  probability: "[0.0, 1.0]"
+  ratio: "bps_or_percentage"
+
+information_supply_chain:
+  credential_dossier_tiers:
+    - id: "TIER_TRACK_2_DUMP"
+      description: "Harvested via physical skimmers or POS malware (Alina/Dexter). Track 2 magstripe dump."
+      known_fields: ["pan", "expiry_month", "expiry_year", "service_code"]
+      missing_fields: ["cvv2", "cardholder_name", "billing_zip", "pin", "chip_cryptogram", "otp_stream"]
+      market_price_usd_cents: { min: 1500, max: 4500 }
+      feasible_channels: ["CP_POS_MAGSTRIPE", "CP_CLONED_TERMINAL", "ATM_MAGSTRIPE"]
+      pruned_channels: ["CNP_WEB", "CNP_MOBILE", "CP_POS_CHIP", "CP_CONTACTLESS_NFC"]
+      grounding_source: "US v. Roman Seleznev (Track 2 dumps and POS breaches)"
+
+    - id: "TIER_CNP_FULLZ"
+      description: "Harvested via phishing or Magecart e-commerce sniffers. Complete e-commerce cardholder record."
+      known_fields: ["pan", "expiry_month", "expiry_year", "cvv2", "cardholder_name", "billing_zip", "phone_number"]
+      missing_fields: ["pin", "emv_chip_cryptogram", "otp_stream", "session_cookie"]
+      market_price_usd_cents: { min: 1000, max: 3500 }
+      feasible_channels: ["CNP_WEB", "CNP_MOBILE", "MOTO"]
+      pruned_channels: ["CP_POS_CHIP", "CP_CONTACTLESS_NFC", "ATM_CASH"]
+      grounding_source: "Thomas et al. (USENIX Security 2017) / Flashpoint Market Monitor"
+
+    - id: "TIER_SESSION_COOKIE_BUNDLE"
+      description: "Harvested via infostealers (Lumma/Vidar/RedLine). Browser credentials + active session cookies."
+      known_fields: ["pan", "expiry_month", "expiry_year", "cvv2", "cardholder_name", "session_cookies", "user_agent", "ip_asn"]
+      missing_fields: ["pin", "emv_chip_cryptogram", "otp_stream"]
+      market_price_usd_cents: { min: 8000, max: 18000 }
+      feasible_channels: ["CNP_WEB"]
+      pruned_channels: ["CP_POS_CHIP", "CP_CONTACTLESS_NFC", "ATM_CASH"]
+      cookie_invalidation_half_life_seconds: 43200 # 12.0 hours median session expiry
+      grounding_source: "Kotzias et al. (IEEE S&P 2019) / Recorded Future Cybercrime Report"
+
+    - id: "TIER_PHISHED_OTP_STREAM"
+      description: "Harvested via reverse-proxy kits (Evilginx) or Telegram OTP bots. Live credentials with real-time OTP."
+      known_fields: ["pan", "expiry_month", "expiry_year", "cvv2", "cardholder_name", "phone_number", "live_otp"]
+      missing_fields: ["pin", "emv_chip_cryptogram"]
+      market_price_usd_cents: { min: 4000, max: 12000 }
+      feasible_channels: ["CNP_WEB", "CNP_MOBILE", "PROVISION_DIGITAL_WALLET"]
+      otp_lifespan_seconds: 180 # 3-minute statutory OTP expiration
+      grounding_source: "Group-IB Digital Risk Protection Report / MHA I4C Compendium"
+
+    - id: "TIER_APP_DEVICE_TOKEN"
+      description: "Harvested from rooted Android/iOS emulation (Magisk/LSPosed). Mobile app-bound device token."
+      known_fields: ["pan", "device_id", "app_token", "imei_hash", "oa_id"]
+      missing_fields: ["physical_chip"]
+      market_price_usd_cents: { min: 5000, max: 15000 }
+      feasible_channels: ["CNP_MOBILE", "UPI_QR_CREDIT", "P2P_PUSH"]
+      grounding_source: "Check Point Mobile Threat Report"
+
+    - id: "TIER_VCN_DYNAMIC_CVV"
+      description: "Virtual Card Number with rotating 4-hour dynamic CVV (Revolut / Capital One). Anti-fraud countermeasure."
+      known_fields: ["pan", "expiry_month", "expiry_year", "cvv2_stale"]
+      missing_fields: ["cvv2_live"]
+      market_price_usd_cents: { min: 0, max: 100 } # Near-zero value; fails CVV verification
+      feasible_channels: []
+      pruned_channels: ["ALL"]
+
+  asset_degradation_survival_model:
+    base_checker_hazard_rate_per_sec: 0.00005 # 1.8% hourly probability of automated checker bot burn
+    base_cpp_detection_hazard_per_sec: 0.00001 # 3.6% daily probability of network Common Point of Purchase detection
+    victim_alert_hazard:
+      instant_push_or_sms:
+        awake_hazard_per_sec: 0.01155 # Median alert detection latency = 60 seconds (ln(2)/60)
+        asleep_hazard_per_sec: 0.00010 # Median alert detection latency = 1.9 hours
+      daily_email_digest:
+        awake_hazard_per_sec: 0.000016 # Median alert latency = 12 hours
+        asleep_hazard_per_sec: 0.000008 # Median alert latency = 24 hours
+      monthly_paper_statement:
+        awake_hazard_per_sec: 0.0000005 # Median alert latency = 16 days
+
+syndicate_specialization_roles:
+  - role: "INITIAL_ACCESS_BROKER"
+    function: "Harvests bulk infostealer logs and database breaches. Sells unsifted archives."
+    unit_cost_usd_cents: { min: 50, max: 200 }
+    validity_rate_prior: 0.35 # 35% of raw dump cards are actually active
+
+  - role: "CHECKER_BOT_OPERATOR"
+    function: "High-velocity automated card verification via OpenBullet / SilverBullet on micro-auth merchants."
+    request_velocity_req_per_sec: { min: 10.0, max: 50.0 }
+    ticket_size_usd_cents: { min: 50, max: 200 } # $0.50 - $2.00
+    target_mccs: [8398, 5815, 4899] # Charities, micro-trials, digital streaming
+    proxy_infrastructure: "DATACENTER_OR_CHEAP_ROTATING"
+    network_switch_detection_probability: 0.65 # Highly vulnerable to Visa VAAI
+
+  - role: "CARDER_ATO_SPECIALIST"
+    function: "Targeted high-ticket liquidation and account takeover. Highly risk-averse."
+    request_velocity_req_per_card: 1.0 # 1 transaction per target session
+    ticket_size_usd_cents: { min: 15000, max: 250000 } # $150 - $2,500
+    dwell_time_seconds: { min: 900, max: 1800 } # 15 - 30 minutes
+    proxy_infrastructure: "RESIDENTIAL_STICKY_SOCKS5"
+    anti_detect_browser_profile: "MATCH_VICTIM_OS_AND_CITY"
+
+  - role: "RESHIP_DROP_NETWORK"
+    function: "Physical package forwarding mules for electronics/luxury liquidation."
+    shipping_latency_seconds: { min: 172800, max: 432000 } # 2 to 5 business days
+    package_attrition_loss_ratio: 0.30 # 30% lost to mule theft, carrier intercept, or police
+    secondary_fence_discount_ratio: 0.35 # Sold at 65% MSRP (35% haircut)
+
+  - role: "CASH_OUT_MULE_HERDER"
+    function: "Smurfs fiat funds via instant push rails (Zelle, FedNow, UPI) into Crypto P2P."
+    mule_account_lifespan_seconds: { min: 172800, max: 259200 } # 48 - 72 hours before hard freeze
+    mule_commission_cut_ratio: 0.25 # 25% cut taken by mule
+    interbank_lien_freeze_latency_seconds: 180 # CFCFRMS 1930 golden hour freeze window
+
+physical_and_technical_constraints:
+  network_costs:
+    residential_proxy_cost_per_gb_cents: 800 # $8.00 per GB (US v. Wang 911 S5)
+    datacenter_proxy_cost_per_gb_cents: 80  # $0.80 per GB
+    anti_detect_browser_subscription_monthly_cents: 10000 # $100.00 / month
+    sim_swap_insider_bribe_cents: 150000 # $1,500.00 (T-Mobile / AT&T carrier bribe)
+
+  anti_fraud_telemetry_invariants:
+    ip_reputation_scoring:
+      evaluator: "MAXMIND_MINFRAUD_OR_IPQS"
+      high_risk_threshold: 85
+      velocity_threshold_attempts_per_ip_24h: 5
+      penalty_on_high_risk: "GATEWAY_PRE_AUTH_AUTO_DECLINE_05"
+
+    tls_signature_consistency:
+      ja4_fingerprint_check: true
+      inconsistency_rule: "IF user_agent == 'macOS Chrome' AND tcp_syn_os == 'Linux' THEN flag_bot = TRUE"
+      penalty_on_mismatch: "PRE_AUTH_DROP"
+
+    canvas_repeatability:
+      repeat_execution_count: 5
+      invariant: "Real GPU produces bitwise identical hash across 5/5 calls"
+      synthetic_noise_penalty: "FLAG_BROWSER_TAMPERING"
+
+    kinematic_velocity:
+      max_physical_velocity_kmh: 900.0 # Commercial jet ceiling
+      penalty_on_violation: "ISO_59_HARD_FREEZE"
+
+multi_hop_banking_switch_topology:
+  hop_1_gateway_payfac:
+    evaluates: ["ip_reputation", "card_burst_velocity", "captcha_verification"]
+    rejection_outcomes:
+      ip_rate_limit: { http_status: 429, iso_equivalent: "05", origin: "GATEWAY_FILTER" }
+      synthetic_bot_detected: { http_status: 403, iso_equivalent: "05", origin: "GATEWAY_FILTER" }
+
+  hop_2_network_switch_in_flight:
+    visa_vaai_screening:
+      risk_score_field: "FIELD_44_5_VAAI"
+      decline_threshold: 75
+      inference_latency_ms: 0.8
+      action_on_threshold: "SWITCH_PRE_AUTH_DROP_05"
+    mastercard_safety_net:
+      action: "SWITCH_PRE_AUTH_DROP_05"
+
+  hop_3_3ds_access_control_server:
+    exemption_pathways:
+      psd2_article_16_low_value:
+        max_amount_cents: 3000 # €30.00
+        max_consecutive_exempt_tx: 5
+        cumulative_cap_cents: 10000 # €100.00
+      psd2_article_18_tra:
+        max_amount_cents: 50000 # €500.00
+        required_acquirer_fraud_bps: 1
+      india_rbi_afa_mandate:
+        statutory_exemption: "NONE" # 100% 2FA enforced for all domestic CNP
+        recurring_e_mandate_cap_paisa: 1500000 # ₹15,000.00
+    challenge_outcome:
+      trans_status_c: "CHALLENGE_REQUIRED"
+      trans_status_y: "FRICTIONLESS_APPROVED"
+      trans_status_n: "AUTHENTICATION_FAILED_05"
+
+  hop_4_issuer_core_banking_host:
+    dda_balance_evaluation:
+      solvency_check: true
+      overdraft_buffer_allowed: true
+      default_overdraft_buffer_cents: 25000 # $250.00
+    daily_limits:
+      max_daily_transactions: 15
+      max_daily_spend_cents: 500000 # $5,000.00
+    stip_processing:
+      offline_floor_limit_cents: 25000 # $250.00 approval during issuer downtime
+
+iso_8583_response_palette:
+  "00":
+    meaning: "APPROVED"
+    adversarial_signal: "SUCCESS_SCALE_OR_PROCEED"
+    belief_update: "p_valid = 1.0, min_available_balance = max(min_available, amount)"
+
+  "05":
+    meaning: "DO_NOT_HONOR"
+    adversarial_signal: "RISK_ENGINE_BLOCK"
+    belief_update: "beta_risk += 1.0, consecutive_declines += 1"
+
+  "10":
+    meaning: "PARTIAL_APPROVAL"
+    adversarial_signal: "EXACT_BALANCE_ORACLE_LEAK"
+    belief_update: "available_balance_exact = partial_amount, variance = 0.0"
+
+  "12":
+    meaning: "INVALID_TRANSACTION"
+    adversarial_signal: "CHANNEL_OR_MCC_DEFECTIVE"
+    belief_update: "prune_channel_mcc_pair(current_channel, current_mcc)"
+
+  "14":
+    meaning: "INVALID_CARD_NUMBER"
+    adversarial_signal: "CLOSED_ACCOUNT_TERMINAL_FAIL"
+    belief_update: "p_valid = 0.0, is_burned = True, target_purge = True"
+
+  "51":
+    meaning: "INSUFFICIENT_FUNDS"
+    adversarial_signal: "AMOUNT_EXCEEDS_CREDIT"
+    belief_update: "max_available_balance = min(max_available, amount - 0.01)"
+
+  "54":
+    meaning: "EXPIRED_CARD"
+    adversarial_signal: "EXPIRY_SEARCH_INCREMENT"
+    belief_update: "increment_expiry_year()"
+
+  "57":
+    meaning: "TRANSACTION_NOT_PERMITTED"
+    adversarial_signal: "CHANNEL_GEOFENCE_DISABLED"
+    belief_update: "prune_channel_globally(current_channel)"
+
+  "59":
+    meaning: "SUSPECTED_FRAUD"
+    adversarial_signal: "HARD_ISSUER_FREEZE"
+    belief_update: "p_valid = 0.0, is_burned = True, target_purge = True"
+
+  "63":
+    meaning: "SECURITY_VIOLATION"
+    adversarial_signal: "DYNAMIC_CVV_OR_HSM_MAC_FAIL"
+    belief_update: "mark_cvv_invalid()"
+
+  "65":
+    meaning: "ACTIVITY_LIMIT_EXCEEDED"
+    adversarial_signal: "DAILY_VELOCITY_CAP_REACHED"
+    belief_update: "park_card_until_midnight(), do_not_burn = True"
+
+  "75":
+    meaning: "ALLOWABLE_PIN_TRIES_EXCEEDED"
+    adversarial_signal: "PHYSICAL_ATM_CHIP_LOCK"
+    belief_update: "prune_pin_channels()"
+
+  "82":
+    meaning: "POLICY_OR_CVV_MISMATCH"
+    adversarial_signal: "CVV2_INVALID_PAN_VALID"
+    belief_update: "p_pan_valid = 1.0, cvv2_valid = 0.0"
+
+  "91":
+    meaning: "ISSUER_SWITCH_INOPERATIVE"
+    adversarial_signal: "STIP_OFFLINE_FLOOR_EXPLOIT_OPPORTUNITY"
+    belief_update: "target_stip_floor_limit(amount <= 25000)"
+
+hierarchical_smdp_and_ids_formulation:
+  macro_options:
+    - id: "OMEGA_PROBE"
+      description: "Active information gathering. Minimizes Information Ratio by maximizing entropy reduction."
+      target_ticket_range_usd_cents: { min: 50, max: 250 }
+      target_mccs: [8398, 5815, 4899]
+      termination_condition: "response_code in ('00', '10', '14', '59')"
+
+    - id: "OMEGA_INCUBATE"
+      description: "Silent baking. Delays next action to allow issuer velocity counters to decay."
+      duration_seconds_range: [86400, 259200] # 24 to 72 hours
+      termination_condition: "sim_time >= sleep_until"
+
+    - id: "OMEGA_BISECT_DRAIN"
+      description: "Systematic balance drainage following ISO 51 upper-bound truncation or ISO 10 balance leak."
+      target_ticket_derivation: "min(candidate_amount, updated_upper_bound)"
+      target_mccs: [5947, 5732, 5311]
+      termination_condition: "consecutive_declines >= 2 or approved_cash_collected >= threshold"
+
+    - id: "OMEGA_HARVEST"
+      description: "High-ticket liquidation through optimized off-ramp channels."
+      target_ticket_range_usd_cents: { min: 25000, max: 250000 }
+      target_mccs: [5732, 5944, 5947, 6051]
+      termination_condition: "response_code in ('59', '14', '51')"
+
+    - id: "OMEGA_PURGE"
+      description: "Immediate asset discard upon terminal lock. Frees memory and halts attacks."
+      termination_condition: "IMMEDIATE"
+
+  information_directed_sampling:
+    formula: "Psi(b, a) = (E[R(a*)] - E[R(a)])^2 / I(S; O | a)"
+    mutual_information_derivation: "I(S; O | a) = H(b) - E_o[H(b | a, o)]"
+    entropy_formula: "H(p) = -p * ln(p) - (1-p) * ln(1-p)"
+
+  terminal_risk_cents:
+    formula: "Loss_terminal = 1(burned) * [C_dossier + C_proxy + E[unharvested] * P_pass] + 1(lien) * settled_amount"

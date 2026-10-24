@@ -1,0 +1,191 @@
+# spec/09_us_calibration_targets.yaml
+# Canonical calibration targets for the United States card stream, each with the public source of the number.
+# Grounded in:
+# - Federal Reserve Payments Study (FRPS 2022, revised 2025): General-purpose credit and debit card payments,
+#   fraud-to-sales ratio (10.5 bps), and remote vs. in-person payment shares.
+# - Visa Inc. Q3 FY25 Network Performance Disclosure: 88.3% authorization approval rate across US switches.
+# - Federal Reserve Diary and Survey of Consumer Payment Choice (DCPC 2023): In-person and online ticket distributions.
+
+schema_version: "1.0.0"
+unit_definitions:
+  currency: "USD major units"
+  prevalence: "fraud transactions per transaction"
+  basis_points: "fraud value per 10,000 dollars of payment value"
+  share: "[0.0, 1.0]"
+
+profiles:
+  - id: "fed-payments-study-2022"
+    region: "US"
+    as_of: "2022-12"
+    scope: >
+      General-purpose credit and debit card payment authorisations on US payment rails (Visa, Mastercard,
+      American Express, Discover). Excludes commercial fleet cards, closed-loop private label store cards,
+      ACH and wire payments.
+    fraud_prevalence_per_transaction: 0.00105
+    fraud_prevalence_range_2025_26: [0.00080, 0.00130]
+    demo_rate_policy: >
+      The nominal fraud prevalence in US general-purpose card payments is approximately 10.5 basis points.
+      The CLI uses 0.01-0.03 for demonstration batches to allow statistical analysis without requiring
+      millions of rows.
+
+    targets:
+      - id: "fraud_prevalence"
+        statistic: "fraud rows divided by all rows"
+        target: 0.00105
+        gate: false
+        reason_not_gated: "scales with the requested prevalence"
+        source: "Federal Reserve Payments Study 2022: general-purpose card fraud-to-sales ratio ~10.5 bps"
+
+      - id: "fraud_value_share_bps"
+        statistic: "amount of fraud rows divided by amount of all rows, in basis points"
+        target: 10.5
+        gate: false
+        reason_not_gated: "scales with the requested prevalence"
+        source: "Federal Reserve Payments Study 2022"
+
+      - id: "mean_credit_card_ticket_usd"
+        statistic: "mean amount of legitimate rows on credit card products"
+        target: 191.72
+        tolerance_relative: 0.40
+        gate: true
+        source: >
+          IEEE-CIS Fraud Detection corpus (Vesta, 590,540 real card-not-present transactions over
+          182 days, USD-native; sha256 recorded in spec/18 section 3b): the mean legitimate ticket
+          on card6=credit rows is USD 191.72 (median 100.00). The corpus is the certification's
+          active amount reference (spec/18 section 3b), so the gate follows it.
+        superseded_source: >
+          Was target 98.00 citing "Federal Reserve DCPC 2023 & FRPS". Re-read of the primary DCPC
+          2023 report on 2026-10-16: consumers made large-value purchases with credit cards
+          "averaging about $95 per transaction"; neither 98.00 nor a reproducible combination with
+          FRPS could be recovered from the primaries, so the composite is superseded.
+        source_conflict: >
+          The two sources measure different populations and cannot both be satisfied by one
+          generator: DCPC is a consumer diary blending in-person and online purchases (~USD 95 per
+          credit purchase), while the corpus is a card-not-present-heavy issuer portfolio with a
+          higher ticket level (credit-subset mean 191.72, all-legit mean 134.51). The simulator's
+          ticket parameters are scaled to the corpus (recalibration provenance in spec/02), so this
+          gate is corpus-anchored; per-channel (CP vs CNP) ticket calibration is the open work item
+          that would reconcile the two, tracked as future work.
+        measured_2026_10_16: >
+          Post-recalibration legitimate credit-subset means: 169.27 (150 cards, seed 44, n=1,500),
+          176.65 (400 cards, seed 42, n=20,000), 166.64 (400 cards, seed 44, n=20,000); spread
+          145.06-203.13 across seeds 42/43/44/99 at 150 cards. New band [115.03, 268.41]; every
+          measured configuration sits inside.
+
+      - id: "mean_debit_card_ticket_usd"
+        statistic: "mean amount of legitimate rows on debit card products"
+        target: 46.0
+        tolerance_relative: 0.40
+        gate: false
+        reason_not_gated: "debit product volume in synthetic batch is secondary to credit"
+        source: "Federal Reserve DCPC 2023: mean debit card ticket $46.00"
+
+      - id: "mean_fraud_amount_usd"
+        statistic: "mean amount of fraud rows"
+        target: 185.0
+        tolerance_relative: 0.45
+        gate: false
+        reason_not_gated: "covers blended attack typologies across carding probes and ATO cashouts"
+        source: "FTC Consumer Sentinel Network & FRPS 2022: median reported card fraud loss"
+
+      - id: "authorization_approval_rate"
+        statistic: "share of transactions approved by rails (ISO 00)"
+        target: 0.883
+        tolerance_absolute: 0.10
+        gate: false
+        reason_not_gated: "Visa global switch average (88.3%) includes cross-border traffic, gaming/crypto merchants, and automated bot retry storms; domestic cardholder baseline is 94-97%"
+        source: "Visa Q3 FY25 Network Earnings Call: 88.3% global/US authorization approval rate"
+
+      - id: "cnp_fraud_value_share"
+        statistic: "share of fraud amount in card-not-present channels"
+        target: 0.785
+        tolerance_absolute: 0.15
+        gate: true
+        source: "Federal Reserve Payments Study 2022: CNP accounts for 78.5% of card fraud value"
+        corroboration: >
+          Independently confirmed on 2026-10-13 against UK Finance Annual Fraud Report 2026
+          (data for 2025): remote purchase GBP 423.5m of GBP 594.9m total UK-issued card fraud
+          = 0.712, and 0.81 in the 2022 report. The target of 0.785 sits between the two.
+        measured_2026_10_13: >
+          Published US 100k seed 42 gives a realized fraud value share of 0.7187 in CNP
+          channels and 0.7783 by row count, measured on channel_type. Inside the band, and
+          within 0.007 of the UK Finance 2025 value. This is why the gate is on.
+        # Below this many fraud rows the statistic's own sampling spread exceeds the tolerance
+        # band, so a verdict is the sample's rather than the generator's. Still reported, never
+        # suppressed -- only annotated as unreliable.
+        reliable_from_fraud_rows: 600
+        reliability_basis: >
+          Derived by bootstrap, not chosen. Resampling 4,000 subsamples of the published US 100k
+          at each size gives the false-failure rate of a generator that is in fact correct:
+          44 fraud rows sd 0.167, P(false FAIL) 29.4 percent; 100 rows 0.108 and 21.3 percent;
+          300 rows 0.059 and 8.3 percent; 600 rows 0.037 and 1.1 percent. The band is plus or
+          minus 0.15, so below roughly 300 rows the sampling spread exceeds a third of the band
+          and the number is mostly noise. 600 is the first size at which the false-failure rate
+          falls to about 1 percent. This statistic is a value-weighted ratio, which is why it
+          needs far more rows than a plain mean: heavy-tailed amounts make it converge slowly.
+          CAVEAT, measured the same day: three independently generated 20,000-row batches
+          holding 600 to 635 fraud rows gave 0.8549, 0.7476 and 0.8760, an implied standard
+          deviation of 0.069 and a mean of 0.826. Both are larger than the bootstrap predicts,
+          and the mean sits above the 0.7187 of the published 100k, so the share may also
+          depend on batch configuration and not on fraud-row count alone. If so, 600 is
+          optimistic and the true floor is higher. Unexplained; carried as a hypothesis.
+
+    out_of_scope:
+      - payment_system: "ACH / FedNow"
+        reason: "instant account-to-account push payments; outside card switch scope"
+      - payment_system: "Wire / Fedwire"
+        reason: "high-value gross settlement; outside consumer retail card switch scope"
+
+# ----------------------------------------------------------------------------------------------
+# 9. Parameters this spec CANNOT ground, and what would replace each
+# Recorded 2026-10-13 after a search that reached the FTC Consumer Sentinel Data Book,
+# UK Finance Annual Fraud Report 2026, the ECB report on card fraud, the JPMorgan
+# card-testing white paper and OCC guidance. Those sources ground the attack lifecycle,
+# the dollar sizing of card tests, the CNP share and average case values. They do NOT
+# ground the three quantities below. None is presented as fact.
+# ----------------------------------------------------------------------------------------------
+ungroundable_fraud_parameters:
+  hypothesis: true
+  parameters:
+    - id: "authorized_fraud_typology_mix"
+      value_at_2026_10_13: >
+        INTENT_OMEGA_PROBE 45.5 percent, INTENT_OMEGA_HARVEST 39.7 percent,
+        INTENT_OMEGA_BISECT_DRAIN 14.8 percent of fraud rows, published US 100k seed 42.
+      why_not_grounded: >
+        OCC and JPMorgan describe card testing as "zero or small dollar" and as preceding
+        much larger activity, which establishes that a probe-then-drain lifecycle exists.
+        Neither gives the share of COMPLETED fraud that is testing. Testing overwhelmingly
+        produces declined authorizations, so the share admitted into an authorized-fraud
+        population is issuer data that no public source reports.
+      measured_consequence: >
+        The 45.5 percent probe share is the reason the fraud-amount distribution is bimodal
+        against a smoother real distribution (IEEE-CIS 2019: p50 0.811 of the card's typical
+        ticket, 1.77 percent above 5 times; this generator: p50 0.363, 16.70 percent above
+        5 times). Reported as a measured discrepancy, not tuned away, because tuning to
+        IEEE would be fitting to the validation corpus.
+      replace_with: >
+        Case-level fraud data from an issuer's fraud-operations function, giving the count
+        of completed fraud transactions by typology.
+
+    - id: "fraud_amount_distribution_shape"
+      why_not_grounded: >
+        No public source publishes a fraud transaction amount distribution, and the FTC
+        Consumer Sentinel Data Book reports victim-REPORTED LOSSES, which are a different
+        quantity from transaction ticket sizes. Central Bank of Ireland reports an average
+        fraudulent POS transaction of EUR 97.5 for 2025, which is a mean and constrains
+        level but not shape.
+      replace_with: >
+        A published binned fraud amount histogram, conditional on channel and typology.
+
+    - id: "typology_conditional_amount_ratio"
+      why_not_grounded: >
+        The relationship between a fraud ticket and the cardholder's own typical spend,
+        conditional on attack typology, is not published anywhere reachable.
+      replace_with: >
+        Paired legitimate and fraudulent transactions on the same card, which only an
+        issuer or network holds.
+
+  consequence_for_claiming: >
+    The generator's attack structure is grounded; three of its amplitude and mix parameters
+    are not. A claim of behavioural realism is therefore not supported by this spec, and the
+    cards state the discrepancy instead of asserting realism.

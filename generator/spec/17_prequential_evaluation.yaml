@@ -1,0 +1,58 @@
+# spec/17_prequential_evaluation.yaml
+# Canonical Specification for Prequential Time-Ordered Evaluation, Rolling Retraining,
+# and Streaming Drift Auditing under Delayed Supervision.
+# Grounded in: Dal Pozzolo et al. (IEEE TNNLS 2018), Le Borgne et al. (2021), Bahnsen et al. (2016),
+# Chenyu Wu (2026), and Gama et al. (2013).
+
+schema_version: "1.0.0"
+unit_definitions:
+  time: "seconds (with day convenience scalars: 86400 seconds)"
+  currency: "major units (USD or INR)"
+  probability: "[0.0, 1.0]"
+  score: "continuous risk score in [0.0, 1.0]"
+
+prequential_evaluation:
+  window_parameters:
+    default_w_train_days: 30.0
+    default_w_test_days: 1.0
+    default_delta_delay_days: 14.0
+    default_retrain_freq_days: 1.0
+    default_k_daily: 50
+    min_train_samples: 50
+
+  delay_policies:
+    - id: "STRICT_DELAY_GAP"
+      description: "Excludes unalerted transactions in [T - delta_delay, T] to eliminate false-negative contamination."
+      recommended: true
+    - id: "ASSUME_NEGATIVE"
+      description: "Optimistic baseline: assumes unalerted transactions in pending band are genuine until chargeback arrives."
+      recommended: false
+    - id: "BIFURCATED_ENSEMBLE"
+      description: "Dual model: rapid model trained on recent alerts + robust model trained on matured history."
+      recommended: false
+
+  cost_matrices:
+    USD:
+      c_admin: 2.50               # Cost of analyst verification call / SMS
+      c_friction_rate: 0.01       # 1% of transaction amount in customer friction / false decline cost
+      c_chargeback_fee: 15.00     # Scheme chargeback processing penalty fee
+    INR:
+      c_admin: 200.00             # ₹200 analyst verification overhead
+      c_friction_rate: 0.01       # 1% customer friction
+      c_chargeback_fee: 1200.00   # ₹1,200 scheme dispute fee
+
+  drift_detection:
+    ks_test_p_value_threshold: 0.01
+    psi_warning_threshold: 0.10
+    psi_alarm_threshold: 0.25
+    psi_bins: 10
+    page_hinkley_delta: 0.005
+    page_hinkley_threshold: 30.0
+
+  acceptance_criteria:
+    - zero_temporal_lookahead_leakage: true
+    - delay_gap_blackout_enforced: true
+    - operational_metrics_exactness_verified: true
+    - cost_savings_bounded_and_monotonic: true
+    - streaming_drift_tripwire_alarm_functional: true
+    - end_to_end_prequential_rolling_benchmark_green: true

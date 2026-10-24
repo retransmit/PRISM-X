@@ -1,0 +1,47 @@
+[
+  {
+    "model": "isolation_forest",
+    "threshold": 0.7457350614078191,
+    "pr_auc": 0.11430302117631067,
+    "roc_auc": 0.9308371014029575,
+    "precision": 0.22826086956521738,
+    "recall": 0.22105263157894736,
+    "f1": 0.22459893048128343,
+    "true_negatives": 56580,
+    "false_positives": 71,
+    "false_negatives": 74,
+    "true_positives": 21,
+    "alerts_per_true_fraud": 4.380952380952381,
+    "resample_applied": false
+  },
+  {
+    "model": "autoencoder",
+    "threshold": 0.9444488935261854,
+    "pr_auc": 0.4533135807068344,
+    "roc_auc": 0.9373575418838707,
+    "precision": 0.5540540540540541,
+    "recall": 0.43157894736842106,
+    "f1": 0.48520710059171596,
+    "true_negatives": 56618,
+    "false_positives": 33,
+    "false_negatives": 54,
+    "true_positives": 41,
+    "alerts_per_true_fraud": 1.8048780487804879,
+    "resample_applied": false
+  },
+  {
+    "model": "xgboost",
+    "threshold": 0.7166429162025452,
+    "pr_auc": 0.8169014287377628,
+    "roc_auc": 0.9680839935003702,
+    "precision": 0.972972972972973,
+    "recall": 0.7578947368421053,
+    "f1": 0.8520710059171598,
+    "true_negatives": 56649,
+    "false_positives": 2,
+    "false_negatives": 23,
+    "true_positives": 72,
+    "alerts_per_true_fraud": 1.0277777777777777,
+    "resample_applied": false
+  }
+]

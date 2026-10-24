@@ -1,0 +1,47 @@
+/* Design tokens. Every colour and type decision in the app derives from here.
+   See docs/plans/2026-08-15-prism-dashboard.md § Design System. */
+
+:root {
+  /* Ground. Deep slate-blue, deliberately not near-black: an analyst reads
+     this panel for hours, and pure black haloes badly against light text. */
+  --ground:   #0E1620;
+  --surface:  #16202C;
+  --raised:   #1D2A38;
+  --rule:     #24313F;
+  --text:     #E6EDF3;
+  --text-dim: #8A9BAC;
+
+  /* Spectral ramp. DATA ONLY. Position in the ramp identifies a factor;
+     no button, border, or panel may borrow these. */
+  --spec-violet: #7C6BF0;
+  --spec-indigo: #5B8DEF;
+  --spec-cyan:   #35C5D8;
+  --spec-amber:  #E8A33D;
+  --spec-rose:   #E85D75;
+
+  /* Risk. §6.2.3 specifies green/red; cyan replaces green because red/green
+     is the worst pairing for colour-vision deficiency. Colour never carries
+     risk alone; a filled/hollow marker and the numeric score carry it too. */
+  --risk-high: var(--spec-rose);
+  --risk-low:  var(--spec-cyan);
+
+  --font-display: 'IBM Plex Sans Condensed', system-ui, sans-serif;
+  --font-body:    'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono:    'IBM Plex Mono', ui-monospace, monospace;
+
+  --step--1: 0.75rem;
+  --step-0:  0.875rem;
+  --step-1:  1.125rem;
+  --step-2:  1.5rem;
+  --step-3:  2.25rem;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 40px;
+
+  /* Near-square. This is instrumentation, not a consumer app. */
+  --radius: 2px;
+}

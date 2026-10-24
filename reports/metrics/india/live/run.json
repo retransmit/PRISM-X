@@ -1,0 +1,3111 @@
+{
+  "complete": true,
+  "limit": 0,
+  "settings": {
+    "stem": "data/raw/india/live/train_in",
+    "seed": 101,
+    "rows": 180000,
+    "cards": 2000,
+    "merchants": 300,
+    "days": 120,
+    "fraud_rate": 0.005,
+    "calibration": "rbi-psi-2026-07",
+    "database_url": "sqlite:///prism_audit_live.db",
+    "model_dir": "models/live",
+    "enabled": false,
+    "supervision": {
+      "k_daily": 50,
+      "seed": 0
+    },
+    "retrain_every_days": 15,
+    "first_retrain_day": 60,
+    "label_lag_days": 30,
+    "backtest_days": 20,
+    "val_days": 10,
+    "min_known_fraud": 10,
+    "bootstrap_resamples": 2000,
+    "bundle_poll_seconds": 5,
+    "events_shown": 20,
+    "drift_window_rows": 5000,
+    "drift_min_rows": 500,
+    "drift_refresh_seconds": 30,
+    "drift_discrete_max": 10,
+    "drift_warn": 0.1,
+    "drift_alert": 0.25,
+    "drift_epsilon": 0.0001,
+    "category_floor": 0.01
+  },
+  "stem": "data/raw/india/live/train_in",
+  "generator_revision": "51e5c77c00280734e46097f4ebd872ab887f3783",
+  "origin": 1704067778.77,
+  "rows": 180000,
+  "days": [
+    {
+      "day": 0,
+      "requests": 1752,
+      "flagged": 1,
+      "fraud": 6,
+      "caught": 1,
+      "failed": 0,
+      "labels": {},
+      "bundle_id": "offline"
+    },
+    {
+      "day": 1,
+      "requests": 1853,
+      "flagged": 4,
+      "fraud": 8,
+      "caught": 4,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 2,
+      "requests": 1797,
+      "flagged": 6,
+      "fraud": 13,
+      "caught": 6,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 4
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 3,
+      "requests": 1422,
+      "flagged": 2,
+      "fraud": 7,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 6
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 4,
+      "requests": 1537,
+      "flagged": 1,
+      "fraud": 1,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 5,
+      "requests": 1487,
+      "flagged": 2,
+      "fraud": 8,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 6,
+      "requests": 1484,
+      "flagged": 3,
+      "fraud": 7,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 7,
+      "requests": 1450,
+      "flagged": 1,
+      "fraud": 5,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 8,
+      "requests": 1371,
+      "flagged": 2,
+      "fraud": 6,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 9,
+      "requests": 1442,
+      "flagged": 1,
+      "fraud": 8,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 10,
+      "requests": 1347,
+      "flagged": 2,
+      "fraud": 5,
+      "caught": 2,
+      "failed": 0,
+      "labels": {},
+      "bundle_id": "offline"
+    },
+    {
+      "day": 11,
+      "requests": 1130,
+      "flagged": 2,
+      "fraud": 6,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 12,
+      "requests": 1308,
+      "flagged": 1,
+      "fraud": 1,
+      "caught": 0,
+      "failed": 0,
+      "labels": {},
+      "bundle_id": "offline"
+    },
+    {
+      "day": 13,
+      "requests": 1357,
+      "flagged": 4,
+      "fraud": 5,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 5
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 14,
+      "requests": 1514,
+      "flagged": 1,
+      "fraud": 10,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 15,
+      "requests": 1585,
+      "flagged": 3,
+      "fraud": 11,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 16,
+      "requests": 1614,
+      "flagged": 2,
+      "fraud": 5,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 17,
+      "requests": 1414,
+      "flagged": 1,
+      "fraud": 7,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 4
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 18,
+      "requests": 1403,
+      "flagged": 1,
+      "fraud": 10,
+      "caught": 0,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 19,
+      "requests": 1348,
+      "flagged": 3,
+      "fraud": 6,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 20,
+      "requests": 1284,
+      "flagged": 2,
+      "fraud": 3,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 21,
+      "requests": 1326,
+      "flagged": 4,
+      "fraud": 8,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 22,
+      "requests": 1318,
+      "flagged": 1,
+      "fraud": 5,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 1,
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 23,
+      "requests": 1390,
+      "flagged": 3,
+      "fraud": 11,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 1,
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 24,
+      "requests": 1334,
+      "flagged": 2,
+      "fraud": 7,
+      "caught": 2,
+      "failed": 0,
+      "labels": {},
+      "bundle_id": "offline"
+    },
+    {
+      "day": 25,
+      "requests": 1367,
+      "flagged": 2,
+      "fraud": 2,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 3,
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 26,
+      "requests": 1418,
+      "flagged": 4,
+      "fraud": 9,
+      "caught": 4,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 5,
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 27,
+      "requests": 1276,
+      "flagged": 1,
+      "fraud": 3,
+      "caught": 0,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 28,
+      "requests": 1296,
+      "flagged": 2,
+      "fraud": 5,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 1,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 29,
+      "requests": 1141,
+      "flagged": 1,
+      "fraud": 3,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 3,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 30,
+      "requests": 1395,
+      "flagged": 4,
+      "fraud": 8,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 31,
+      "requests": 1420,
+      "flagged": 1,
+      "fraud": 4,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 2,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 32,
+      "requests": 1356,
+      "flagged": 2,
+      "fraud": 5,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 33,
+      "requests": 1405,
+      "flagged": 5,
+      "fraud": 11,
+      "caught": 4,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 5,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 34,
+      "requests": 1226,
+      "flagged": 2,
+      "fraud": 11,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 3,
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 35,
+      "requests": 1453,
+      "flagged": 1,
+      "fraud": 6,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 2,
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 36,
+      "requests": 1451,
+      "flagged": 2,
+      "fraud": 4,
+      "caught": 0,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 1,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 37,
+      "requests": 1438,
+      "flagged": 0,
+      "fraud": 2,
+      "caught": 0,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 3,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 38,
+      "requests": 1250,
+      "flagged": 3,
+      "fraud": 5,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 39,
+      "requests": 1276,
+      "flagged": 0,
+      "fraud": 6,
+      "caught": 0,
+      "failed": 0,
+      "labels": {},
+      "bundle_id": "offline"
+    },
+    {
+      "day": 40,
+      "requests": 1278,
+      "flagged": 1,
+      "fraud": 6,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 41,
+      "requests": 1242,
+      "flagged": 3,
+      "fraud": 5,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 42,
+      "requests": 1350,
+      "flagged": 2,
+      "fraud": 6,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 5,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 43,
+      "requests": 1308,
+      "flagged": 5,
+      "fraud": 6,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 3,
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 44,
+      "requests": 1392,
+      "flagged": 0,
+      "fraud": 4,
+      "caught": 0,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 4,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 45,
+      "requests": 1317,
+      "flagged": 3,
+      "fraud": 9,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 4,
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 46,
+      "requests": 1356,
+      "flagged": 5,
+      "fraud": 5,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 5,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 47,
+      "requests": 1253,
+      "flagged": 2,
+      "fraud": 6,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 3,
+        "INVESTIGATOR_ALERT": 4
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 48,
+      "requests": 1483,
+      "flagged": 0,
+      "fraud": 5,
+      "caught": 0,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 1,
+        "CHARGEBACK_DISPUTE": 6
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 49,
+      "requests": 1330,
+      "flagged": 3,
+      "fraud": 10,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 4
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 50,
+      "requests": 1424,
+      "flagged": 0,
+      "fraud": 4,
+      "caught": 0,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 8,
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 51,
+      "requests": 1266,
+      "flagged": 4,
+      "fraud": 6,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 52,
+      "requests": 1352,
+      "flagged": 4,
+      "fraud": 5,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 3,
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 53,
+      "requests": 1268,
+      "flagged": 2,
+      "fraud": 6,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 54,
+      "requests": 1334,
+      "flagged": 10,
+      "fraud": 11,
+      "caught": 7,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 6,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 55,
+      "requests": 1304,
+      "flagged": 5,
+      "fraud": 7,
+      "caught": 5,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 9
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 56,
+      "requests": 1260,
+      "flagged": 2,
+      "fraud": 11,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 2,
+        "CHARGEBACK_DISPUTE": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 57,
+      "requests": 1295,
+      "flagged": 2,
+      "fraud": 7,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 2,
+        "CHARGEBACK_DISPUTE": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 58,
+      "requests": 1292,
+      "flagged": 4,
+      "fraud": 6,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 59,
+      "requests": 1242,
+      "flagged": 5,
+      "fraud": 5,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 5,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 60,
+      "requests": 1521,
+      "flagged": 2,
+      "fraud": 5,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 5,
+        "CHARGEBACK_DISPUTE": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 61,
+      "requests": 1457,
+      "flagged": 9,
+      "fraud": 16,
+      "caught": 9,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 5,
+        "CHARGEBACK_DISPUTE": 4
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 62,
+      "requests": 1355,
+      "flagged": 2,
+      "fraud": 6,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 7,
+        "CHARGEBACK_DISPUTE": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 63,
+      "requests": 1254,
+      "flagged": 1,
+      "fraud": 6,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 1,
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 64,
+      "requests": 1298,
+      "flagged": 3,
+      "fraud": 3,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 6,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 65,
+      "requests": 1211,
+      "flagged": 6,
+      "fraud": 12,
+      "caught": 5,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 4,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 66,
+      "requests": 1360,
+      "flagged": 2,
+      "fraud": 3,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 5,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 67,
+      "requests": 1278,
+      "flagged": 2,
+      "fraud": 12,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 2,
+        "CHARGEBACK_DISPUTE": 5
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 68,
+      "requests": 1389,
+      "flagged": 5,
+      "fraud": 9,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 4
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 69,
+      "requests": 1335,
+      "flagged": 7,
+      "fraud": 10,
+      "caught": 5,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 4,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 70,
+      "requests": 1375,
+      "flagged": 6,
+      "fraud": 10,
+      "caught": 5,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 9,
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 71,
+      "requests": 1217,
+      "flagged": 2,
+      "fraud": 3,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 4,
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 72,
+      "requests": 1392,
+      "flagged": 2,
+      "fraud": 5,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 73,
+      "requests": 1281,
+      "flagged": 4,
+      "fraud": 9,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 74,
+      "requests": 1321,
+      "flagged": 3,
+      "fraud": 9,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 75,
+      "requests": 1310,
+      "flagged": 3,
+      "fraud": 4,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 3,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 76,
+      "requests": 1350,
+      "flagged": 2,
+      "fraud": 5,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 4,
+        "CHARGEBACK_DISPUTE": 5
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 77,
+      "requests": 1309,
+      "flagged": 3,
+      "fraud": 10,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 78,
+      "requests": 1199,
+      "flagged": 4,
+      "fraud": 6,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 5,
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 79,
+      "requests": 1255,
+      "flagged": 3,
+      "fraud": 4,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 1,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 80,
+      "requests": 1361,
+      "flagged": 1,
+      "fraud": 4,
+      "caught": 0,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 4,
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 81,
+      "requests": 1185,
+      "flagged": 5,
+      "fraud": 7,
+      "caught": 4,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 82,
+      "requests": 1191,
+      "flagged": 3,
+      "fraud": 7,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 4,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 83,
+      "requests": 1341,
+      "flagged": 8,
+      "fraud": 10,
+      "caught": 7,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 5,
+        "INVESTIGATOR_ALERT": 6
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 84,
+      "requests": 1155,
+      "flagged": 3,
+      "fraud": 7,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 4,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 85,
+      "requests": 1162,
+      "flagged": 2,
+      "fraud": 3,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "INVESTIGATOR_ALERT": 3,
+        "CHARGEBACK_DISPUTE": 5
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 86,
+      "requests": 1283,
+      "flagged": 1,
+      "fraud": 4,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 1,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 87,
+      "requests": 1174,
+      "flagged": 1,
+      "fraud": 8,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 88,
+      "requests": 1254,
+      "flagged": 4,
+      "fraud": 10,
+      "caught": 4,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 4,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 89,
+      "requests": 1173,
+      "flagged": 2,
+      "fraud": 9,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "CHARGEBACK_DISPUTE": 8,
+        "INVESTIGATOR_ALERT": 4
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 90,
+      "requests": 1244,
+      "flagged": 2,
+      "fraud": 5,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1746,
+        "CHARGEBACK_DISPUTE": 5,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 91,
+      "requests": 1099,
+      "flagged": 1,
+      "fraud": 4,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1845,
+        "INVESTIGATOR_ALERT": 1,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 92,
+      "requests": 1236,
+      "flagged": 4,
+      "fraud": 7,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1782,
+        "CHARGEBACK_DISPUTE": 4,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 93,
+      "requests": 1432,
+      "flagged": 2,
+      "fraud": 3,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1414,
+        "INVESTIGATOR_ALERT": 3,
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 94,
+      "requests": 1372,
+      "flagged": 0,
+      "fraud": 1,
+      "caught": 0,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1536,
+        "INVESTIGATOR_ALERT": 2,
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 95,
+      "requests": 1216,
+      "flagged": 3,
+      "fraud": 2,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1481,
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 96,
+      "requests": 1249,
+      "flagged": 2,
+      "fraud": 11,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1475,
+        "CHARGEBACK_DISPUTE": 1,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 97,
+      "requests": 1413,
+      "flagged": 4,
+      "fraud": 5,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1445,
+        "INVESTIGATOR_ALERT": 4
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 98,
+      "requests": 1189,
+      "flagged": 3,
+      "fraud": 3,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1367,
+        "INVESTIGATOR_ALERT": 3,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 99,
+      "requests": 1225,
+      "flagged": 5,
+      "fraud": 8,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1434,
+        "CHARGEBACK_DISPUTE": 3,
+        "INVESTIGATOR_ALERT": 4
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 100,
+      "requests": 1209,
+      "flagged": 6,
+      "fraud": 10,
+      "caught": 4,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1342,
+        "INVESTIGATOR_ALERT": 6,
+        "CHARGEBACK_DISPUTE": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 101,
+      "requests": 1193,
+      "flagged": 1,
+      "fraud": 2,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1123,
+        "INVESTIGATOR_ALERT": 3,
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 102,
+      "requests": 1209,
+      "flagged": 2,
+      "fraud": 7,
+      "caught": 0,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1307,
+        "INVESTIGATOR_ALERT": 2,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 103,
+      "requests": 1357,
+      "flagged": 1,
+      "fraud": 6,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1351,
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 104,
+      "requests": 1294,
+      "flagged": 1,
+      "fraud": 6,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1501,
+        "CHARGEBACK_DISPUTE": 1,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 105,
+      "requests": 1166,
+      "flagged": 2,
+      "fraud": 5,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1575,
+        "CHARGEBACK_DISPUTE": 3,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 106,
+      "requests": 1477,
+      "flagged": 4,
+      "fraud": 5,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1610,
+        "CHARGEBACK_DISPUTE": 3,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 107,
+      "requests": 1346,
+      "flagged": 2,
+      "fraud": 6,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1407,
+        "INVESTIGATOR_ALERT": 3,
+        "CHARGEBACK_DISPUTE": 4
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 108,
+      "requests": 1156,
+      "flagged": 1,
+      "fraud": 5,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1383,
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 109,
+      "requests": 1260,
+      "flagged": 1,
+      "fraud": 3,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1349,
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 110,
+      "requests": 1263,
+      "flagged": 3,
+      "fraud": 9,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1281,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 111,
+      "requests": 1129,
+      "flagged": 2,
+      "fraud": 3,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1316,
+        "CHARGEBACK_DISPUTE": 4,
+        "INVESTIGATOR_ALERT": 4
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 112,
+      "requests": 1233,
+      "flagged": 0,
+      "fraud": 4,
+      "caught": 0,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1311,
+        "CHARGEBACK_DISPUTE": 6,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 113,
+      "requests": 1302,
+      "flagged": 4,
+      "fraud": 6,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1382,
+        "CHARGEBACK_DISPUTE": 6,
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 114,
+      "requests": 1266,
+      "flagged": 4,
+      "fraud": 6,
+      "caught": 4,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1327,
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 5
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 115,
+      "requests": 1190,
+      "flagged": 1,
+      "fraud": 5,
+      "caught": 0,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1359,
+        "CHARGEBACK_DISPUTE": 5,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 116,
+      "requests": 1170,
+      "flagged": 1,
+      "fraud": 4,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1412,
+        "CHARGEBACK_DISPUTE": 3,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 117,
+      "requests": 1245,
+      "flagged": 7,
+      "fraud": 10,
+      "caught": 5,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1274,
+        "INVESTIGATOR_ALERT": 3,
+        "CHARGEBACK_DISPUTE": 4
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 118,
+      "requests": 1284,
+      "flagged": 2,
+      "fraud": 3,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1290,
+        "INVESTIGATOR_ALERT": 3,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 119,
+      "requests": 1242,
+      "flagged": 3,
+      "fraud": 9,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1138,
+        "INVESTIGATOR_ALERT": 3,
+        "CHARGEBACK_DISPUTE": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 120,
+      "requests": 1369,
+      "flagged": 3,
+      "fraud": 5,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1386,
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 4
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 121,
+      "requests": 1318,
+      "flagged": 1,
+      "fraud": 3,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1412,
+        "INVESTIGATOR_ALERT": 1,
+        "CHARGEBACK_DISPUTE": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 122,
+      "requests": 1316,
+      "flagged": 3,
+      "fraud": 5,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1347,
+        "INVESTIGATOR_ALERT": 3,
+        "CHARGEBACK_DISPUTE": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 123,
+      "requests": 1345,
+      "flagged": 4,
+      "fraud": 4,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1400,
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 124,
+      "requests": 1244,
+      "flagged": 6,
+      "fraud": 9,
+      "caught": 4,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1213,
+        "CHARGEBACK_DISPUTE": 4,
+        "INVESTIGATOR_ALERT": 5
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 125,
+      "requests": 1300,
+      "flagged": 0,
+      "fraud": 7,
+      "caught": 0,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1442,
+        "CHARGEBACK_DISPUTE": 6,
+        "INVESTIGATOR_ALERT": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 126,
+      "requests": 1247,
+      "flagged": 4,
+      "fraud": 8,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1451,
+        "CHARGEBACK_DISPUTE": 5,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 127,
+      "requests": 1304,
+      "flagged": 3,
+      "fraud": 4,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1436,
+        "INVESTIGATOR_ALERT": 4,
+        "CHARGEBACK_DISPUTE": 3
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 128,
+      "requests": 1182,
+      "flagged": 4,
+      "fraud": 8,
+      "caught": 4,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1239,
+        "INVESTIGATOR_ALERT": 4,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 129,
+      "requests": 1069,
+      "flagged": 3,
+      "fraud": 6,
+      "caught": 3,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1274,
+        "INVESTIGATOR_ALERT": 2,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 130,
+      "requests": 1259,
+      "flagged": 4,
+      "fraud": 7,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1272,
+        "CHARGEBACK_DISPUTE": 1,
+        "INVESTIGATOR_ALERT": 4
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 131,
+      "requests": 1134,
+      "flagged": 1,
+      "fraud": 2,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1229,
+        "CHARGEBACK_DISPUTE": 2,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 132,
+      "requests": 1166,
+      "flagged": 1,
+      "fraud": 3,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1349,
+        "CHARGEBACK_DISPUTE": 6,
+        "INVESTIGATOR_ALERT": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 133,
+      "requests": 1149,
+      "flagged": 1,
+      "fraud": 4,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1300,
+        "INVESTIGATOR_ALERT": 1,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 134,
+      "requests": 1176,
+      "flagged": 2,
+      "fraud": 2,
+      "caught": 1,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1388,
+        "CHARGEBACK_DISPUTE": 3,
+        "INVESTIGATOR_ALERT": 1
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 135,
+      "requests": 1268,
+      "flagged": 6,
+      "fraud": 6,
+      "caught": 5,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1307,
+        "INVESTIGATOR_ALERT": 5,
+        "CHARGEBACK_DISPUTE": 2
+      },
+      "bundle_id": "offline"
+    },
+    {
+      "day": 136,
+      "requests": 961,
+      "flagged": 7,
+      "fraud": 8,
+      "caught": 2,
+      "failed": 0,
+      "labels": {
+        "UNLABELLED": 1106,
+        "CHARGEBACK_DISPUTE": 1,
+        "INVESTIGATOR_ALERT": 6
+      },
+      "bundle_id": "offline"
+    }
+  ],
+  "labels": {
+    "posted": {
+      "INVESTIGATOR_ALERT": 371,
+      "CHARGEBACK_DISPUTE": 290,
+      "UNLABELLED": 65114
+    },
+    "refused": 0,
+    "pending_at_end": 114004,
+    "never_reported": 221
+  },
+  "failed_requests": 0,
+  "retrains": [
+    {
+      "as_of": 1709251778.77,
+      "challenger_bundle": null,
+      "challenger_model": null,
+      "challenger_pr_auc": null,
+      "champion_bundle": "offline",
+      "champion_model": null,
+      "champion_pr_auc": null,
+      "difference": null,
+      "known_fraud": {
+        "backtest": 79,
+        "train": 0,
+        "val": 45
+      },
+      "reason": "the training window holds 0 known frauds among 0 rows, fewer than min_known_fraud 10",
+      "recorded_at": "2026-10-22T22:57:44.384181+00:00",
+      "rows": {
+        "backtest": 27170,
+        "train": 0,
+        "val": 15595
+      },
+      "status": "skipped",
+      "stream_day": 60.0,
+      "windows": {
+        "backtest": [
+          1704931778.77,
+          1706659778.77
+        ],
+        "train": [
+          1704067778.77,
+          1704067778.77
+        ],
+        "val": [
+          1704067778.77,
+          1704931778.77
+        ]
+      }
+    },
+    {
+      "as_of": 1710547778.77,
+      "challenger_bundle": "day-075-659ef7",
+      "challenger_model": "xgboost",
+      "challenger_pr_auc": 0.1721979722311504,
+      "champion_bundle": "offline",
+      "champion_model": "xgboost",
+      "champion_pr_auc": 0.4477870999784286,
+      "difference": {
+        "high": -0.17289715632163646,
+        "low": -0.3777900757116007
+      },
+      "known_fraud": {
+        "backtest": 70,
+        "train": 65,
+        "val": 53
+      },
+      "reason": "the paired interval of the PR-AUC difference [-0.3778, -0.1729] does not lie above zero",
+      "recorded_at": "2026-10-22T23:16:32.570733+00:00",
+      "rows": {
+        "backtest": 26738,
+        "train": 22251,
+        "val": 14016
+      },
+      "status": "kept",
+      "stream_day": 75.0,
+      "train_seconds": 32.49313129999791,
+      "windows": {
+        "backtest": [
+          1706227778.77,
+          1707955778.77
+        ],
+        "train": [
+          1704067778.77,
+          1705363778.77
+        ],
+        "val": [
+          1705363778.77,
+          1706227778.77
+        ]
+      },
+      "truth": {
+        "fraud": 111,
+        "challenger_pr_auc": 0.18597224539314042,
+        "champion_pr_auc": 0.3699116489604875
+      }
+    },
+    {
+      "as_of": 1711843778.77,
+      "challenger_bundle": "day-090-7ae106",
+      "challenger_model": "autoencoder",
+      "challenger_pr_auc": 0.21290452493932757,
+      "champion_bundle": "offline",
+      "champion_model": "xgboost",
+      "champion_pr_auc": 0.6132425175296549,
+      "difference": {
+        "high": -0.2774664633115066,
+        "low": -0.519598932166118
+      },
+      "known_fraud": {
+        "backtest": 85,
+        "train": 137,
+        "val": 42
+      },
+      "reason": "the paired interval of the PR-AUC difference [-0.5196, -0.2775] does not lie above zero",
+      "recorded_at": "2026-10-22T23:34:31.124146+00:00",
+      "rows": {
+        "backtest": 26346,
+        "train": 42765,
+        "val": 13670
+      },
+      "status": "kept",
+      "stream_day": 90.0,
+      "train_seconds": 38.92315330001293,
+      "windows": {
+        "backtest": [
+          1707523778.77,
+          1709251778.77
+        ],
+        "train": [
+          1704067778.77,
+          1706659778.77
+        ],
+        "val": [
+          1706659778.77,
+          1707523778.77
+        ]
+      },
+      "truth": {
+        "fraud": 130,
+        "challenger_pr_auc": 0.15353841286829117,
+        "champion_pr_auc": 0.5144997590413539
+      }
+    },
+    {
+      "as_of": 1713139778.77,
+      "challenger_bundle": "day-105-348e35",
+      "challenger_model": "xgboost",
+      "challenger_pr_auc": 0.5296544317974407,
+      "champion_bundle": "offline",
+      "champion_model": "xgboost",
+      "champion_pr_auc": 0.7054471614030894,
+      "difference": {
+        "high": -0.09628885729231974,
+        "low": -0.25668101892797
+      },
+      "known_fraud": {
+        "backtest": 90,
+        "train": 202,
+        "val": 48
+      },
+      "reason": "the paired interval of the PR-AUC difference [-0.2567, -0.0963] does not lie above zero",
+      "recorded_at": "2026-10-22T23:55:30.281854+00:00",
+      "rows": {
+        "backtest": 26437,
+        "train": 63005,
+        "val": 13383
+      },
+      "status": "kept",
+      "stream_day": 105.0,
+      "train_seconds": 45.7288661999919,
+      "windows": {
+        "backtest": [
+          1708819778.77,
+          1710547778.77
+        ],
+        "train": [
+          1704067778.77,
+          1707955778.77
+        ],
+        "val": [
+          1707955778.77,
+          1708819778.77
+        ]
+      },
+      "truth": {
+        "fraud": 154,
+        "challenger_pr_auc": 0.4446145635789041,
+        "champion_pr_auc": 0.5468040568738738
+      }
+    },
+    {
+      "as_of": 1714435778.77,
+      "challenger_bundle": "day-120-d95055",
+      "challenger_model": "xgboost",
+      "challenger_pr_auc": 0.6156784027039156,
+      "champion_bundle": "offline",
+      "champion_model": "xgboost",
+      "champion_pr_auc": 0.5940556481049768,
+      "difference": {
+        "high": 0.11068185722466688,
+        "low": -0.06308507515709924
+      },
+      "known_fraud": {
+        "backtest": 88,
+        "train": 280,
+        "val": 52
+      },
+      "reason": "the paired interval of the PR-AUC difference [-0.0631, 0.1107] does not lie above zero",
+      "recorded_at": "2026-10-23T00:16:15.543103+00:00",
+      "rows": {
+        "backtest": 25288,
+        "train": 82781,
+        "val": 13458
+      },
+      "status": "kept",
+      "stream_day": 120.0,
+      "train_seconds": 52.69748459997936,
+      "windows": {
+        "backtest": [
+          1710115778.77,
+          1711843778.77
+        ],
+        "train": [
+          1704067778.77,
+          1709251778.77
+        ],
+        "val": [
+          1709251778.77,
+          1710115778.77
+        ]
+      },
+      "truth": {
+        "fraud": 134,
+        "challenger_pr_auc": 0.5107975666584972,
+        "champion_pr_auc": 0.49054499678963365
+      }
+    },
+    {
+      "as_of": 1715731778.77,
+      "challenger_bundle": "day-135-24ea98",
+      "challenger_model": "xgboost",
+      "challenger_pr_auc": 0.5090356017565203,
+      "champion_bundle": "offline",
+      "champion_model": "xgboost",
+      "champion_pr_auc": 0.4619991386965725,
+      "difference": {
+        "high": 0.11682812869135409,
+        "low": -0.01928811889349794
+      },
+      "known_fraud": {
+        "backtest": 82,
+        "train": 360,
+        "val": 47
+      },
+      "reason": "the paired interval of the PR-AUC difference [-0.0193, 0.1168] does not lie above zero",
+      "recorded_at": "2026-10-23T00:36:49.593477+00:00",
+      "rows": {
+        "backtest": 24983,
+        "train": 102825,
+        "val": 12656
+      },
+      "status": "kept",
+      "stream_day": 135.0,
+      "train_seconds": 59.28436420002254,
+      "windows": {
+        "backtest": [
+          1711411778.77,
+          1713139778.77
+        ],
+        "train": [
+          1704067778.77,
+          1710547778.77
+        ],
+        "val": [
+          1710547778.77,
+          1711411778.77
+        ]
+      },
+      "truth": {
+        "fraud": 114,
+        "challenger_pr_auc": 0.45771800867070966,
+        "champion_pr_auc": 0.4017810444622475
+      }
+    }
+  ],
+  "drift": [
+    {
+      "as_of": 1709251778.77,
+      "status": 200,
+      "bundle_id": "offline",
+      "rows": 5000,
+      "state": "warn",
+      "score": {
+        "psi": 0.006762622473364869,
+        "state": "ok"
+      },
+      "score_rows": 5000,
+      "features": [
+        {
+          "feature": "gateway_provider",
+          "psi": 0.18699908197199233,
+          "state": "warn"
+        },
+        {
+          "feature": "mcc",
+          "psi": 0.17836108988579924,
+          "state": "warn"
+        },
+        {
+          "feature": "utilization",
+          "psi": 0.07556654507492773,
+          "state": "ok"
+        },
+        {
+          "feature": "first_cnp_30d",
+          "psi": 0.07395296578357868,
+          "state": "ok"
+        },
+        {
+          "feature": "acquirer_bin",
+          "psi": 0.03789332341943061,
+          "state": "ok"
+        },
+        {
+          "feature": "first_mcc_30d",
+          "psi": 0.03591193303329426,
+          "state": "ok"
+        },
+        {
+          "feature": "hour_of_day",
+          "psi": 0.014601990771285215,
+          "state": "ok"
+        },
+        {
+          "feature": "seconds_since_last",
+          "psi": 0.005101891620388034,
+          "state": "ok"
+        },
+        {
+          "feature": "card_amount_24h",
+          "psi": 0.004392153539743222,
+          "state": "ok"
+        },
+        {
+          "feature": "card_tx_24h",
+          "psi": 0.0028215516441053917,
+          "state": "ok"
+        },
+        {
+          "feature": "ip_distance_from_home_km",
+          "psi": 0.0022250135839185486,
+          "state": "ok"
+        },
+        {
+          "feature": "vaai_score",
+          "psi": 0.00173566502534525,
+          "state": "ok"
+        },
+        {
+          "feature": "amount_to_limit",
+          "psi": 0.001658218103908772,
+          "state": "ok"
+        },
+        {
+          "feature": "amount",
+          "psi": 0.0014552958555368728,
+          "state": "ok"
+        },
+        {
+          "feature": "avs_match_code",
+          "psi": 0.0013295159235582256,
+          "state": "ok"
+        },
+        {
+          "feature": "product_id",
+          "psi": 0.0011573251953187137,
+          "state": "ok"
+        },
+        {
+          "feature": "card_distinct_mcc_30m",
+          "psi": 0.0005443087325885444,
+          "state": "ok"
+        },
+        {
+          "feature": "eci",
+          "psi": 0.0004092742488057285,
+          "state": "ok"
+        },
+        {
+          "feature": "pos_entry_mode",
+          "psi": 0.0003925903361256195,
+          "state": "ok"
+        },
+        {
+          "feature": "channel_type",
+          "psi": 0.0003925903361256195,
+          "state": "ok"
+        },
+        {
+          "feature": "card_tx_1h",
+          "psi": 0.00025815794904990644,
+          "state": "ok"
+        },
+        {
+          "feature": "geo_risk_score",
+          "psi": 0.00014764022309439394,
+          "state": "ok"
+        },
+        {
+          "feature": "cvv_match_flag",
+          "psi": 0.00012416310714770873,
+          "state": "ok"
+        },
+        {
+          "feature": "pos_condition_code",
+          "psi": 0.00010387156024288738,
+          "state": "ok"
+        },
+        {
+          "feature": "asn_type",
+          "psi": 4.936813830110961e-05,
+          "state": "ok"
+        },
+        {
+          "feature": "is_cross_border",
+          "psi": 4.062153262443054e-05,
+          "state": "ok"
+        }
+      ]
+    },
+    {
+      "as_of": 1710547778.77,
+      "status": 200,
+      "bundle_id": "offline",
+      "rows": 5000,
+      "state": "warn",
+      "score": {
+        "psi": 0.002144745967633808,
+        "state": "ok"
+      },
+      "score_rows": 5000,
+      "features": [
+        {
+          "feature": "gateway_provider",
+          "psi": 0.1790322430464228,
+          "state": "warn"
+        },
+        {
+          "feature": "mcc",
+          "psi": 0.1746995522560796,
+          "state": "warn"
+        },
+        {
+          "feature": "utilization",
+          "psi": 0.1311605376228255,
+          "state": "warn"
+        },
+        {
+          "feature": "first_cnp_30d",
+          "psi": 0.05358294095182429,
+          "state": "ok"
+        },
+        {
+          "feature": "first_mcc_30d",
+          "psi": 0.03326338870514224,
+          "state": "ok"
+        },
+        {
+          "feature": "acquirer_bin",
+          "psi": 0.022788991577205528,
+          "state": "ok"
+        },
+        {
+          "feature": "hour_of_day",
+          "psi": 0.01600501541283607,
+          "state": "ok"
+        },
+        {
+          "feature": "seconds_since_last",
+          "psi": 0.011846288709682384,
+          "state": "ok"
+        },
+        {
+          "feature": "product_id",
+          "psi": 0.010260433734775067,
+          "state": "ok"
+        },
+        {
+          "feature": "card_amount_24h",
+          "psi": 0.0031099352391969278,
+          "state": "ok"
+        },
+        {
+          "feature": "card_tx_1h",
+          "psi": 0.0029668249279676015,
+          "state": "ok"
+        },
+        {
+          "feature": "vaai_score",
+          "psi": 0.0027579282885650726,
+          "state": "ok"
+        },
+        {
+          "feature": "amount",
+          "psi": 0.002206370531460915,
+          "state": "ok"
+        },
+        {
+          "feature": "card_tx_24h",
+          "psi": 0.0017855908025829275,
+          "state": "ok"
+        },
+        {
+          "feature": "amount_to_limit",
+          "psi": 0.0017547554782427386,
+          "state": "ok"
+        },
+        {
+          "feature": "ip_distance_from_home_km",
+          "psi": 0.0017316546461815818,
+          "state": "ok"
+        },
+        {
+          "feature": "asn_type",
+          "psi": 0.0014107725665744252,
+          "state": "ok"
+        },
+        {
+          "feature": "card_distinct_mcc_30m",
+          "psi": 0.0013655263676787739,
+          "state": "ok"
+        },
+        {
+          "feature": "avs_match_code",
+          "psi": 0.0011803545500548146,
+          "state": "ok"
+        },
+        {
+          "feature": "eci",
+          "psi": 0.0008737972544975775,
+          "state": "ok"
+        },
+        {
+          "feature": "pos_entry_mode",
+          "psi": 0.0008249528547522671,
+          "state": "ok"
+        },
+        {
+          "feature": "channel_type",
+          "psi": 0.0008249528547522671,
+          "state": "ok"
+        },
+        {
+          "feature": "pos_condition_code",
+          "psi": 0.0007360881760752089,
+          "state": "ok"
+        },
+        {
+          "feature": "is_cross_border",
+          "psi": 0.0001503578643488104,
+          "state": "ok"
+        },
+        {
+          "feature": "cvv_match_flag",
+          "psi": 0.00012416310714770873,
+          "state": "ok"
+        },
+        {
+          "feature": "geo_risk_score",
+          "psi": 3.134529048968924e-05,
+          "state": "ok"
+        }
+      ]
+    },
+    {
+      "as_of": 1711843778.77,
+      "status": 200,
+      "bundle_id": "offline",
+      "rows": 5000,
+      "state": "warn",
+      "score": {
+        "psi": 0.0027526329700082314,
+        "state": "ok"
+      },
+      "score_rows": 5000,
+      "features": [
+        {
+          "feature": "mcc",
+          "psi": 0.23416480024570985,
+          "state": "warn"
+        },
+        {
+          "feature": "gateway_provider",
+          "psi": 0.21158269850845807,
+          "state": "warn"
+        },
+        {
+          "feature": "utilization",
+          "psi": 0.1520754937920614,
+          "state": "warn"
+        },
+        {
+          "feature": "first_cnp_30d",
+          "psi": 0.06757894642568585,
+          "state": "ok"
+        },
+        {
+          "feature": "first_mcc_30d",
+          "psi": 0.035496655115715176,
+          "state": "ok"
+        },
+        {
+          "feature": "acquirer_bin",
+          "psi": 0.032683637061772935,
+          "state": "ok"
+        },
+        {
+          "feature": "hour_of_day",
+          "psi": 0.005902538694428538,
+          "state": "ok"
+        },
+        {
+          "feature": "product_id",
+          "psi": 0.004497338938513225,
+          "state": "ok"
+        },
+        {
+          "feature": "seconds_since_last",
+          "psi": 0.0044481504662065696,
+          "state": "ok"
+        },
+        {
+          "feature": "card_amount_24h",
+          "psi": 0.0037236563103174567,
+          "state": "ok"
+        },
+        {
+          "feature": "card_distinct_mcc_30m",
+          "psi": 0.003058576065800967,
+          "state": "ok"
+        },
+        {
+          "feature": "amount",
+          "psi": 0.0029918906870531944,
+          "state": "ok"
+        },
+        {
+          "feature": "pos_entry_mode",
+          "psi": 0.002562705452700525,
+          "state": "ok"
+        },
+        {
+          "feature": "channel_type",
+          "psi": 0.002562705452700525,
+          "state": "ok"
+        },
+        {
+          "feature": "card_tx_24h",
+          "psi": 0.002490777028172247,
+          "state": "ok"
+        },
+        {
+          "feature": "eci",
+          "psi": 0.002259627395837893,
+          "state": "ok"
+        },
+        {
+          "feature": "pos_condition_code",
+          "psi": 0.0020313698430385746,
+          "state": "ok"
+        },
+        {
+          "feature": "amount_to_limit",
+          "psi": 0.001922927762847325,
+          "state": "ok"
+        },
+        {
+          "feature": "asn_type",
+          "psi": 0.0017243470371518096,
+          "state": "ok"
+        },
+        {
+          "feature": "card_tx_1h",
+          "psi": 0.0014675548387062354,
+          "state": "ok"
+        },
+        {
+          "feature": "vaai_score",
+          "psi": 0.0011679726139280577,
+          "state": "ok"
+        },
+        {
+          "feature": "ip_distance_from_home_km",
+          "psi": 0.0010433819672212847,
+          "state": "ok"
+        },
+        {
+          "feature": "cvv_match_flag",
+          "psi": 0.000815592955155073,
+          "state": "ok"
+        },
+        {
+          "feature": "avs_match_code",
+          "psi": 0.0004670634649770938,
+          "state": "ok"
+        },
+        {
+          "feature": "is_cross_border",
+          "psi": 0.00028367126552157444,
+          "state": "ok"
+        },
+        {
+          "feature": "geo_risk_score",
+          "psi": 6.500853780691685e-05,
+          "state": "ok"
+        }
+      ]
+    },
+    {
+      "as_of": 1713139778.77,
+      "status": 200,
+      "bundle_id": "offline",
+      "rows": 5000,
+      "state": "warn",
+      "score": {
+        "psi": 0.005482166529350602,
+        "state": "ok"
+      },
+      "score_rows": 5000,
+      "features": [
+        {
+          "feature": "mcc",
+          "psi": 0.20724979871204935,
+          "state": "warn"
+        },
+        {
+          "feature": "gateway_provider",
+          "psi": 0.19784771671937273,
+          "state": "warn"
+        },
+        {
+          "feature": "utilization",
+          "psi": 0.12197855141645177,
+          "state": "warn"
+        },
+        {
+          "feature": "first_cnp_30d",
+          "psi": 0.07766722168796082,
+          "state": "ok"
+        },
+        {
+          "feature": "first_mcc_30d",
+          "psi": 0.03933810367419199,
+          "state": "ok"
+        },
+        {
+          "feature": "product_id",
+          "psi": 0.028968457650916126,
+          "state": "ok"
+        },
+        {
+          "feature": "acquirer_bin",
+          "psi": 0.02117983280421852,
+          "state": "ok"
+        },
+        {
+          "feature": "amount_to_limit",
+          "psi": 0.00575065416454528,
+          "state": "ok"
+        },
+        {
+          "feature": "card_tx_24h",
+          "psi": 0.004494627713236027,
+          "state": "ok"
+        },
+        {
+          "feature": "hour_of_day",
+          "psi": 0.004472740392018188,
+          "state": "ok"
+        },
+        {
+          "feature": "ip_distance_from_home_km",
+          "psi": 0.003036661619899384,
+          "state": "ok"
+        },
+        {
+          "feature": "seconds_since_last",
+          "psi": 0.0028374834080780406,
+          "state": "ok"
+        },
+        {
+          "feature": "amount",
+          "psi": 0.0023040482631270925,
+          "state": "ok"
+        },
+        {
+          "feature": "avs_match_code",
+          "psi": 0.0019452311186608827,
+          "state": "ok"
+        },
+        {
+          "feature": "card_tx_1h",
+          "psi": 0.0014612805816030022,
+          "state": "ok"
+        },
+        {
+          "feature": "eci",
+          "psi": 0.0013701824629022228,
+          "state": "ok"
+        },
+        {
+          "feature": "vaai_score",
+          "psi": 0.001223173048586526,
+          "state": "ok"
+        },
+        {
+          "feature": "card_amount_24h",
+          "psi": 0.0011262937132751668,
+          "state": "ok"
+        },
+        {
+          "feature": "pos_entry_mode",
+          "psi": 0.0007958741198692017,
+          "state": "ok"
+        },
+        {
+          "feature": "channel_type",
+          "psi": 0.0007958741198692017,
+          "state": "ok"
+        },
+        {
+          "feature": "card_distinct_mcc_30m",
+          "psi": 0.0005365307151616735,
+          "state": "ok"
+        },
+        {
+          "feature": "pos_condition_code",
+          "psi": 0.00016651610129980596,
+          "state": "ok"
+        },
+        {
+          "feature": "asn_type",
+          "psi": 5.609860069668709e-05,
+          "state": "ok"
+        },
+        {
+          "feature": "is_cross_border",
+          "psi": 1.912399140013598e-05,
+          "state": "ok"
+        },
+        {
+          "feature": "cvv_match_flag",
+          "psi": 6.6216159196891215e-06,
+          "state": "ok"
+        },
+        {
+          "feature": "geo_risk_score",
+          "psi": 8.458870750595692e-07,
+          "state": "ok"
+        }
+      ]
+    },
+    {
+      "as_of": 1714435778.77,
+      "status": 200,
+      "bundle_id": "offline",
+      "rows": 5000,
+      "state": "warn",
+      "score": {
+        "psi": 0.004486537627944144,
+        "state": "ok"
+      },
+      "score_rows": 5000,
+      "features": [
+        {
+          "feature": "gateway_provider",
+          "psi": 0.22197695718420127,
+          "state": "warn"
+        },
+        {
+          "feature": "utilization",
+          "psi": 0.20261448124431747,
+          "state": "warn"
+        },
+        {
+          "feature": "mcc",
+          "psi": 0.1559672461896443,
+          "state": "warn"
+        },
+        {
+          "feature": "first_cnp_30d",
+          "psi": 0.06757894642568585,
+          "state": "ok"
+        },
+        {
+          "feature": "first_mcc_30d",
+          "psi": 0.02868290779352032,
+          "state": "ok"
+        },
+        {
+          "feature": "acquirer_bin",
+          "psi": 0.01900152072471616,
+          "state": "ok"
+        },
+        {
+          "feature": "product_id",
+          "psi": 0.013617102726306802,
+          "state": "ok"
+        },
+        {
+          "feature": "amount_to_limit",
+          "psi": 0.010125176074605757,
+          "state": "ok"
+        },
+        {
+          "feature": "hour_of_day",
+          "psi": 0.009691971638638379,
+          "state": "ok"
+        },
+        {
+          "feature": "seconds_since_last",
+          "psi": 0.006206309281680719,
+          "state": "ok"
+        },
+        {
+          "feature": "card_tx_24h",
+          "psi": 0.004325848613751816,
+          "state": "ok"
+        },
+        {
+          "feature": "amount",
+          "psi": 0.003938624500133451,
+          "state": "ok"
+        },
+        {
+          "feature": "card_amount_24h",
+          "psi": 0.003611318908196306,
+          "state": "ok"
+        },
+        {
+          "feature": "card_tx_1h",
+          "psi": 0.0025077666512236772,
+          "state": "ok"
+        },
+        {
+          "feature": "card_distinct_mcc_30m",
+          "psi": 0.0022292944845725775,
+          "state": "ok"
+        },
+        {
+          "feature": "eci",
+          "psi": 0.0017536135340669456,
+          "state": "ok"
+        },
+        {
+          "feature": "vaai_score",
+          "psi": 0.0016927888335053882,
+          "state": "ok"
+        },
+        {
+          "feature": "avs_match_code",
+          "psi": 0.001171741500456138,
+          "state": "ok"
+        },
+        {
+          "feature": "ip_distance_from_home_km",
+          "psi": 0.0011436930637971883,
+          "state": "ok"
+        },
+        {
+          "feature": "asn_type",
+          "psi": 0.00042728603040389807,
+          "state": "ok"
+        },
+        {
+          "feature": "pos_entry_mode",
+          "psi": 0.0002985150784315583,
+          "state": "ok"
+        },
+        {
+          "feature": "channel_type",
+          "psi": 0.0002985150784315583,
+          "state": "ok"
+        },
+        {
+          "feature": "pos_condition_code",
+          "psi": 0.00022303327750502553,
+          "state": "ok"
+        },
+        {
+          "feature": "is_cross_border",
+          "psi": 0.00010644871843198955,
+          "state": "ok"
+        },
+        {
+          "feature": "geo_risk_score",
+          "psi": 1.723082425589871e-05,
+          "state": "ok"
+        },
+        {
+          "feature": "cvv_match_flag",
+          "psi": 1.3596676255139584e-07,
+          "state": "ok"
+        }
+      ]
+    },
+    {
+      "as_of": 1715731778.77,
+      "status": 200,
+      "bundle_id": "offline",
+      "rows": 5000,
+      "state": "warn",
+      "score": {
+        "psi": 0.00385657390536914,
+        "state": "ok"
+      },
+      "score_rows": 5000,
+      "features": [
+        {
+          "feature": "utilization",
+          "psi": 0.2303859102866686,
+          "state": "warn"
+        },
+        {
+          "feature": "mcc",
+          "psi": 0.20000018560618962,
+          "state": "warn"
+        },
+        {
+          "feature": "gateway_provider",
+          "psi": 0.18718317049873567,
+          "state": "warn"
+        },
+        {
+          "feature": "first_cnp_30d",
+          "psi": 0.06223179461329612,
+          "state": "ok"
+        },
+        {
+          "feature": "first_mcc_30d",
+          "psi": 0.04112154579366259,
+          "state": "ok"
+        },
+        {
+          "feature": "acquirer_bin",
+          "psi": 0.03517937437636914,
+          "state": "ok"
+        },
+        {
+          "feature": "seconds_since_last",
+          "psi": 0.01200475907277139,
+          "state": "ok"
+        },
+        {
+          "feature": "card_amount_24h",
+          "psi": 0.00828469980487032,
+          "state": "ok"
+        },
+        {
+          "feature": "hour_of_day",
+          "psi": 0.006998383778287308,
+          "state": "ok"
+        },
+        {
+          "feature": "card_tx_1h",
+          "psi": 0.006451930894434205,
+          "state": "ok"
+        },
+        {
+          "feature": "ip_distance_from_home_km",
+          "psi": 0.006354742483016478,
+          "state": "ok"
+        },
+        {
+          "feature": "card_tx_24h",
+          "psi": 0.00579336460948007,
+          "state": "ok"
+        },
+        {
+          "feature": "product_id",
+          "psi": 0.004894971401148217,
+          "state": "ok"
+        },
+        {
+          "feature": "card_distinct_mcc_30m",
+          "psi": 0.0029073327302524318,
+          "state": "ok"
+        },
+        {
+          "feature": "pos_entry_mode",
+          "psi": 0.002460132176262596,
+          "state": "ok"
+        },
+        {
+          "feature": "channel_type",
+          "psi": 0.002460132176262596,
+          "state": "ok"
+        },
+        {
+          "feature": "amount",
+          "psi": 0.0021906777694240148,
+          "state": "ok"
+        },
+        {
+          "feature": "is_cross_border",
+          "psi": 0.0021428666337603257,
+          "state": "ok"
+        },
+        {
+          "feature": "amount_to_limit",
+          "psi": 0.001818730632008336,
+          "state": "ok"
+        },
+        {
+          "feature": "vaai_score",
+          "psi": 0.0018186295071283799,
+          "state": "ok"
+        },
+        {
+          "feature": "avs_match_code",
+          "psi": 0.0012162035962714893,
+          "state": "ok"
+        },
+        {
+          "feature": "asn_type",
+          "psi": 0.00033924720501221964,
+          "state": "ok"
+        },
+        {
+          "feature": "eci",
+          "psi": 0.00029006722528055465,
+          "state": "ok"
+        },
+        {
+          "feature": "geo_risk_score",
+          "psi": 3.134529048968924e-05,
+          "state": "ok"
+        },
+        {
+          "feature": "pos_condition_code",
+          "psi": 2.294811311399089e-05,
+          "state": "ok"
+        },
+        {
+          "feature": "cvv_match_flag",
+          "psi": 1.3596676255139584e-07,
+          "state": "ok"
+        }
+      ]
+    }
+  ],
+  "windows": [
+    {
+      "window": 0,
+      "start_day": 0.0,
+      "end_day": 15.0,
+      "rows": 22251,
+      "fraud": 96,
+      "pr_auc": 0.48995121013538634,
+      "recall": 0.3125,
+      "alerts": 33,
+      "bundles": [
+        "offline"
+      ]
+    },
+    {
+      "window": 1,
+      "start_day": 15.0,
+      "end_day": 30.0,
+      "rows": 20514,
+      "fraud": 95,
+      "pr_auc": 0.42232631592073316,
+      "recall": 0.2631578947368421,
+      "alerts": 32,
+      "bundles": [
+        "offline"
+      ]
+    },
+    {
+      "window": 2,
+      "start_day": 30.0,
+      "end_day": 45.0,
+      "rows": 20240,
+      "fraud": 89,
+      "pr_auc": 0.32999397437263067,
+      "recall": 0.19101123595505617,
+      "alerts": 31,
+      "bundles": [
+        "offline"
+      ]
+    },
+    {
+      "window": 3,
+      "start_day": 45.0,
+      "end_day": 60.0,
+      "rows": 19776,
+      "fraud": 103,
+      "pr_auc": 0.5598112344581592,
+      "recall": 0.3786407766990291,
+      "alerts": 51,
+      "bundles": [
+        "offline"
+      ]
+    },
+    {
+      "window": 4,
+      "start_day": 60.0,
+      "end_day": 75.0,
+      "rows": 20044,
+      "fraud": 118,
+      "pr_auc": 0.5598033868766351,
+      "recall": 0.3728813559322034,
+      "alerts": 56,
+      "bundles": [
+        "offline"
+      ]
+    },
+    {
+      "window": 5,
+      "start_day": 75.0,
+      "end_day": 90.0,
+      "rows": 18702,
+      "fraud": 98,
+      "pr_auc": 0.47544851915368136,
+      "recall": 0.35714285714285715,
+      "alerts": 45,
+      "bundles": [
+        "offline"
+      ]
+    },
+    {
+      "window": 6,
+      "start_day": 90.0,
+      "end_day": 105.0,
+      "rows": 18937,
+      "fraud": 80,
+      "pr_auc": 0.39392753583024787,
+      "recall": 0.3,
+      "alerts": 37,
+      "bundles": [
+        "offline"
+      ]
+    },
+    {
+      "window": 7,
+      "start_day": 105.0,
+      "end_day": 120.0,
+      "rows": 18729,
+      "fraud": 83,
+      "pr_auc": 0.44533880969922773,
+      "recall": 0.3373493975903614,
+      "alerts": 37,
+      "bundles": [
+        "offline"
+      ]
+    },
+    {
+      "window": 8,
+      "start_day": 120.0,
+      "end_day": 135.0,
+      "rows": 18578,
+      "fraud": 77,
+      "pr_auc": 0.47850585587217365,
+      "recall": 0.37662337662337664,
+      "alerts": 40,
+      "bundles": [
+        "offline"
+      ]
+    },
+    {
+      "window": 9,
+      "start_day": 135.0,
+      "end_day": 150.0,
+      "rows": 2229,
+      "fraud": 14,
+      "pr_auc": 0.5374481280817887,
+      "recall": 0.5,
+      "alerts": 13,
+      "bundles": [
+        "offline"
+      ]
+    }
+  ]
+}

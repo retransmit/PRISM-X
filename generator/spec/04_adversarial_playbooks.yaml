@@ -1,0 +1,334 @@
+# spec/04_adversarial_playbooks.yaml
+# Canonical Specification for Adversarial Attack Playbooks, Cybercrime Infrastructure & Dynamic Adaptation
+# Grounded in: US DOJ Indictments (911 S5, May 2024), Ali et al. (IEEE S&P 2017), Mi et al. (IEEE S&P 2019),
+# Vastel et al. (USENIX Security 2018), Visa Account Attack Intelligence (VAAI), Real-World Botnet Case Studies.
+
+schema_version: "1.1.0"
+unit_definitions:
+  currency: "USD_cents"
+  time: "seconds"
+  probability: "[0.0, 1.0]"
+  ratio: "bps_or_percentage"
+
+darknet_market_economics:
+  asset_pricing_cents:
+    track_2_no_pin: { min: 1500, max: 4500 }
+    track_2_with_pin: { min: 8000, max: 22000 }
+    cvv_cnp_record: { min: 800, max: 3000 }
+    fullz_classic: { min: 3500, max: 12000 }
+    fullz_ultra_premium: { min: 15000, max: 35000 }
+  warranty_window_seconds: 7200  # 2-hour darknet replacement warranty
+  expiration_decay_model:
+    formula: "V(t) = V_0 * [0.65 * exp(-t / 41.11) + 0.35 * exp(-t / 375.1)]"
+    fast_half_life_hours: 28.5
+    slow_half_life_hours: 260.0
+
+liquidation_channels:
+  - id: "LIQ_GIFT_CARDS"
+    mccs: [5947, 5310]
+    haircut_discount_ratio: 0.25 # 75 cents on dollar
+    settlement_speed: "INSTANT"
+    irreversibility: "TOTAL"
+  - id: "LIQ_HIGH_VALUE_ELECTRONICS"
+    mccs: [5732, 5045]
+    haircut_discount_ratio: 0.15 # 85 cents on dollar
+    settlement_speed: "HOURS_TO_DAYS"
+    irreversibility: "PHYSICAL_POSSESSION"
+  - id: "LIQ_CRYPTO_ONRAMP"
+    mccs: [6051, 6012]
+    haircut_discount_ratio: 0.08 # 92 cents on dollar
+    settlement_speed: "BLOCKCHAIN_MINUTES"
+    irreversibility: "TOTAL"
+  - id: "LIQ_BULK_DIESEL_FUEL"
+    mccs: [5542]
+    haircut_discount_ratio: 0.50 # 50 cents on dollar
+    settlement_speed: "INSTANT"
+    irreversibility: "TOTAL"
+
+adversarial_playbooks:
+  - id: "ADV_MICRO_AUTH_PROBE"
+    name: "Automated Card Testing Micro-Probe"
+    target_products: ["PROD_SUBPRIME_SECURED", "PROD_CLASSIC_REVOLVING", "PROD_GPR_PREPAID"]
+    target_clusters: ["C1_HOURLY_GIG_WORKER", "C3_YOUNG_ADULT_STUDENT"]
+    ticket_size_range_cents: [50, 199]
+    target_mccs: [8398, 4899, 5815] # Charities, streaming micro-trials
+    exploited_gaps:
+      - "AVS_Z_ZIP_ONLY_BYPASS"
+      - "PSD2_ARTICLE_16_LOW_VALUE"
+    response_handling:
+      iso_00_approved: "PROMOTE_TO_HIGH_TICKET_CASHOUT"
+      iso_05_decline: "PURGE_AND_REQUEST_DARKNET_WARRANTY"
+      iso_14_invalid: "PURGE_CARD"
+
+  - id: "ADV_ATO_SILENT_BAKING"
+    name: "Account Takeover with 14-Day Dormancy Baking"
+    target_products: ["PROD_REWARDS_SIGNATURE", "PROD_ULTRA_PREMIUM_INFINITE"]
+    target_clusters: ["C5_URBAN_TECH_PROFESSIONAL", "C4_SUBURBAN_FAMILY"]
+    reconnaissance: "INFOSTEALER_SESSION_CREDENTIALS"
+    action_sequence:
+      step_1: "UPDATE_EMAIL_AND_SMS_PHONE_NUMBER"
+      step_2: "DISABLE_PUSH_NOTIFICATIONS"
+      step_3_silent_bake_seconds: 1209600 # 14 calendar days sleep
+      step_4_drain_spend_cents: [300000, 800000] # $3,000 - $8,000
+    expected_response: "ISO_00_APPROVED_DUE_TO_DECAYED_VELOCITY_COUNTERS"
+
+  - id: "ADV_SLEEPER_BUST_OUT"
+    name: "Synthetic Sleeper Bust-Out with ACH Float"
+    target_products: ["PROD_SUBPRIME_SECURED"]
+    target_clusters: ["C6_SMALL_BUSINESS_OWNER"]
+    incubation_period_days: 365 # 1 year seasoning
+    credit_graduation_target_cents: 1200000 # $12,000 line
+    double_bust_out_sequence:
+      t_0h: { action: "CHARGE_100_PERCENT_LIMIT", amount_cents: 1180000 }
+      t_12h: { action: "SUBMIT_FRAUDULENT_ACH_PAYMENT", amount_cents: 1180000 }
+      t_14h_memo_credit_float: { action: "CHARGE_SECOND_100_PERCENT_LIMIT", amount_cents: 1180000 }
+      t_96h: { outcome: "ACH_BOUNCE_R01_ABANDON_IDENTITY" }
+    total_extraction_multiplier: 2.0
+
+  - id: "ADV_APPLE_PAY_YELLOW_PATH"
+    name: "Token Provisioning Social Engineering (Yellow Path)"
+    target_products: ["PROD_REWARDS_SIGNATURE", "PROD_ULTRA_PREMIUM_INFINITE"]
+    target_clusters: ["C4_SUBURBAN_FAMILY", "C5_URBAN_TECH_PROFESSIONAL"]
+    attack_mechanism: "REVERSE_PROXY_TELEPHONY_OTP_INTERCEPTION"
+    post_binding_liquidation:
+      channel: "CP_CONTACTLESS_NFC"
+      mccs: [5732, 5651] # Apple Store, Luxury Fashion
+      ticket_size_cents: [50000, 250000]
+      chargeback_liability_outcome: "ISSUER_FULL_ABSORPTION"
+
+  - id: "ADV_NOCTURNAL_BURST"
+    name: "Circadian Nocturnal Carding Burst"
+    target_products: ["ALL_CONSUMER_CREDIT", "PROD_CHECKING_DEBIT"]
+    target_clusters: ["ALL"]
+    attack_window_local_hour: [0, 5] # 00:00 - 05:00 local time
+    burst_velocity_tx: 6
+    spacing_seconds: [180, 420]
+    expected_discovery_latency_seconds: 21600 # 6 hours (sleep suppressed)
+
+  - id: "ADV_DISTRIBUTED_BIN_ENUMERATION"
+    name: "PAN Enumeration Attack (PEA) via Distributed Additive Guessing"
+    grounding_authority: "Ali et al. (IEEE S&P 2017) / Visa VAAI"
+    target_bins: ["414720", "524890", "40001234"]
+    search_space_complexity: "ADDITIVE_O_N_PLUS_M" # 1,060 reqs vs 60,000 multiplicative
+    phase_1_expiry_probing:
+      search_space_combinations: 60
+      parallel_merchants_count: 30
+      requests_per_merchant: 2
+      target_response_transition: "ISO_54_EXPIRED_TO_ISO_82_INVALID_CVV"
+      latency_budget_seconds: 2.5
+    phase_2_cvv_probing:
+      search_space_combinations: 1000
+      parallel_merchants_count: 200
+      requests_per_merchant: 5
+      target_response_transition: "ISO_82_INVALID_CVV_TO_ISO_00_APPROVED"
+      expected_attempts: 500
+      latency_budget_seconds: 5.0
+    network_countermeasures:
+      visa_vaai:
+        risk_score_field: "FIELD_44_VAAI"
+        threshold_decline: 75
+        inference_latency_ms: 1.0
+        field_39_outcome: "05_OR_59"
+      mastercard_aai:
+        action: "NETWORK_SWITCH_PRE_AUTH_DROP"
+
+  - id: "ADV_TRIANGULATION_FRAUD"
+    name: "E-Commerce Triangulation Fraud Lifecycle"
+    victim_roles:
+      clean_customer: "PAYS_CLEAN_FIAT_RECEIVES_GOODS"
+      target_retailer: "SHIPS_GOODS_BEARS_100_PCT_CHARGEBACK_LOSS"
+      stolen_cardholder: "FILES_UNAUTHORIZED_DISPUTE_REASON_10_4"
+      fraudster: "EXTRACTS_CLEAN_PROFIT_ZERO_CHARGEBACK_RECOURSE"
+    discount_markup_ratio: 0.30 # Sold at 30% below MSRP on eBay/Amazon
+    timing_lifecycle:
+      t_0h: "DEPLOY_GHOST_STOREFRONT"
+      t_24h: "CLEAN_BUYER_PURCHASES_DISCOUNT_ITEM"
+      t_26h: "EXPLOIT_RETAILER_WITH_STOLEN_CARD_AND_CLEAN_SHIP_ADDRESS"
+      t_96h: "RETAILER_DELIVERS_PRODUCT_CLEAN_BUYER_LEAVES_5_STAR_REVIEW"
+      t_168h: "MARKETPLACE_RELEASES_CLEAN_PAYOUT_TO_MULE"
+      t_720h: "STOLEN_CARDHOLDER_CHARGEBACK_SHOCKWAVE_HITS_RETAILER"
+    chargeback_multiplier_range: [3.75, 4.23] # Cost to retailer per $1 fraud
+
+  - id: "ADV_COLLUSIVE_BUST_OUT_MID"
+    name: "Collusive PayFac Sub-MID Bust-Out"
+    incubation_period_days: 60 # Clean transaction seasoning at 0.00% chargebacks
+    initial_volume_cap_usd: 50000.00
+    seasoned_volume_cap_usd: 250000.00
+    strike_window:
+      start_time: "FRIDAY_18_00_EST" # Long bank holiday weekend
+      duration_hours: 48
+      harvest_volume_usd: [150000.00, 600000.00]
+      ticket_size_range_usd: [185.00, 475.00]
+    payout_sweep_rail: "SAME_DAY_ACH_OR_INSTANT_DIRECT"
+    fallout_chargeback_surge_ratio: 0.92 # 92% chargeback ratio post-abandonment
+    regulatory_outcome: "MATCH_LISTING_REASON_08_11_14"
+
+underground_spoofing_infrastructure:
+  residential_proxy_networks:
+    grounding: "DOJ 911 S5 Indictment / IEEE S&P 2019 (Mi et al.)"
+    node_types: ["RESIDENTIAL_SOCKS5", "MOBILE_4G_5G_P2P", "DATACENTER_BULK"]
+    us_residential_pools:
+      asns: ["AS7922", "AS7018", "AS20115", "AS21928", "AS22773"]
+      isps: ["Comcast", "AT&T", "Charter Spectrum", "T-Mobile USA", "Cox"]
+      subnet_cidr_cap_sessions: 2 # max 2 sessions per /24 prefix to avoid subnet blacklists
+      sticky_session_duration_seconds: [600, 1800] # 10 to 30 min checkout hold
+      bandwidth_cost_cents_per_gb: 800 # $8.00/GB ($0.08 - $0.25/checkout attempt)
+    india_mobile_pools:
+      asns: ["AS55836", "AS45609", "AS24560", "AS9829"]
+      isps: ["Reliance Jio", "Bharti Airtel", "Airtel Broadband", "BSNL"]
+      sticky_session_duration_seconds: [300, 900]
+      bandwidth_cost_cents_per_gb: 350
+    datacenter_checker_pools:
+      asns: ["AS16509", "AS15169", "AS8075", "AS14061"]
+      isps: ["AWS", "Google Cloud", "Microsoft Azure", "DigitalOcean"]
+      rotation_policy: "PER_REQUEST"
+      bandwidth_cost_cents_per_gb: 40
+      gateway_rejection_rate: 0.85 # High gate drop rate when unmasked
+    asn_matching_criteria: "TARGET_VICTIM_CITY_RESIDENTIAL_ISP"
+    max_geofence_distance_km: 25.0
+
+  network_fingerprinting_telemetry:
+    foxio_ja4_tls_suite:
+      format: "{ja4_a}_{ja4_b}_{ja4_c}"
+      bot_signatures:
+        python_requests: "t13d1516h2_8daaf6152771_e562703ab853"
+        go_http: "t12i1212h1_7caa04519921_b124802fc712"
+      clean_browser_signatures:
+        chrome_windows: "t13d1516h2_dfa4a7752771_c212703ab899"
+        safari_macos: "t13d1415h2_08a3f8541249_4387201bc910"
+    p0f_v3_tcp_stack_parameters:
+      windows_11_kernel:
+        initial_ttl: 128
+        tcp_window_size: 64240
+        wscale: 8
+        options: "MSS, NOP, WScale, NOP, NOP, SACK"
+      linux_kernel_container:
+        initial_ttl: 64
+        tcp_window_size: 29200
+        wscale: 7
+        options: "MSS, SACK, Timestamps, NOP, WScale"
+    cross_layer_discrepancy_tripwires:
+      user_agent_vs_tcp_os_mismatch: "RISK_SCORE_ADD_45"
+      user_agent_vs_ja4_client_mismatch: "GATEWAY_DROP_ISO_05"
+
+  anti_detect_browser_mechanics:
+    canvas_noise_injection:
+      delta_rgb_variance: [-2, 2] # Deterministic pseudo-random seed
+    webgl_spoofing:
+      unmasked_vendor: "Google Inc. (NVIDIA)"
+      unmasked_renderer: "ANGLE (NVIDIA, NVIDIA GeForce RTX 3070 Direct3D11 vs_5_0 ps_5_0)"
+    audiocontext_noise:
+      float32_buffer_variance: 0.000001
+    webrtc_policy: "DISABLE_NON_PROXIED_UDP"
+  counter_detection_fp_scanner:
+    grounding: "USENIX Security 2018 (Vastel et al.)"
+    checks:
+      prototype_descriptor_tampering: "Function.prototype.toString.call"
+      canvas_repeatability_test_count: 5 # Real GPU produces 5/5 identical hashes
+      hardware_performance_discrepancy_threshold_ms: 45.0
+
+money_mule_laundering_pipeline:
+  grounding: "FinCEN Advisories FIN-2020-A003 / FIN-2021-A001 / FATF 2023 Money Mules"
+  layer_1_ingress:
+    channels: ["RENT_PORTAL", "INSTANT_P2P", "COLLUSIVE_POS"]
+    dwell_time_seconds: [60, 180]
+    mule_archetype: "DORMANT_STUDENT_OR_MIGRANT"
+  layer_2_smurfing_fan_out:
+    fan_out_accounts_count: [4, 8]
+    dwell_time_seconds: [120, 300]
+    tranche_ceiling_usd: 1950.00 # Below $2,000 retail AML limit
+    transfer_rails: ["ZELLE", "FEDNOW", "RTP", "SAME_DAY_ACH"]
+    corporate_shell_account_ratio: 0.35 # High-limit current accounts
+    hop_latency_seconds: [30, 120]
+  layer_3_crypto_severance:
+    exchange_venues: ["BINANCE_P2P", "BYBIT_P2P", "OKX"]
+    crypto_asset: "USDT_TRC20"
+    p2p_fiat_transfer_dwell_seconds: [180, 600]
+    settlement_outcome: "PERMANENT_FIAT_TRAIL_SEVERED"
+    final_destination: "UNHOSTED_NON_CUSTODIAL_WALLET_SE_ASIA_OR_DUBAI"
+  tier_1_smurfing_ingress:
+    account_type: "PERSONAL_CHECKING_OR_SAVINGS"
+    target_institutions: ["CHASE", "BOA", "WELLS_FARGO", "SBI", "HDFC"]
+    channels: ["INSTANT_P2P", "RENT_PORTAL", "COLLUSIVE_POS"]
+    fan_in_range: [3, 8] # 3 to 8 victim transfers
+    tranche_ceiling_usd_cents: 250000 # Under $2,500 AML reporting threshold
+    mule_retention_cut_ratio: 0.10 # 10% fee to Tier 1 mule
+    dwell_time_seconds_range: [300, 1800] # 5 to 30 minutes
+    mule_archetypes: ["UNWITTING_JOB_SCAM_VICTIM", "COMPLICIT_STUDENT_DROP"]
+  tier_2_aggregator_consolidation:
+    account_type: "COMMERCIAL_CORPORATE_SHELL_LLC"
+    consolidation_fan_in: [4, 10] # Pools 4-10 Tier 1 smurf flows
+    tranche_ceiling_usd_cents: 3500000 # $35,000 corporate tranches
+    aggregator_cut_ratio: 0.15 # 15% fee to Tier 2 aggregator
+    dwell_time_seconds_range: [1800, 7200] # 30 min to 2 hours
+    transfer_rails: ["FEDNOW", "RTP", "SAME_DAY_ACH", "IMPS", "RTGS"]
+  tier_3_crypto_severance_offramp:
+    exchange_venues: ["BINANCE_P2P", "BYBIT_P2P", "HUIONE_GUARANTEE"]
+    crypto_asset: "USDT_TRC20"
+    otc_merchant_spread_ratio: 0.05 # 5% spread haircut
+    dwell_time_seconds_range: [600, 1500] # 10 to 25 minutes
+    settlement_outcome: "PERMANENT_FIAT_TRAIL_SEVERED"
+    final_destination: "UNHOSTED_NON_CUSTODIAL_WALLET_SE_ASIA_OR_DUBAI"
+  cumulative_pipeline_friction_ratio: 0.30 # Total 30% lost across 3 hops
+  golden_window_fund_recovery_decay:
+    formula: "P(Recovery | t) = 0.82 * exp(-0.045 * t) for t <= 30m; 0.21 * exp(-0.015 * t) for 30 < t <= 120m; < 0.03 for t > 120m"
+    sub_30_minute_success_rate: 0.88 # 88% success if fiat severed within 30 min
+
+cybercrime_syndicate_taxonomy:
+  grounding: "CaaS (Cybercrime-as-a-Service) Specialization Architecture"
+  archetypes:
+    - id: "SYN_IAB_STEALER_BROKER"
+      name: "Initial Access Broker & Stealer Log Distributor"
+      ecosystem_role: "CREDENTIAL_HARVESTING_WHOLESALE"
+      botnet_type: "MALWARE_DROPPER_C2"
+      target_mccs: []
+      primary_liquidation: "CRYPTO_ESCROW_SALES"
+    - id: "SYN_CARD_CHECKER_BOTNET"
+      name: "Automated Micro-Auth Card Testing Botnet"
+      ecosystem_role: "RAPID_CARD_VALIDATION"
+      botnet_type: "DATACENTER_ROTATING_PROXY"
+      target_mccs: [8398, 4899, 5815]
+      ticket_range_cents: [50, 200]
+      primary_liquidation: "NONE_DISCOVERY_ONLY"
+    - id: "SYN_ATO_RETAIL_CREW"
+      name: "Account Takeover & Session Hijacking Syndicate"
+      ecosystem_role: "HIGH_TICKET_INVENTORY_DRAIN"
+      botnet_type: "RESIDENTIAL_STICKY_SOCKS5"
+      target_mccs: [5732, 5311, 5944]
+      ticket_range_cents: [150000, 450000]
+      primary_liquidation: "MULE_TIER_1_SMURF"
+    - id: "SYN_SYNTHETIC_BUSTOUT_RING"
+      name: "Synthetic Sleeper Bust-Out & ACH Float Syndicate"
+      ecosystem_role: "MAX_LIMIT_FLOAT_EXPLOITATION"
+      botnet_type: "RESIDENTIAL_STICKY_SOCKS5"
+      target_mccs: [6051, 5944, 5732]
+      ticket_range_cents: [1200000, 5000000]
+      primary_liquidation: "MULE_TIER_2_AGGREGATOR"
+    - id: "SYN_RESHIP_GIFT_DRAIN"
+      name: "CNP Reship Logistics & Gift Card Drain Ring"
+      ecosystem_role: "LIQUID_PHYSICAL_AND_DIGITAL_DRAIN"
+      botnet_type: "RESIDENTIAL_SOCKS5_MULTI_ASN"
+      target_mccs: [5947, 5732]
+      ticket_range_cents: [25000, 150000]
+      primary_liquidation: "SECONDARY_GIFT_CARD_P2P"
+    - id: "SYN_FINCEN_MULE_NETWORK"
+      name: "FinCEN/FATF 3-Tier Layering & Crypto Off-Ramp Network"
+      ecosystem_role: "FIAT_SEVERANCE_AND_LAUNDERING"
+      botnet_type: "RESIDENTIAL_STICKY_SOCKS5"
+      target_mccs: []
+      primary_liquidation: "BINANCE_BYBIT_P2P_USDT_TRC20"
+
+dynamic_adaptation_algorithms:
+  balance_discovery_bisection_on_iso_51:
+    formula: "A_{k+1} = round(max(0.50 * A_k, floor_cents), 2)"
+    initial_ticket_cents: 85000
+    floor_cents: 2500
+    action_on_consecutive_approvals: "REPEAT_LAST_APPROVED_AMOUNT"
+    action_on_exhaustion: "MARK_EXHAUSTED_AND_PURGE"
+
+  merchant_hopping_on_3ds_challenge:
+    trigger_response: "3DS_REDIRECT_OR_FIELD_39_65"
+    action: "ABANDON_MID_AND_HOP"
+    target_merchant_criteria: "LOW_VALUE_ARTICLE_16_OR_NON_SCA_JURISDICTION"
+    retry_delay_seconds: 45
+    reduced_amount_cents: 2800 # Below €30 SCA threshold

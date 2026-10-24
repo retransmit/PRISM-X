@@ -1,0 +1,202 @@
+# spec/20_backbone_replay.yaml
+# Canonical Specification for External Backbone Replay Mode
+# Grounded in:
+#   - Dal Pozzolo et al. (ULB Machine Learning Group, OpenML file 1673544)
+#   - Vesta Corporation / IEEE-CIS Fraud Detection Benchmark (2019)
+#   - ISO 8583 / ISO 20022 Financial Messaging Specifications
+#   - spec/19_detector_contract.yaml and spec/07_export_leakage_gate.yaml
+
+schema_version: "1.0.0"
+slice_id: "slice-26-external-backbone-replay-mode"
+title: "External Backbone Replay Mode with Causal Attack Superimposition"
+
+# ------------------------------------------------------------------------------
+# 1. Supported External Real Corpora
+# ------------------------------------------------------------------------------
+corpora:
+  ulb_creditcard:
+    name: "ULB Machine Learning Group Credit Card Fraud Detection"
+    source_url: "https://www.openml.org/d/1597"
+    file_format: "arff"
+    canonical_sha256: "fdaf12739b8296a6d0efb32ff00028a38541c9b3a0f9dcbf11f0c2a71d7914f6"
+    record_count_total: 284807
+    record_count_legitimate: 284315
+    record_count_fraud: 492
+    time_span_seconds: 172792.0
+    time_span_days: 1.9999074074074075
+    nominal_currency: "EUR"
+    clock_resolution_seconds: 1.0
+    provided_columns:
+      - "Time"
+      - "Amount"
+      - "Class"
+    excluded_columns:
+      - "V1"
+      - "V2"
+      - "V3"
+      - "V4"
+      - "V5"
+      - "V6"
+      - "V7"
+      - "V8"
+      - "V9"
+      - "V10"
+      - "V11"
+      - "V12"
+      - "V13"
+      - "V14"
+      - "V15"
+      - "V16"
+      - "V17"
+      - "V18"
+      - "V19"
+      - "V20"
+      - "V21"
+      - "V22"
+      - "V23"
+      - "V24"
+      - "V25"
+      - "V26"
+      - "V27"
+      - "V28"
+    exclusion_rationale: "PCA components V1-V28 are anonymized mathematical projections without physical payment scheme semantics; retaining them would contaminate contract telemetry."
+
+  ieee_cis:
+    name: "IEEE-CIS Fraud Detection Benchmark (Vesta Corp)"
+    source_url: "https://www.kaggle.com/c/ieee-fraud-detection"
+    file_format: "csv"
+    record_count_total: 590540
+    nominal_currency: "USD"
+    clock_resolution_seconds: 1.0
+    provided_columns:
+      - "TransactionDT"
+      - "TransactionAmt"
+      - "isFraud"
+      - "card1"
+      - "card2"
+      - "card3"
+      - "card4"
+      - "card6"
+      - "addr1"
+      - "addr2"
+
+# ------------------------------------------------------------------------------
+# 2. Four-Tier Field Provenance Architecture
+# ------------------------------------------------------------------------------
+# Every column exported by BackboneReplayEngine originates from exactly one tier.
+field_provenance:
+  tier_1_corpus_verbatim:
+    description: "Authentic empirical values taken directly from the external corpus without transformation"
+    fields:
+      - name: "amount"
+        rule: "Preserved verbatim: record['amount'] == corpus['Amount']"
+      - name: "tx_time_seconds"
+        rule: "Monotonically anchored: record['tx_time_seconds'] == anchor_epoch_seconds + corpus['Time']"
+
+  tier_2_realtime_ledger_derived:
+    description: "Features computed dynamically over time by StreamingLedger using legitimate transaction history"
+    fields:
+      - name: "tx_count_1h"
+        rule: "Rolling 3,600-second historical transaction count per card_id"
+      - name: "tx_count_24h"
+        rule: "Rolling 86,400-second historical transaction count per card_id"
+      - name: "available_balance"
+        rule: "Current open-to-buy tracked via DoubleEntryWorldLedger"
+      - name: "credit_limit"
+        rule: "Inferred issuer credit line based on 99th-percentile spend cohort"
+
+  tier_3_scheme_synthesized:
+    description: "Banking rail fields synthesized using conditional empirical priors (spec/01, spec/03, spec/05)"
+    fields:
+      - name: "mcc"
+        rule: "Sampled from empirical retail distributions (spec/02) conditioned on transaction amount"
+      - name: "pos_entry_mode"
+        rule: "Sampled from Federal Reserve FRPS CP/CNP splits (67.3% CP / 32.7% CNP)"
+      - name: "pos_condition_code"
+        rule: "Derived from pos_entry_mode ('00' for CP, '59' for CNP)"
+      - name: "client_ip"
+        rule: "Residential subnet for cardholder home region; 127.0.0.1 for CP"
+      - name: "device_canvas_hash"
+        rule: "Persistent hardware hash for cardholder primary device on CNP; empty on CP"
+      - name: "avs_match_code"
+        rule: "Legitimate cardholder matches address: 'Y' (92.4%), 'A' (4.2%), 'Z' (2.1%)"
+      - name: "cvv_match_flag"
+        rule: "1 for legitimate transactions (99.85% approval baseline)"
+      - name: "vaai_score"
+        rule: "Low risk network score: Beta(alpha=1.8, beta=28.5) bounded within [1, 25]"
+      - name: "response_code"
+        rule: "'00' Approved if available_balance >= amount and limits respected; otherwise ISO decline"
+
+  tier_4_injected_adversarial:
+    description: "Synthetic attack mechanics injected over victim cards by AdaptiveFraudsterAgent"
+    fields:
+      - name: "is_fraud"
+        rule: "1 for injected attack rows; 0 for replayed legitimate rows (never in request feed)"
+      - name: "scenario_id"
+        rule: "Grounded cybercrime playbook (e.g. ADV_ATO_DORMANT_TAKEOVER, ADV_BIN_HARVEST)"
+      - name: "counterfactual_twin"
+        rule: "Surgical Pearlian counterfactual record where adversary intervention is ablated"
+      - name: "analytical_shapley_probability"
+        rule: "Exact ground-truth feature attributions from Structural Causal Model"
+
+# ------------------------------------------------------------------------------
+# 3. Pacing & Purity Mechanics
+# ------------------------------------------------------------------------------
+pacing_and_purity:
+  convexity_correction:
+    formula: "K = round((p * N_legit) / (1.0 - p))"
+    rationale: "Injecting K rows into N legitimate rows yields total N + K; naive K = p * N yields p / (1 + p) < p"
+  
+  zero_leakage_guarantees:
+    - rule: "Corpus original fraud labels ('Class' == 1 or 'isFraud' == 1) are purged before replay by default"
+    - rule: "Authorisation request feeds (spec/19) contain zero target labels or counterfactual twins"
+    - rule: "Labels are emitted exclusively via SupervisionEngine and LabelFeed under Dal Pozzolo latencies"
+
+# ------------------------------------------------------------------------------
+# 4. Formal Acceptance Criteria & Falsifiable Invariants
+# ------------------------------------------------------------------------------
+acceptance_criteria:
+  - id: "INV_REPLAY_AMOUNT_VERBATIM"
+    description: "Every replayed amount equals the corpus amount verbatim"
+    falsification_test: "test_every_replayed_amount_is_the_corpus_amount_verbatim"
+    tolerance: 0.0
+
+  - id: "INV_REPLAY_TIME_ANCHORED"
+    description: "Every replayed timestamp equals the corpus time plus the declared epoch anchor"
+    falsification_test: "test_every_replayed_time_equals_corpus_time_plus_anchor"
+    tolerance: 0.0
+
+  - id: "INV_LABEL_LEAKAGE_ZERO"
+    description: "The corpus label column and is_fraud never appear in authorisation_request feeds"
+    falsification_test: "test_authorisation_request_has_zero_label_leakage"
+
+  - id: "INV_CLEAN_BACKBONE_ISOLATION"
+    description: "External corpus own fraud rows are dropped by default so the injector is the sole fraud source"
+    falsification_test: "test_clean_backbone_purges_corpus_fraud_rows"
+
+  - id: "INV_INJECTION_INVARIANCE"
+    description: "Injecting fraud attacks does not alter the values or ordering of legitimate transactions"
+    falsification_test: "test_injection_preserves_legitimate_transactions_identically"
+
+  - id: "INV_PREVALENCE_CONVEXITY_PACING"
+    description: "Realized fraud prevalence matches requested prevalence within statistical tolerance"
+    falsification_test: "test_fraud_prevalence_matches_requested_share_under_convexity_correction"
+    tolerance: 0.001
+
+  - id: "INV_DETECTOR_CONTRACT_COMPLIANCE"
+    description: "Replayed streams produce zero contract violations against spec/19_detector_contract.yaml"
+    falsification_test: "test_backbone_replay_has_zero_spec_19_contract_violations"
+
+  - id: "INV_DOUBLE_ENTRY_CONSERVATION"
+    description: "World ledger conservation discrepancy is strictly below 1e-6 at end of replay"
+    falsification_test: "test_backbone_replay_ledger_balance_conserved"
+    tolerance: 1e-6
+
+  - id: "INV_PCA_COLUMNS_EXCLUDED"
+    description: "Anonymized PCA columns (V1-V28) are excluded from all generated export schemas"
+    falsification_test: "test_pca_columns_completely_excluded_from_export"
+
+  - id: "INV_BOUNDED_MEMORY_STREAMING"
+    description: "Streaming replay memory footprint remains strictly under 500 MB for 284k+ rows"
+    falsification_test: "test_streaming_replay_memory_remains_bounded"
+    max_memory_mb: 500.0

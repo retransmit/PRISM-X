@@ -1,0 +1,55 @@
+# Data: never commit the dataset
+data/raw/*
+data/processed/*
+!data/**/.gitkeep
+
+# Trained model artifacts
+models/*
+!models/.gitkeep
+*.pt
+*.joblib
+*.pkl
+*.h5
+
+# Figures are rebuilt by the pipeline. The metric files under reports/metrics
+# are the evidence behind every number in the README and the report, and are
+# committed with them; the scratch database of the HTTP latency run is not.
+reports/figures/*
+reports/metrics/**/latency_http.db
+reports/metrics/**/latency_http.db-journal
+!reports/**/.gitkeep
+
+# Audit log database
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Node
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+.vite/
+
+# Local working notes, not part of the deliverable
+CLAUDE.md
+# Per-machine overrides of config.yaml (track, port); never committed
+config.local.yaml
+
+# Editor / OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini

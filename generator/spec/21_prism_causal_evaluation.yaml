@@ -1,0 +1,309 @@
+# ==============================================================================
+# Canonical Specification 21: PRISM Causal Explanation Recovery & Dual-Track XAI Audit
+# ==============================================================================
+# Grounding:
+#   - Structural Causal Models (Pearl 2009, Peters et al. 2017)
+#   - Causal PRISM & Attributive Ground Truth in Fraud Detection (Chenyu Wu 2026)
+#   - Axiomatic Cooperative Game Theory & Shapley Decomposition (Roth 1988, Owen 1972)
+#   - Critique of Post-Hoc Shapley Explanations under Feature Correlation (Kumar et al. 2020)
+#   - Model-Free Forensic Intervention Recovery (Federal Reserve & OCC Fraud Examination)
+# ==============================================================================
+
+version: "1.0.0"
+slice_id: "slice-27-prism-causal-explanation-recovery"
+
+unit_definitions:
+  attribution_weight: "dimensionless normalized attribution mass in [0.0, 1.0]"
+  correlation_coefficient: "rank/linear correlation in [-1.0, 1.0]"
+  time_seconds: "seconds since sim_time_epoch"
+  amount_currency: "major units of cardholder currency (USD / EUR / INR)"
+
+# ------------------------------------------------------------------------------
+# 1. Core Architecture: Dual-Track Separation
+# ------------------------------------------------------------------------------
+# In Prism Generator, an Explainable AI (XAI) benchmark asks two distinct, un-conflated questions:
+#
+# Track 1: Model-Free Forensic Intervention Support Recovery
+#   Question: "Does the post-hoc explainer (TreeSHAP, Integrated Gradients, KernelSHAP)
+#   correctly identify the true physical levers that the cybercrime adversary actually
+#   modified on the victim's cardholder baseline?"
+#   Ground Truth (phi*): The standardized physical intervention footprint Delta x_adversary / sigma_30d
+#   over the mutated features.
+#
+# Track 2: Glass-Box Scoring Model Faithfulness Audit
+#   Question: "Does the post-hoc explainer faithfully recover the exact closed-form
+#   Shapley attribution of a known, non-linear scoring function under correlated financial features?"
+#   Ground Truth (phi*): Exact Owen multilinear / 128-point Gauss-Legendre decomposition
+#   evaluated directly on HeuristicBankScorer.
+dual_track_framework:
+  track_1_forensic_intervention_recovery:
+    description: "Evaluates recovery of physical intervention support mutated by adversary"
+    model_dependence: "model-free (property of data-generating simulation process alone)"
+    primary_metrics:
+      - "intervention_precision_at_k"
+      - "intervention_recall_at_k"
+      - "interventional_kendall_tau"
+    standardization: "variance-normalized intervention delta: |Delta x_j| / sigma_j"
+    normalization: "sum(phi*_j) == 1.0 over active intervention support"
+
+  track_2_glass_box_explainer_audit:
+    description: "Evaluates mathematical fidelity against known non-linear scoring function"
+    model_dependence: "function-relative (property of HeuristicBankScorer)"
+    primary_metrics:
+      - "spearman_rank_rho"
+      - "pearson_linear_r"
+      - "relative_attribution_error_rae"
+      - "subset_ablation_faithfulness"
+    decomposition_algorithms:
+      log_odds_logit: "exact_owen_multilinear_extension"
+      probability_scale: "128_point_gauss_legendre_quadrature"
+
+# ------------------------------------------------------------------------------
+# 2. Explained Feature Contract (the eleven columns both causal benchmarks score)
+# ------------------------------------------------------------------------------
+# One list, read by both harnesses through prism_generator/causal_contract.py:
+# the XAI harness (benchmark.py) and the four-pillar runner (benchmark_reporter.py).
+# Names are the record/lever vocabulary used by `canonical_interventions` below and by
+# the HeuristicBankScorer input vector (causal_scm.py), so a declared lever and a
+# modelled column intersect **by name**: no alias table exists to drift.
+#
+# source is exactly one of:
+#   {field: <record field>}                        verbatim float
+#   {field: <record field>, cast: "bool01"}        1.0 when the field is truthy
+#   {rule: <rule id>}                              a derivation the code owns by name
+# ground_truth_key is the key in analytical_shapley_probability / _log_odds.
+explained_feature_contract:
+  features:
+    - name: "amount"
+      kind: "continuous"
+      source: {field: "amount"}
+      ground_truth_key: "amount_to_mean_ratio_30d"
+      note: "the raw authorised ticket; the scorer attributes the 30-day ratio it consumes"
+    - name: "haversine_velocity_kph"
+      kind: "continuous"
+      source: {field: "haversine_velocity_kph"}
+      ground_truth_key: "haversine_velocity_kph"
+    - name: "ip_distance_from_home_km"
+      kind: "continuous"
+      source: {field: "ip_distance_from_home_km"}
+      ground_truth_key: "ip_distance_from_home_km"
+    - name: "tx_count_1h"
+      kind: "continuous"
+      source: {field: "tx_count_1h"}
+      ground_truth_key: "tx_count_1h"
+    - name: "tx_count_24h"
+      kind: "continuous"
+      source: {field: "tx_count_24h"}
+      ground_truth_key: "tx_count_24h"
+    - name: "is_cross_border"
+      kind: "binary"
+      source: {field: "is_cross_border", cast: "bool01"}
+      ground_truth_key: "is_cross_border_tx"
+      note: "1 when the merchant country differs from the cardholder's country"
+    - name: "avs_mismatch_flag"
+      kind: "binary"
+      source: {rule: "avs_mismatch"}
+      ground_truth_key: "avs_mismatch_flag"
+      note: "1 when avs_match_code is N (no match) or U (unavailable)"
+    - name: "billing_shipping_mismatch"
+      kind: "binary"
+      source: {rule: "billing_shipping_mismatch"}
+      ground_truth_key: "billing_shipping_mismatch"
+      note: "1 when billing_shipping_match is 0"
+    - name: "cvv_mismatch_flag"
+      kind: "binary"
+      source: {rule: "cvv_mismatch"}
+      ground_truth_key: "cvv_mismatch_flag"
+      note: "1 when cvv_match_flag is 0; mismatch polarity matches the scorer's input"
+    - name: "emv_arqc_verified"
+      kind: "binary"
+      source: {field: "emv_arqc_verified"}
+      ground_truth_key: "emv_arqc_verified"
+      note: "EMV Tag 9F26 ARQC validated by the issuer HSM; a contact-chip authorisation fact"
+    - name: "three_ds_authenticated"
+      kind: "binary"
+      source: {field: "three_ds_authenticated"}
+      ground_truth_key: "three_ds_authenticated"
+      note: "EMV 3DS 2.x status Y (fully authenticated); see rails.py trans_status_3ds"
+
+# ------------------------------------------------------------------------------
+# 3. Canonical Physical Attack Interventions (Model-Free Support Sets)
+# ------------------------------------------------------------------------------
+# Ground truth physical mutation levers defined per cybercrime playbook.
+# When an attack strikes a victim cardholder, these are the exact features
+# transformed by the adversary's intervention.
+canonical_interventions:
+  ADV_MICRO_AUTH_PROBE:
+    intervened_features:
+      - "amount"
+      - "tx_count_1h"
+      - "avs_mismatch_flag"
+      - "cvv_mismatch_flag"
+    description: "Automated card-testing probe with small ticket and velocity spike"
+
+  ADV_TRIANGULATION_FRAUD:
+    intervened_features:
+      - "amount"
+      - "billing_shipping_mismatch"
+      - "ip_distance_from_home_km"
+    description: "Drop-shipping fraud with mismatched shipping destination and distant proxy"
+
+  ADV_ATO_SILENT_BAKING:
+    intervened_features:
+      - "ip_distance_from_home_km"
+      - "haversine_velocity_kph"
+      - "amount"
+      - "asn_type"
+    description: "Account takeover cashout after credential dormancy baking"
+
+  ADV_APPLE_PAY_YELLOW_PATH:
+    intervened_features:
+      - "amount"
+      - "channel_type"
+      - "pos_entry_mode"
+    description: "Provisioned digital token fraud executed at contactless physical POS"
+
+  ADV_DISTRIBUTED_BIN_ENUMERATION:
+    intervened_features:
+      - "tx_count_1h"
+      - "tx_count_24h"
+      - "cvv_mismatch_flag"
+      - "vaai_score"
+    description: "Pan-issuer distributed BIN attack with elevated CVV failure rate"
+
+  ADV_SLEEPER_BUST_OUT:
+    intervened_features:
+      - "amount"
+      - "available_balance"
+      - "credit_limit"
+    description: "Synthetic identity credit-line max-out harvest prior to total abandonment"
+
+  IN_ADV_INTL_NON_3DS_BYPASS:
+    intervened_features:
+      - "amount"
+      - "is_cross_border"
+      - "eci"
+      - "trans_status_3ds"
+    description: "Routing Indian card through foreign merchant to evade RBI mandatory AFA"
+
+  IN_ADV_REVERSE_PROXY_VISHING:
+    intervened_features:
+      - "amount"
+      - "ip_distance_from_home_km"
+      - "mcc"
+    description: "Real-time OTP phishing cashout on quasi-cash or gold liquidation rails"
+
+# ------------------------------------------------------------------------------
+# 4. Ground Truth Construction & Normalization
+# ------------------------------------------------------------------------------
+# In DiscreteEventEngine, whenever an attack fires, the simulator snapshots the
+# cardholder's baseline transaction:
+#   factual_counterfactual = {
+#     "amount": user_avg_tx_amount_30d,
+#     "channel_type": card.dominant_channel,
+#     "ip_distance_from_home_km": 0.0,
+#     "haversine_velocity_kph": 0.0,
+#     "billing_shipping_match": 1,
+#     "avs_match_code": "Y",
+#     "cvv_match_flag": 1
+#   }
+# The physical intervention delta vector is:
+#   Delta x_j = x_attack,j - x_baseline,j
+# The normalized ground-truth vector phi*_j is:
+#   phi*_j = (|Delta x_j| / sigma_30d,j) / sum_k (|Delta x_k| / sigma_30d,k)
+# where sigma_30d,j is the cardholder's 30-day Welford standard deviation for continuous
+# features, and 1.0 for binary indicators.
+intervention_attribution_formula:
+  continuous_features:
+    standardization: "z_j = |x_attack,j - x_baseline,j| / max(sigma_30d,j, 1e-4)"
+  discrete_indicators:
+    standardization: "z_j = 1.0 if x_attack,j != x_baseline,j else 0.0"
+  masking: "z_j = 0.0 for all j not in canonical_interventions[playbook]"
+  final_normalization: "phi*_j = z_j / sum_k(z_k)"
+
+# ------------------------------------------------------------------------------
+# 5. Experimental Boundary: Quarantine of Unfitted Normalizing Flow
+# ------------------------------------------------------------------------------
+# The Conditional RealNVP flow in prism_generator/experimental/invertible_flow.py
+# contains coupling layer matrices (W1, W2_s, W2_t) that are uncalibrated random
+# Gaussian draws (np.random.default_rng(42)).
+#
+# Statutory Invariant:
+# Under the Anti-Astronaut Grounding Mandate, random-weight neural flows MUST NOT
+# be used to define official certification ground truth in benchmark_reporter.py.
+# All production causal attributions and counterfactual twins must come from the
+# grounded physical simulation twin (factual_counterfactual / normative_baseline).
+flow_quarantine:
+  invertible_flow_status: "experimental_only"
+  production_use_prohibited: true
+  ground_truth_authority: "physical_intervention_delta"
+
+# ------------------------------------------------------------------------------
+# 6. Prequential Two-Tier Protocol Specification
+# ------------------------------------------------------------------------------
+# Prequential evaluation windows follow:
+#   T_warmup = W_train + Delta_delay
+#   N_test_windows = floor((T_realised - T_warmup) / W_test)
+two_tier_protocols:
+  protocol_fast:
+    description: "CI/CD, automated unit tests, and rapid developer iteration"
+    stream_parameters:
+      n_transactions: 2000
+      n_cards: 80
+      time_span_days: 12.0
+      stability_seeds: [42, 0, 1, 2, 3]
+    prequential_windows:
+      w_train_days: 3.0
+      delta_delay_days: 1.5
+      w_test_days: 1.0
+      k_daily: 15
+    warmup_days: 4.5
+    expected_test_windows: [5, 8]
+    badge_label: "REGRESSION (PROTOCOL_FAST)"
+
+  protocol_full:
+    description: "Camera-ready publication tables, dataset releases, and spec/17 certification"
+    stream_parameters:
+      n_transactions: 100000
+      n_cards: 1000
+      time_span_days: 75.0
+      stability_seeds: [42, 0, 1, 2, 3]
+    prequential_windows:
+      w_train_days: 30.0
+      delta_delay_days: 14.0
+      w_test_days: 1.0
+      k_daily: 50
+    warmup_days: 44.0
+    expected_test_windows: [16, 31]
+    badge_label: "CERTIFIED (PROTOCOL_FULL)"
+
+# ------------------------------------------------------------------------------
+# 7. Pillar-4 attribution protocol (revised 2026-10-16)
+# ------------------------------------------------------------------------------
+# The Pillar-4 row grades a practical attribution method against the causal ground
+# truth OF THE SAME OBJECT at the SAME reference point. The previous protocol
+# (2026-10-15) compared the one-feature counterfactual drops of a label-trained
+# gradient-boosted classifier against the HeuristicBankScorer's zero-reference
+# attribution -- a different function, a different reference point, different units.
+# Its measured failure (Pearson r = -0.054, RAE = 1.425 at the graded seed; the
+# audit note in spec/18 section 3a) was a protocol finding, not synthesizer quality,
+# and this block pins the matched replacement.
+#
+# Object under explanation: the HeuristicBankScorer approval probability
+# (prism_generator/causal_scm.py), restricted to the eleven explained columns of
+# `explained_feature_contract`. Every field the columns do not name (channel, MCC,
+# hour of day, the card's 30-day mean ticket, credit limit, unmapped authentication
+# flags) is held at the graded record's own context, exactly as the engine's scorer
+# reads it (`HeuristicBankScorer.probability_on_columns`). The graded population is
+# the fraud records of the test window that carry the pipeline's causal payload.
+pillar_4_attribution_protocol:
+  background_rows: 100          # B: rows drawn without replacement from the first 70% (train window)
+  background_rng: "np.random.default_rng(run_seed)"
+  coalition_value: "v(S) = mean over the B background rows of f(record with the S columns at the record's own values and the remaining columns at the background row's values)"
+  ground_truth: "exact interventional Shapley by subset enumeration over all 2^11 coalitions; per-record efficiency identity sum(phi*) == v(full) - v(empty) asserted to 1e-6. Weights |S|!(n-|S|-1)!/n! (Roth 1988)."
+  explainer: "shap.KernelExplainer(f, background) at the explained point, l1_reg=0.0 (no fractional-l1 sparsification: the row grades the estimator, not a sparse surrogate)"
+  explainer_nsamples: 256       # Q: coalition budget handed to KernelSHAP (measured mean RAE at the graded seed: Q=128 0.066, Q=256 0.038, Q=512 0.022)
+  explainer_l1_reg: 0.0
+  explainer_rng: "numpy global RNG seeded from (run_seed, record ordinal), global state saved and restored around each record (shap 0.52 samples coalitions from the global stream)"
+  normalization: "both attribution vectors L1-normalized by the sum of absolute values; rank metrics on |phi|, Pearson on signed values (GroundTruthXAIEvaluator conventions)"
+  measured_at_seed_42_protocol_fast: {mean_kendall_tau: 0.9055, mean_spearman_rho: 0.9632, mean_pearson_r: 0.9991, mean_precision_at_3: 1.0, mean_relative_attribution_error: 0.0384, mean_causal_faithfulness: 0.899}

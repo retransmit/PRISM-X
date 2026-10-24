@@ -1,0 +1,45 @@
+# spec/16_operational_supervision.yaml
+# Canonical Specification for Operational Fraud Investigation Queue & Delayed Verification Latency Layer
+# Grounded in:
+# - Andrea Dal Pozzolo et al. (IEEE TNNLS 2018), "Credit Card Fraud Detection: A Realistic Modeling and a Novel Learning Strategy"
+# - Fabrizio Carcillo et al. (AAAI 2018), "Streaming active learning, sketching, and evaluating for fraud detection"
+# - Visa Claims Resolution (VCR 2024-2026) & Mastercard Dispute Resolution Framework (120-day rule)
+# - Reserve Bank of India Customer Protection Circular (RBI/2017-18/15)
+
+schema_version: "1.0.0"
+unit_definitions:
+  time: "seconds"
+  hours: "continuous hours"
+  days: "continuous calendar days (86,400 seconds)"
+  currency: "major units (USD or INR)"
+  probability: "[0.0, 1.0]"
+
+operational_supervision:
+  investigation_queue:
+    default_k_daily: 50                   # Daily alert budget per fraud analysis unit (analyst capacity)
+    alert_threshold: 0.70                # Triage score cutoff for investigation escalation
+    default_priority_strategy: "RISK_SCORE" # Priority queue ordering: RISK_SCORE, AMOUNT, or EXPECTED_LOSS
+
+  analyst_review_latency:
+    model: "Truncated_Weibull"
+    statutory_source: "Dal Pozzolo et al. (2018) empirical bank review queue timing"
+    shape_k: 1.35
+    scale_hours: 18.00                   # Mode ~12h, Median ~15h, Mean ~16.5h
+    min_hours: 0.50                      # Rapid phone/SMS verification lower floor (30 minutes)
+    max_hours: 72.00                     # 3 business days investigation SLA ceiling
+
+  customer_dispute_latency:
+    model: "Truncated_LogNormal"
+    statutory_source: "Visa Claims Resolution (VCR) dispute rules & Dal Pozzolo et al. statement billing cycle lag"
+    mu_days: 3.40                        # Median exp(3.40) ~ 30.0 days (monthly statement reconciliation)
+    sigma_days: 0.45
+    min_days: 3.00                       # RBI 3-day zero-liability early dispute window
+    max_days: 120.00                     # Card scheme statutory dispute filing window (120 calendar days)
+
+  dark_fraud_non_reporting:
+    model: "Sigmoidal_Value_Threshold"
+    statutory_source: "Empirical carding micro-probe attrition and unnoticed subscription probing"
+    v0_usd: 15.00                        # 50% reporting indifference threshold ($15 USD)
+    v0_inr: 1250.00                      # 50% reporting indifference threshold (₹1,250 INR)
+    smoothness_gamma: 0.40               # Logistic steepness parameter
+    clean_maturity_days: 90.00           # Period after which unflagged/undisputed record is confirmed legitimate

@@ -1,0 +1,488 @@
+# ==============================================================================
+# PRISM GENERATOR SPECIFICATION 13: ANNUAL SEASONALITY, CALENDAR DRIFT & MACRO SHOCKS
+# ==============================================================================
+# Canonical Grounding:
+# 1. Federal Reserve Diary of Consumer Payment Choice (DCPC 2024 / October 2023 cycle):
+#    docs/papers/2024_fed_diary_consumer_payment_choice.pdf (Bayeh, Cubides & O'Brien).
+# 2. 2019 Federal Reserve Payments Study (FRPS):
+#    docs/papers/2019_fed_payments_study.pdf (Board of Governors of the Federal Reserve System).
+# 3. Reserve Bank of India Annual Report 2023-24 (Chapter IX: Payment & Settlement Systems):
+#    docs/papers/2024_rbi_annual_report_payment_systems.pdf (RBI May 30, 2024).
+# 4. BIS CPMI Brief No 3: "Tap, click and pay: how digital payments seize the day" (Feb 2024):
+#    docs/papers/2024_bis_cpmi_tap_click_pay_digital_payments.pdf.
+# 5. BIS CPMI Report No 154: "Fast payments - Enhancing the speed and availability of retail payments":
+#    docs/papers/2016_bis_cpmi_fast_payments.pdf.
+# ==============================================================================
+
+version: "1.0.0"
+jurisdiction: "US_IN_ANNUAL_SEASONALITY"
+
+# ------------------------------------------------------------------------------
+# 1. DAY-OF-WEEK (DoW) VOLUME MULTIPLIERS
+# Base index: 1.0 = Average day across the 365-day year.
+# Grounded in Federal Reserve DCPC 2024 and RBI Retail Payment Daily Trends.
+# ------------------------------------------------------------------------------
+day_of_week_multipliers:
+  0: 0.88   # Monday: Commercial restart, routine bill clearing, low discretionary spend
+  1: 0.95   # Tuesday: Steady corporate purchases, routine grocery replenishment
+  2: 0.98   # Wednesday: Midweek baseline, recurring subscriptions
+  3: 1.02   # Thursday: Ramp-up in advance bookings and weekend planning
+  4: 1.22   # Friday: Workday exit surge, dining, bars, travel bookings
+  5: 1.34   # Saturday: Weekly retail peak (malls, departmental, dining, family spend)
+  6: 1.11   # Sunday: Family dining, weekly grocery stocking, late-evening online ordering
+
+# ------------------------------------------------------------------------------
+# 2. INTRA-MONTH PAYDAY SURGE WINDOWS
+# Models liquid disposable income surges following salary disbursements.
+# ------------------------------------------------------------------------------
+payday_cycles:
+  US:
+    cycle_type: "BIWEEKLY_AND_SEMI_MONTHLY"
+    primary_days_of_month: [1, 15]
+    surge_multiplier: 1.35
+    surge_duration_days: 2
+  IN:
+    cycle_type: "MONTH_END_SALARY_CREDIT"
+    primary_days_of_month: [28, 29, 30, 31, 1, 2]
+    surge_multiplier: 1.42
+    surge_duration_days: 4
+
+# ------------------------------------------------------------------------------
+# 3. 12-MONTH MCC SEASONAL SCALING MATRIX (S_{m, mcc})
+# Multipliers applied to MCC baseline arrival frequencies relative to 1.0 annual mean.
+# Grounded in Fed DCPC 2024 and RBI Annual Report 2023-24 payment chapters.
+# Month index: 1 = January, 12 = December.
+# ------------------------------------------------------------------------------
+mcc_monthly_scaling:
+  # Grocery / Supermarkets (MCC 5411, 5499)
+  grocery:
+    mccs: [5411, 5499]
+    monthly_multipliers:
+      1: 0.92
+      2: 0.94
+      3: 0.98
+      4: 0.99
+      5: 1.02
+      6: 1.04
+      7: 1.05
+      8: 1.02
+      9: 1.00
+      10: 1.08
+      11: 1.25
+      12: 1.28
+
+  # Dining / Fast Food (MCC 5812, 5814)
+  dining:
+    mccs: [5812, 5814]
+    monthly_multipliers:
+      1: 0.88
+      2: 0.95
+      3: 0.96
+      4: 0.98
+      5: 1.02
+      6: 1.08
+      7: 1.10
+      8: 1.04
+      9: 0.99
+      10: 1.05
+      11: 1.15
+      12: 1.32
+
+  # Airlines & Travel (MCC 3000 to 3300)
+  airlines:
+    mccs: [3000, 3001, 3002, 3005, 3010, 3058, 3075, 3100]
+    monthly_multipliers:
+      1: 0.80
+      2: 0.85
+      3: 1.10
+      4: 1.15
+      5: 1.35
+      6: 1.65
+      7: 1.70
+      8: 1.30
+      9: 0.95
+      10: 1.05
+      11: 1.25
+      12: 1.55
+
+  # Hotels & Lodging (MCC 3500 to 3900, 7011)
+  lodging:
+    mccs: [3501, 3502, 3503, 3504, 7011]
+    monthly_multipliers:
+      1: 0.75
+      2: 0.82
+      3: 1.05
+      4: 1.12
+      5: 1.30
+      6: 1.60
+      7: 1.65
+      8: 1.25
+      9: 0.90
+      10: 1.00
+      11: 1.20
+      12: 1.50
+
+  # Electronics & Computing (MCC 5732, 5734)
+  electronics:
+    mccs: [5732, 5734]
+    monthly_multipliers:
+      1: 0.85
+      2: 0.88
+      3: 1.05
+      4: 0.95
+      5: 0.92
+      6: 0.95
+      7: 1.15
+      8: 1.25
+      9: 1.10
+      10: 1.65
+      11: 2.40
+      12: 1.85
+
+  # Apparel & Department Stores (MCC 5651, 5691, 5311)
+  apparel:
+    mccs: [5651, 5691, 5311]
+    monthly_multipliers:
+      1: 0.82
+      2: 0.86
+      3: 0.92
+      4: 0.95
+      5: 0.98
+      6: 1.02
+      7: 1.05
+      8: 1.30
+      9: 1.05
+      10: 1.45
+      11: 1.95
+      12: 1.65
+
+  # Fuel & Transit (MCC 5541, 5542, 4111)
+  fuel_transit:
+    mccs: [5541, 5542, 4111]
+    monthly_multipliers:
+      1: 0.90
+      2: 0.92
+      3: 0.98
+      4: 1.02
+      5: 1.08
+      6: 1.15
+      7: 1.18
+      8: 1.12
+      9: 1.02
+      10: 1.00
+      11: 0.98
+      12: 0.95
+
+  # Jewelry & Precious Metals (MCC 5944, Indian Gold / Akshaya Tritiya / Dhanteras)
+  jewelry_gold:
+    mccs: [5944]
+    monthly_multipliers:
+      1: 0.80
+      2: 0.95
+      3: 1.45
+      4: 1.55
+      5: 1.20
+      6: 0.90
+      7: 0.85
+      8: 1.05
+      9: 1.15
+      10: 2.20
+      11: 2.80
+      12: 1.30
+
+# ------------------------------------------------------------------------------
+# 4. REGIONAL 2024 CALENDAR MACRO SHOCKS & HOLIDAY ACCELERATIONS
+# ------------------------------------------------------------------------------
+calendar_macro_shocks:
+  US:
+    # Day 0 = Jan 1, 2024
+    - name: "NEW_YEARS_DAY"
+      day_of_year: 1
+      volume_multiplier: 0.72
+      dominant_mccs: [5812, 5814]
+    - name: "SUPER_BOWL_SUNDAY"
+      day_of_year: 42
+      volume_multiplier: 1.38
+      dominant_mccs: [5812, 5814, 5411, 5732]
+    - name: "VALENTINES_DAY"
+      day_of_year: 45
+      volume_multiplier: 1.45
+      dominant_mccs: [5812, 5944, 5992]
+    - name: "TAX_REFUND_SURGE"
+      start_day: 70
+      end_day: 85
+      volume_multiplier: 1.25
+      dominant_mccs: [5732, 5311, 5511]
+    - name: "MEMORIAL_DAY_WEEKEND"
+      start_day: 145
+      end_day: 148
+      volume_multiplier: 1.55
+      dominant_mccs: [5541, 5812, 7011, 3000]
+    - name: "INDEPENDENCE_DAY_WEEKEND"
+      start_day: 185
+      end_day: 188
+      volume_multiplier: 1.62
+      dominant_mccs: [5411, 5541, 5812]
+    - name: "PRIME_DAY_SUMMER_SALE"
+      start_day: 198
+      end_day: 200
+      volume_multiplier: 2.10
+      dominant_mccs: [5311, 5732, 5999]
+    - name: "LABOR_DAY_WEEKEND"
+      start_day: 244
+      end_day: 246
+      volume_multiplier: 1.48
+      dominant_mccs: [5541, 5812, 7011]
+    - name: "HALLOWEEN"
+      day_of_year: 305
+      volume_multiplier: 1.35
+      dominant_mccs: [5411, 5651, 5814]
+    - name: "THANKSGIVING_WEEK_AND_BLACK_FRIDAY"
+      start_day: 332
+      end_day: 336
+      volume_multiplier: 2.85
+      dominant_mccs: [5311, 5732, 5651, 5411, 5944]
+    - name: "CYBER_MONDAY"
+      day_of_year: 337
+      volume_multiplier: 3.10
+      dominant_mccs: [5732, 5311, 5651, 5999]
+    - name: "CHRISTMAS_RUSH"
+      start_day: 350
+      end_day: 358
+      volume_multiplier: 2.40
+      dominant_mccs: [5311, 5411, 5651, 5812, 5944]
+    - name: "NEW_YEARS_EVE"
+      day_of_year: 366
+      volume_multiplier: 1.75
+      dominant_mccs: [5812, 5814, 7011]
+
+  IN:
+    - name: "NEW_YEARS_DAY"
+      day_of_year: 1
+      volume_multiplier: 0.80
+      dominant_mccs: [5812, 5814]
+    - name: "REPUBLIC_DAY_SALE"
+      day_of_year: 26
+      volume_multiplier: 1.55
+      dominant_mccs: [5311, 5732, 5651]
+    - name: "HOLI_FESTIVAL"
+      start_day: 84
+      end_day: 86
+      volume_multiplier: 1.45
+      dominant_mccs: [5411, 5812, 5651]
+    - name: "FISCAL_YEAR_END_CLOSING"
+      start_day: 89
+      end_day: 91
+      volume_multiplier: 1.75
+      dominant_mccs: [6300, 5944, 8220]
+    - name: "AKSHAYA_TRITIYA_GOLD_RUSH"
+      day_of_year: 131
+      volume_multiplier: 2.35
+      dominant_mccs: [5944]
+    - name: "SUMMER_VACATION_TRAVEL"
+      start_day: 140
+      end_day: 170
+      volume_multiplier: 1.45
+      dominant_mccs: [3000, 7011, 4111, 5812]
+    - name: "INDEPENDENCE_DAY_FREEDOM_SALES"
+      start_day: 226
+      end_day: 229
+      volume_multiplier: 1.68
+      dominant_mccs: [5311, 5732, 5651]
+    - name: "RAKSHA_BANDHAN"
+      day_of_year: 232
+      volume_multiplier: 1.52
+      dominant_mccs: [5411, 5944, 5651]
+    - name: "GANESH_CHATURTHI"
+      start_day: 250
+      end_day: 254
+      volume_multiplier: 1.60
+      dominant_mccs: [5411, 5651, 5812]
+    - name: "NAVRATRI_AND_DURGA_PUJA"
+      start_day: 277
+      end_day: 286
+      volume_multiplier: 1.95
+      dominant_mccs: [5651, 5944, 5812, 5411]
+    - name: "DIWALI_AND_DHANTERAS_PEAK"
+      start_day: 303
+      end_day: 308
+      volume_multiplier: 2.65
+      dominant_mccs: [5944, 5732, 5651, 5411, 5311]
+    - name: "WEDDING_SEASON_WINTER"
+      start_day: 320
+      end_day: 350
+      volume_multiplier: 1.50
+      dominant_mccs: [5944, 5651, 5812, 7011]
+    - name: "CHRISTMAS_AND_NEW_YEARS_EVE"
+      start_day: 359
+      end_day: 366
+      volume_multiplier: 1.80
+      dominant_mccs: [5812, 7011, 3000]
+
+# ------------------------------------------------------------------------------
+# 5. TOP-OF-WALLET WALLET SHARE DISTRIBUTIONS
+# Grounded in Federal Reserve DCPC 2024 (Table 1 & Figure 2).
+# ------------------------------------------------------------------------------
+wallet_hierarchy:
+  tiers:
+    primary:
+      share_of_transactions: 0.68
+      avg_monthly_tx: 12.0
+      mcc_bias: "EVERYDAY_ESSENTIALS" # Groceries, fuel, QSR, routine bills
+    secondary:
+      share_of_transactions: 0.24
+      avg_monthly_tx: 3.5
+      mcc_bias: "COBRANDED_DISCRETIONARY" # Airlines, hotels, electronics, big-ticket
+    backup_dormant:
+      share_of_transactions: 0.08
+      avg_monthly_tx: 0.8
+      mcc_bias: "SPORADIC_EMERGENCY" # Sporadic emergency or international travel
+
+# ------------------------------------------------------------------------------
+# 6. ADVERSARIAL SYNDICATE CAMPAIGN SEASONALITY & CAMOUFLAGE DRIFT
+# ------------------------------------------------------------------------------
+adversarial_drift_schedule:
+  holiday_camouflage_boost:
+    Q4_retail_super_peak_multiplier: 1.85 # Exploit analyst capacity saturation
+    false_decline_pressure_window_multiplier: 1.60
+  syndicate_burst_campaigns:
+    # 48 to 72 hour episodic campaigns
+    - campaign_id: "SYN_CAMP_Q1_TAX_PHISH"
+      start_day: 78
+      duration_days: 3
+      target_channel: "CNP_WEB"
+      attack_rate_multiplier: 2.40
+    - campaign_id: "SYN_CAMP_Q2_SUMMER_TRAVEL_ACCOUNT_TAKEOVER"
+      start_day: 165
+      duration_days: 3
+      target_channel: "CNP_MOBILE"
+      attack_rate_multiplier: 2.10
+    - campaign_id: "SYN_CAMP_Q3_BACK_TO_SCHOOL_BOTNET_BLITZ"
+      start_day: 235
+      duration_days: 2
+      target_channel: "CNP_WEB"
+      attack_rate_multiplier: 2.60
+    - campaign_id: "SYN_CAMP_Q4_HOLIDAY_CAMOUFLAGE_MASS_DRAIN"
+      start_day: 332
+      duration_days: 6
+      target_channel: "CNP_WEB"
+      attack_rate_multiplier: 3.20
+
+# ------------------------------------------------------------------------------
+# 7. CALENDAR-DRIVEN TOPOLOGY DYNAMICS (P2P VS P2M SEASONALITY)
+# Evaluates dynamic logistic link: P(is_p2p | t) = 1 / (1 + exp(-z(t))) with
+#     z = beta_0 + beta_payday * K_payday(day) - beta_sale * I_sale(t) + beta_dow
+#
+# PROVENANCE, stated plainly because this section carried none before 2026-10-13:
+#
+#   (a) The beta_* values are NOT independent measurements. They are exact closed-form
+#       transforms of the *_share values above them, via the logit:
+#           beta_0     = logit(baseline_share)
+#           beta_payday= logit(payday_share)    - logit(baseline_share)
+#           beta_sale  = logit(megasale_share)  - logit(baseline_share)   [sign flipped in z]
+#       This was checked on 2026-10-13: all six betas reproduce to 4 decimals except
+#       US beta_payday, where the spec's 0.8678 and the transform's 0.8677 differ by
+#       0.0001, a rounding slip with no effect on behaviour. Reproduce with:
+#           python -c "import math; L=lambda p: math.log(p/(1-p)); \
+#             print(L(0.070), abs(L(0.029)-L(0.070)), L(0.152)-L(0.070))"
+#
+#   (b) The *_share values are HYPOTHESES. The Fed DCPC reports payment-instrument
+#       shares; it does not publish a "payday share" or a "megasale share". Those two
+#       quantities are constructed scenarios. baseline_share may be traceable to a DCPC
+#       table, but no table reference was recorded when the values were written, so it
+#       is carried as unverified too. Nothing here is a measured statistic.
+#
+#   (c) No table, page or retrieval date is recorded for either cited report. A citation
+#       naming a report without a table is a pointer, not a source.
+# ------------------------------------------------------------------------------
+topology_seasonality:
+  US:
+    baseline_share: 0.070
+    payday_share: 0.152
+    megasale_share: 0.029
+    beta_0: -2.5867
+    beta_payday: 0.8678
+    beta_sale: 0.9243
+    kernel_sigma: 0.85
+    payday_anchors: [1, 15]
+    weekend_adjustment: -0.1250
+  IN:
+    baseline_share: 0.200
+    payday_share: 0.340
+    megasale_share: 0.082
+    beta_0: -1.3863
+    beta_payday: 0.7230
+    beta_sale: 1.0292
+    kernel_sigma: 1.45
+    payday_anchors: [1]
+    weekend_adjustment: -0.0950
+  hypothesis: true
+  replace_with: >
+    The P2P share by day-of-month and by week from a published instrument-level series.
+    Concretely: the Fed DCPC Diary microdata, grouped by survey wave and day of month,
+    and RBI Annual Report Table IX.1 for India. Until a day-of-month P2P series exists,
+    the payday and megasale shares are scenarios, not observations, and the betas
+    inherit that status despite being exactly derivable from them.
+
+# ------------------------------------------------------------------------------
+# 8. CROSS-BANK MONEY MULE SMURFING RINGS
+# Models multi-stage interbank fan-out across distinct commercial banking silos.
+#
+# PROVENANCE, stated plainly because this section carried none before 2026-10-13:
+#
+#   (a) The cited instruments are real and the CONSTRAINTS they impose are real:
+#       31 CFR 1010.311 sets the $10,000 CTR filing threshold, and FinCEN and I4C both
+#       publish on mule schemes. But the citations establish that structuring below the
+#       threshold occurs. They do NOT supply any of the numbers below. No advisory was
+#       consulted that reports a fan-out degree distribution, a log-normal ticket shape,
+#       or an off-ramp mix, and no page reference was ever recorded.
+#
+#   (b) fan_out_probabilities, hop_latency.*, structuring_amounts.* and the off-ramp
+#       probability are all hand-chosen shapes. They are internally consistent --
+#       E[fan_out] = 3.2 and exp(7.2078) = 1,350s both reproduce -- but internal
+#       consistency is not grounding.
+#
+#   (c) The India reporting threshold of Rs 200,000 is carried from the code that
+#       introduced it. It was not re-verified against the PMLA instrument on
+#       2026-10-13 and should be treated as unchecked.
+# ------------------------------------------------------------------------------
+cross_bank_smurfing:
+  fan_out_degrees: [2, 3, 4, 5]
+  fan_out_probabilities: [0.25, 0.40, 0.25, 0.10]
+  hop_latency:
+    mu: 7.2078
+    sigma: 0.450
+    min_seconds: 600.0
+    max_seconds: 3600.0
+    median_seconds: 1350.0
+  structuring_amounts:
+    US:
+      currency: "USD"
+      mu: 8.150
+      sigma: 0.420
+      min_amount: 1500.0
+      max_amount: 8500.0
+      statutory_reporting_threshold: 10000.0
+    IN:
+      currency: "INR"
+      mu: 11.150
+      sigma: 0.450
+      min_amount: 25000.0
+      max_amount: 180000.0
+      statutory_reporting_threshold: 200000.0
+  offramp_channels:
+    - "P2P_CRYPTO_USDT_ESCROW"
+    - "ATM_CLONED_CARD_CASHOUT"
+  # Moved here from prism_generator/syndicates.py on 2026-10-13. It lived in code
+  # only, so the spec declared the set of off-ramps and the engine silently chose the
+  # mix. The value is unchanged; only its location is new.
+  offramp_probabilities:
+    P2P_CRYPTO_USDT_ESCROW: 0.65
+    ATM_CLONED_CARD_CASHOUT: 0.35
+  hypothesis: true
+  replace_with: >
+    Observed interbank mule transfers from a FinCEN 314(b) sharing programme or an
+    issuer's fraud-investigation dataset, binned by fan-out degree, inter-hop latency and
+    ticket size. The statutory thresholds are facts and stay regardless. Everything above
+    them is a shape choice that a case-level mule dataset would replace wholesale.
+

@@ -1,0 +1,15 @@
+# Copy to config.local.yaml (gitignored) and edit. Every key here overrides
+# the same key in config.yaml on this machine only. Two settings can also come
+# from the environment: PRISM_TRACK and PRISM_DATABASE_URL.
+track: india
+api:
+  database_url: sqlite:///prism_audit_india.db
+  # One long random string per role; the dashboard sends them as bearer
+  # tokens (VITE_ANALYST_TOKEN, VITE_CUSTOMER_TOKEN at build time, or the
+  # localStorage keys prism.credential.analyst and prism.credential.customer)
+  # when posting verdicts.
+  # The live loop's runner posts labels with the label_feed token (PRISM_LABEL_TOKEN).
+  credentials:
+    analyst: replace-with-a-long-random-string
+    customer: replace-with-another-long-random-string
+    label_feed: replace-with-a-third-long-random-string

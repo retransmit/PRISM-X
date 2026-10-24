@@ -1,0 +1,487 @@
+# spec/02_human_personas.yaml
+# Canonical Specification for Human Consumer Personas & Spending Dynamics
+# Grounded in: Federal Reserve Diary of Consumer Payment Choice (DCPC 2020-2026),
+# BLS Consumer Expenditure Surveys, CFPB Consumer Credit Market Reports.
+
+schema_version: "1.0.0"
+unit_definitions:
+  currency: "USD_cents"
+  time: "seconds"
+  arrival_rate: "events_per_second"
+  velocity: "km_per_hour"
+  probability: "[0.0, 1.0]"
+
+fed_empirical_benchmark_marginals:
+  schema_version: "1.1.0"
+  calibration_date: "2026-09-24"
+  baseline_currency: "USD_cents"
+  macro_volume_totals:
+    us_adult_population_mean_monthly_card_tx: 31.4
+    us_adult_payment_day_card_frequency_range: [1.80, 2.74]
+    general_purpose_card_annual_volume_billions: 153.3
+
+  channel_volume_distribution_frps:
+    macro_splits:
+      card_present_in_person_ratio: 0.638
+      card_not_present_remote_ratio: 0.362
+    card_present_subchannels:
+      cp_pos_emv_chip_contact_ratio: 0.678      # 43.26% of total card volume
+      cp_pos_contactless_nfc_ratio: 0.197       # 12.57% of total card volume
+      cp_pos_magstripe_fallback_ratio: 0.125    # 7.98% of total card volume
+    card_not_present_subchannels:
+      cnp_web_ecommerce_browser_ratio: 0.545    # 19.73% of total card volume
+      cnp_app_stored_credential_ratio: 0.455    # 16.47% of total card volume
+    normalized_aggregate_shares:
+      CP_POS_CHIP: 0.4326
+      CP_POS_CONTACTLESS: 0.1257
+      CP_POS_MAGSTRIPE: 0.0798
+      CNP_WEB: 0.1973
+      CNP_APP: 0.1647
+
+  mcc_spend_ticket_marginals:
+    MCC_5411_GROCERY_SUPERMARKET:
+      mcc: 5411
+      category: "Grocery Stores & Supermarkets"
+      distribution_model: "LogNormal"
+      params: { mu_log: 3.550, sigma_log: 0.820 }
+      mean_usd: 48.73
+      mean_cents: 4873
+      median_usd: 34.81
+      median_cents: 3481
+      percentiles_cents: { p25: 2002, p50: 3481, p75: 6053, p95: 13413, p99: 23453 }
+    MCC_5814_FAST_FOOD_QSR:
+      mcc: 5814
+      category: "Fast Food & Quick-Service Restaurants"
+      distribution_model: "LogNormal"
+      params: { mu_log: 2.380, sigma_log: 0.520 }
+      mean_usd: 12.37
+      mean_cents: 1237
+      median_usd: 10.81
+      median_cents: 1081
+      percentiles_cents: { p25: 761, p50: 1081, p75: 1534, p95: 2541, p99: 3622 }
+    MCC_5812_RESTAURANTS_DINING:
+      mcc: 5812
+      category: "Full-Service Restaurants & Dining"
+      distribution_model: "LogNormal"
+      params: { mu_log: 3.470, sigma_log: 0.750 }
+      mean_usd: 42.57
+      mean_cents: 4257
+      median_usd: 32.14
+      median_cents: 3214
+      percentiles_cents: { p25: 1938, p50: 3214, p75: 5330, p95: 11035, p99: 18397 }
+    MCC_5541_GAS_PETROLEUM:
+      mcc: 5541
+      category: "Service Stations & Fuel Dispensers"
+      distribution_model: "LogNormal"
+      params: { mu_log: 3.600, sigma_log: 0.500 }
+      mean_usd: 41.47
+      mean_cents: 4147
+      median_usd: 36.60
+      median_cents: 3660
+      percentiles_cents: { p25: 2612, p50: 3660, p75: 5128, p95: 8330, p99: 11711 }
+    MCC_5311_5999_GENERAL_MERCHANDISE:
+      mcc_list: [5311, 5999, 5300]
+      category: "Department Stores & General Retail Merchandise"
+      distribution_model: "LogNormal"
+      params: { mu_log: 3.810, sigma_log: 0.980 }
+      mean_usd: 72.98
+      mean_cents: 7298
+      median_usd: 45.15
+      median_cents: 4515
+      percentiles_cents: { p25: 2331, p50: 4515, p75: 8744, p95: 22632, p99: 44134 }
+    MCC_5912_8011_MEDICAL_PHARMACY:
+      mcc_list: [5912, 8011, 8021, 8099]
+      category: "Pharmacies & Outpatient Medical Services"
+      distribution_model: "LogNormal"
+      params: { mu_log: 3.350, sigma_log: 1.120 }
+      mean_usd: 53.37
+      mean_cents: 5337
+      median_usd: 28.50
+      median_cents: 2850
+      percentiles_cents: { p25: 1339, p50: 2850, p75: 6067, p95: 17986, p99: 38587 }
+    MCC_4900_4814_UTILITIES_TELECOM:
+      mcc_list: [4900, 4814, 4899]
+      category: "Utilities, Telecommunication & Cable Bills"
+      distribution_model: "LogNormal"
+      params: { mu_log: 4.480, sigma_log: 0.700 }
+      mean_usd: 112.73
+      mean_cents: 11273
+      median_usd: 88.23
+      median_cents: 8823
+      percentiles_cents: { p25: 5503, p50: 8823, p75: 14147, p95: 27905, p99: 44964 }
+
+# Ticket-scale recalibration (2026-10-16): the certification Pillar-1 amount gate
+# compares simulated log10(1 + amount) against the spec-pinned real reference
+# (spec/18 `pillar_1_real_reference`: IEEE-CIS card-not-present corpus, sha256
+# 3a5c83ab6b3c...). That corpus's legitimate-ticket median is ~USD 68 against the
+# clusters' ~USD 28 -- a uniform x2.46 location gap, measured W1 0.35-0.41 against
+# a size-calibrated limit of 0.0916 (failed on 5/5 stability seeds). Every US
+# cluster ticket parameter below was therefore scaled by e^0.90 = 2.45960
+# (mu_log + 0.90; spliced thresholds and GPD betas x 2.45960; documented
+# mean/percentiles x 2.45960). Scaling the LogNormal/Spliced-LogNormal-GPD
+# parameters scales every quantile exactly, so the documented values remain
+# exact. Post-calibration measured W1 on the five stability seeds (n=2000,
+# US, 30d): 0.059-0.070, all below the 0.0916 limit. The corpus is a
+# card-not-present portfolio while this mix spans CP+CNP; per-channel ticket
+# calibration is tracked as future work (measured 2026-10-16: simulated CP and
+# CNP ticket medians are equal, so channel-conditional grading alone cannot
+# close this gap).
+consumer_clusters:
+  - id: "C1_HOURLY_GIG_WORKER"
+    name: "Hourly / Gig Economy Worker"
+    population_weight: 0.16
+    annual_income_usd: [18000, 35000]
+    annual_income_inr: [120000, 288000]  # grounded: PLFS 2025 regular salaried Rs24,217/mo (male), self-employed Rs17,914/mo; Economic Survey 2024-25 self-employed Rs13,279/mo; FY2024-25 new tax regime take-home applied in engine
+    target_daily_tx_frequency: 1.85
+    monthly_card_tx_volume:
+      distribution: "NegativeBinomial"
+      params: { r: 16.5, p: 0.231 }
+      mean: 55.0
+      std: 15.4
+    spend_ticket_distribution:
+      model: "LogNormal"
+      params: { mu_log: 3.65, sigma_log: 0.55 }
+      mean_cents: 4476
+      percentiles_cents: { p25: 2337, p50: 3849, p75: 6100, p95: 12790, p99: 23366 }
+    primary_channels:
+      cp_chip_ratio: 0.45
+      cp_nfc_ratio: 0.25
+      cnp_web_ratio: 0.16
+      cnp_app_ratio: 0.14
+    dominant_mccs: [5411, 5814, 5541, 5912, 7299]
+    default_assigned_products: ["PROD_SUBPRIME_SECURED", "PROD_CHECKING_DEBIT", "PROD_GPR_PREPAID"]
+    vigilance_tier_weights:
+      tier_1_sms_push: 0.35
+      tier_2_app_checker: 0.45
+      tier_3_statement: 0.12
+      tier_4_passive: 0.08
+    hawkes_dynamics:
+      mu_0_hz: 0.00000913
+      alpha_excitation_hz: 0.00195
+      beta_decay_hz: 0.00300
+      branching_ratio_eta: 0.650
+      expected_cluster_size: 2.857
+      nocturnal_floor_beta_0: 0.035
+
+  - id: "C2_FIXED_INCOME_SENIOR"
+    name: "Fixed-Income Senior / Retiree"
+    population_weight: 0.18
+    annual_income_usd: [22000, 48000]
+    annual_income_inr: [180000, 360000]  # grounded: PLFS 2025 regular salaried Rs24,217/mo (male), self-employed Rs17,914/mo; Economic Survey 2024-25 self-employed Rs13,279/mo; FY2024-25 new tax regime take-home applied in engine
+    target_daily_tx_frequency: 1.35
+    monthly_card_tx_volume:
+      distribution: "NegativeBinomial"
+      params: { r: 24.2, p: 0.375 }
+      mean: 40.3
+      std: 10.4
+    spend_ticket_distribution:
+      model: "LogNormal"
+      params: { mu_log: 4.22, sigma_log: 0.62 }
+      mean_cents: 8240
+      percentiles_cents: { p25: 3493, p50: 6789, p75: 11880, p95: 28285, p99: 60260 }
+    primary_channels:
+      cp_chip_ratio: 0.60
+      cp_nfc_ratio: 0.15
+      cnp_web_ratio: 0.18
+      cnp_app_ratio: 0.07
+    dominant_mccs: [5411, 5912, 8011, 8062, 5311, 5812]
+    default_assigned_products: ["PROD_CLASSIC_REVOLVING", "PROD_CHECKING_DEBIT"]
+    vigilance_tier_weights:
+      tier_1_sms_push: 0.15
+      tier_2_app_checker: 0.25
+      tier_3_statement: 0.52
+      tier_4_passive: 0.08
+    hawkes_dynamics:
+      mu_0_hz: 0.00000914
+      alpha_excitation_hz: 0.00130
+      beta_decay_hz: 0.00250
+      branching_ratio_eta: 0.520
+      expected_cluster_size: 2.083
+      nocturnal_floor_beta_0: 0.010
+
+  - id: "C3_YOUNG_ADULT_STUDENT"
+    name: "Young Adult / College Student"
+    population_weight: 0.14
+    annual_income_usd: [12000, 32000]
+    annual_income_inr: [96000, 240000]  # grounded: PLFS 2025 regular salaried Rs24,217/mo (male), self-employed Rs17,914/mo; Economic Survey 2024-25 self-employed Rs13,279/mo; FY2024-25 new tax regime take-home applied in engine
+    target_daily_tx_frequency: 2.10
+    monthly_card_tx_volume:
+      distribution: "NegativeBinomial"
+      params: { r: 18.2, p: 0.225 }
+      mean: 62.7
+      std: 16.7
+    spend_ticket_distribution:
+      model: "LogNormal"
+      params: { mu_log: 3.55, sigma_log: 0.58 }
+      mean_cents: 4108
+      percentiles_cents: { p25: 1771, p50: 3468, p75: 5780, p95: 11806, p99: 27056 }
+    primary_channels:
+      cp_nfc_ratio: 0.44
+      cnp_app_ratio: 0.24
+      cp_chip_ratio: 0.18
+      cnp_web_ratio: 0.14
+    dominant_mccs: [5814, 5812, 5499, 4899, 5815, 7993, 5651]
+    default_assigned_products: ["PROD_CHECKING_DEBIT", "PROD_BNPL_SINGLE_USE_VIRTUAL", "PROD_TOKENIZED_DPAN"]
+    vigilance_tier_weights:
+      tier_1_sms_push: 0.62
+      tier_2_app_checker: 0.30
+      tier_3_statement: 0.05
+      tier_4_passive: 0.03
+    hawkes_dynamics:
+      mu_0_hz: 0.00000888
+      alpha_excitation_hz: 0.00210
+      beta_decay_hz: 0.00300
+      branching_ratio_eta: 0.700
+      expected_cluster_size: 3.333
+      nocturnal_floor_beta_0: 0.045
+
+  - id: "C4_SUBURBAN_FAMILY"
+    name: "Suburban Family Household"
+    population_weight: 0.28
+    annual_income_usd: [75000, 160000]
+    annual_income_inr: [360000, 840000]  # grounded: PLFS 2025 regular salaried Rs24,217/mo (male), self-employed Rs17,914/mo; Economic Survey 2024-25 self-employed Rs13,279/mo; FY2024-25 new tax regime take-home applied in engine
+    target_daily_tx_frequency: 2.65
+    monthly_card_tx_volume:
+      distribution: "NegativeBinomial"
+      params: { r: 28.5, p: 0.264 }
+      mean: 79.4
+      std: 17.3
+    spend_ticket_distribution:
+      model: "Spliced_LogNormal_GPD"
+      params:
+        mu_log: 4.45
+        sigma_log: 0.65
+        threshold_u_cents: 61490  # recalibrated $614.90 EVT splicing threshold (was 25000)
+        gpd_xi: 0.22
+        gpd_beta: 23366
+        tail_prob: 0.03
+      mean_cents: 10552
+      percentiles_cents: { p25: 4526, p50: 8559, p75: 15791, p95: 36402, p99: 72558 }
+    primary_channels:
+      cp_chip_ratio: 0.44
+      cp_nfc_ratio: 0.24
+      cnp_web_ratio: 0.18
+      cnp_app_ratio: 0.14
+    dominant_mccs: [5411, 5541, 5542, 5200, 8211, 8299, 5651, 4900, 5812]
+    default_assigned_products: ["PROD_REWARDS_SIGNATURE", "PROD_CLASSIC_REVOLVING", "PROD_TOKENIZED_DPAN"]
+    vigilance_tier_weights:
+      tier_1_sms_push: 0.55
+      tier_2_app_checker: 0.35
+      tier_3_statement: 0.08
+      tier_4_passive: 0.02
+    hawkes_dynamics:
+      mu_0_hz: 0.00001030
+      alpha_excitation_hz: 0.00225
+      beta_decay_hz: 0.00310
+      branching_ratio_eta: 0.725
+      expected_cluster_size: 3.636
+      nocturnal_floor_beta_0: 0.015
+
+  - id: "C5_URBAN_TECH_PROFESSIONAL"
+    name: "Urban Tech-Forward Professional"
+    population_weight: 0.12
+    annual_income_usd: [85000, 180000]
+    annual_income_inr: [840000, 2160000]  # grounded: PLFS 2025 regular salaried Rs24,217/mo (male), self-employed Rs17,914/mo; Economic Survey 2024-25 self-employed Rs13,279/mo; FY2024-25 new tax regime take-home applied in engine
+    target_daily_tx_frequency: 2.45
+    monthly_card_tx_volume:
+      distribution: "NegativeBinomial"
+      params: { r: 25.1, p: 0.253 }
+      mean: 74.0
+      std: 17.1
+    spend_ticket_distribution:
+      model: "LogNormal"
+      params: { mu_log: 4.55, sigma_log: 0.68 }
+      mean_cents: 11880
+      percentiles_cents: { p25: 4944, p50: 9469, p75: 17906, p95: 43043, p99: 93465 }
+    primary_channels:
+      cp_nfc_ratio: 0.36
+      cnp_app_ratio: 0.24
+      cnp_web_ratio: 0.22
+      cp_chip_ratio: 0.18
+    dominant_mccs: [5812, 5814, 4121, 5411, 4816, 5815, 7011, 3000]
+    default_assigned_products: ["PROD_REWARDS_SIGNATURE", "PROD_ULTRA_PREMIUM_INFINITE", "PROD_TOKENIZED_DPAN"]
+    vigilance_tier_weights:
+      tier_1_sms_push: 0.68
+      tier_2_app_checker: 0.26
+      tier_3_statement: 0.04
+      tier_4_passive: 0.02
+    hawkes_dynamics:
+      mu_0_hz: 0.00001110
+      alpha_excitation_hz: 0.00190
+      beta_decay_hz: 0.00280
+      branching_ratio_eta: 0.680
+      expected_cluster_size: 3.125
+      nocturnal_floor_beta_0: 0.030
+
+  - id: "C6_SMALL_BUSINESS_OWNER"
+    name: "Small Business Owner-Operator"
+    population_weight: 0.07
+    annual_income_usd: [60000, 250000]
+    annual_income_inr: [480000, 2160000]  # grounded: PLFS 2025 regular salaried Rs24,217/mo (male), self-employed Rs17,914/mo; Economic Survey 2024-25 self-employed Rs13,279/mo; FY2024-25 new tax regime take-home applied in engine
+    target_daily_tx_frequency: 2.70
+    monthly_card_tx_volume:
+      distribution: "NegativeBinomial"
+      params: { r: 26.4, p: 0.245 }
+      mean: 81.3
+      std: 18.2
+    spend_ticket_distribution:
+      model: "Spliced_LogNormal_GPD"
+      params:
+        mu_log: 5.05
+        sigma_log: 0.72
+        threshold_u_cents: 110682
+        gpd_xi: 0.28
+        gpd_beta: 44273
+        tail_prob: 0.05
+      mean_cents: 20193
+      percentiles_cents: { p25: 7994, p50: 15594, p75: 30007, p95: 76248, p99: 167253 }
+    primary_channels:
+      cp_chip_ratio: 0.42
+      cnp_web_ratio: 0.26
+      cp_nfc_ratio: 0.22
+      cnp_app_ratio: 0.10
+    dominant_mccs: [5085, 5099, 5200, 5943, 7311, 7372, 5541, 5542, 5812, 9311]
+    default_assigned_products: ["PROD_COMMERCIAL_FLEET", "PROD_REWARDS_SIGNATURE"]
+    vigilance_tier_weights:
+      tier_1_sms_push: 0.38
+      tier_2_app_checker: 0.42
+      tier_3_statement: 0.16
+      tier_4_passive: 0.04
+    hawkes_dynamics:
+      mu_0_hz: 0.00001140
+      alpha_excitation_hz: 0.00210
+      beta_decay_hz: 0.00300
+      branching_ratio_eta: 0.700
+      expected_cluster_size: 3.333
+      nocturnal_floor_beta_0: 0.020
+
+  - id: "C7_LUXURY_AFFLUENT"
+    name: "High-Net-Worth Luxury Spender"
+    population_weight: 0.05
+    annual_income_usd: [225000, 1500000]
+    annual_income_inr: [2160000, 7200000]  # grounded: PLFS 2025 regular salaried Rs24,217/mo (male), self-employed Rs17,914/mo; Economic Survey 2024-25 self-employed Rs13,279/mo; FY2024-25 new tax regime take-home applied in engine
+    target_daily_tx_frequency: 2.60
+    monthly_card_tx_volume:
+      distribution: "NegativeBinomial"
+      params: { r: 25.5, p: 0.248 }
+      mean: 77.3
+      std: 17.6
+    spend_ticket_distribution:
+      model: "Spliced_LogNormal_GPD"
+      params:
+        mu_log: 5.45
+        sigma_log: 0.78
+        threshold_u_cents: 196768
+        gpd_xi: 0.35
+        gpd_beta: 78707
+        tail_prob: 0.06
+      mean_cents: 31532
+      percentiles_cents: { p25: 11609, p50: 23268, p75: 46978, p95: 127899, p99: 332046 }
+    primary_channels:
+      cp_nfc_ratio: 0.35
+      cp_chip_ratio: 0.30
+      cnp_web_ratio: 0.22
+      cnp_app_ratio: 0.13
+    dominant_mccs: [3000, 3500, 5812, 5311, 5651, 5944, 7997, 7011]
+    default_assigned_products: ["PROD_ULTRA_PREMIUM_INFINITE"]
+    vigilance_tier_weights:
+      tier_1_sms_push: 0.40
+      tier_2_app_checker: 0.32
+      tier_3_statement: 0.24
+      tier_4_passive: 0.04
+    hawkes_dynamics:
+      mu_0_hz: 0.00000953
+      alpha_excitation_hz: 0.00237
+      beta_decay_hz: 0.00320
+      branching_ratio_eta: 0.740
+      expected_cluster_size: 3.846
+      nocturnal_floor_beta_0: 0.030
+
+circadian_diurnal_model:
+  mathematical_form: "periodic_24h_von_Mises_mixture"
+  formula: "phi(t) = beta_0 + (24 - 24*beta_0) * sum(w_k * exp(kappa_k * cos(2*pi*(t - mu_k)/24)) / (24 * I_0(kappa_k)))"
+  weekday_profile:
+    nocturnal_floor_beta_0: 0.025
+    components:
+      - { name: "Morning Commute", mu_hour: 8.25, kappa: 4.2, weight: 0.22 }
+      - { name: "Lunch Rush", mu_hour: 12.60, kappa: 4.8, weight: 0.32 }
+      - { name: "Evening Errands", mu_hour: 18.50, kappa: 3.6, weight: 0.34 }
+      - { name: "Night Browsing", mu_hour: 21.25, kappa: 3.0, weight: 0.12 }
+  weekend_profile:
+    nocturnal_floor_beta_0: 0.040
+    components:
+      - { name: "Brunch & Retail", mu_hour: 11.50, kappa: 2.4, weight: 0.42 }
+      - { name: "Dinner Social", mu_hour: 18.75, kappa: 2.6, weight: 0.43 }
+      - { name: "Nightlife", mu_hour: 23.25, kappa: 3.5, weight: 0.15 }
+  # Added 2026-10-16 (arrival-shape slice). The portfolio's arrival stream is the sum of
+  # individual local clocks, not one shared clock: a cardholder's day runs on their own
+  # time zone and chronotype. The engine draws, per card:
+  #   phase_offset_sec = ((circadian_peak_hour - 13.5) + time_zone_offset) * 3600
+  # `circadian_peak_hour` (uniform 11.5-15.5 h, agents.py CardholderProfile) existed on
+  # the profile but was previously unused; this block makes it live. Time-zone offsets are
+  # ET/CT/MT/PT with population shares 0.47/0.29/0.07/0.17 (Census state populations
+  # mapped to zones; AK/HI folded into PT so the weights sum to 1.0), US cards only. The
+  # per-card draw uses a card-derived RNG stream so existing sampling streams are not
+  # shifted. Measured effect (seed 42, 80 cards, n=2000, 12d): aggregate hour-profile L1
+  # against the IEEE-CIS portfolio profile 0.2694 -> 0.1720 (chronotype only) / 0.2196
+  # (composite vs the corpus-aligned profile); rate-invariant arrival W1 across seeds
+  # 42/0/1/2/3 improves 0.0490 -> 0.0468 mean. The diurnal mean stays 0.8208: a phase
+  # shift leaves the mean over S^1 unchanged, so the pacing divisor is untouched.
+  # Mirrored in engine._us_timezone_offset_hours and engine._initialize_cardholders.
+  # Region scope is enforced in engine._initialize_cardholders (2026-10-16): the chronotype
+  # term applies only when applies_to_regions names the card's region (the per-card peak is
+  # still drawn for every card, so sampling streams do not shift). A leaked non-US phase
+  # moved the IN leakage sweep's eci to 0.9501, over spec/07's 0.95 single-column ceiling at
+  # playbook/7d; with the declared scope enforced the sweep tops out at 0.9419
+  # (playbook/21d), inside the ceiling.
+  population_phase_dispersion:
+    enabled: true
+    chronotype_peak_range_hours: [11.5, 15.5]
+    reference_peak_hour: 13.5
+    time_zone_offsets_hours: [0.0, -1.0, -2.0, -3.0]
+    time_zone_population_shares: [0.47, 0.29, 0.07, 0.17]
+    applies_to_regions: ["US"]
+
+authentic_hard_negatives:
+  - id: "HN_HOME_RELOCATION"
+    name: "Home Relocation & Moving Surge"
+    episodic_window_seconds: 259200  # 72 hours
+    velocity_multiplier: 5.5
+    spend_percentile_target: "p99"
+    characteristic_mccs: [7513, 4225, 5200, 5712, 4900]
+    ground_truth_discriminators:
+      valid_emv_arqc_chip: true
+      kinematic_corridor_highway_speed_kmh: [65.0, 110.0]
+
+  - id: "HN_CROSS_BORDER_TRAVEL"
+    name: "International Vacation & Business Travel"
+    booking_trail_lookback_days: 21
+    transit_mccs: [5309, 5812, 4816, 4121]
+    destination_mccs: [7011, 5812, 5651]
+    foreign_currency_flag: true
+    ground_truth_discriminators:
+      flight_velocity_kmh: [750.0, 920.0]
+      prior_airline_auth_exists: true
+      contactless_token_present: true
+
+cardholder_discovery_survival_model:
+  tiers:
+    tier_1_push_sms:
+      model: "LogNormal"
+      params: { mu_log: 5.2, sigma_log: 0.85 }
+      median_seconds: 181  # ~3.0 minutes
+    tier_2_app_checker:
+      model: "Weibull"
+      params: { shape_k: 1.8, scale_hours: 36.0 }
+      median_seconds: 110880  # ~30.8 hours
+    tier_3_statement_cycle:
+      model: "Uniform"
+      params: { min_days: 3, max_days: 45, mean_days: 21.5 }
+    tier_4_passive:
+      discovery_seconds: "Infinity"
+  conditional_flagging_probability:
+    formula: "P(Flag | x, c) = 1 - exp(-(x / x_0)^alpha) * [1 - delta_0 * (1 - c)]"
+    params:
+      x_0_usd: 45.00
+      alpha: 1.35
+      delta_0: 0.40
